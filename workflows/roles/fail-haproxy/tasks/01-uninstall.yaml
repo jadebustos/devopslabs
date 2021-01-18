@@ -1,0 +1,35 @@
+---
+
+- name: install haproxy (Red Hat)
+  dnf:
+    name: "{{ haproxy_rpms }}"
+    state: absent
+  become: yes
+  when: ansible_os_family == 'RedHat'
+
+- name: copy certificate files (Red Hat)
+  file:
+    path: "/etc/ssl/certs/{{ item }}"
+    state: absent
+  become: yes
+  when: ansible_os_family == 'RedHat'
+  with_items:
+      - "acme.es.pem"
+      - "cacert.pem"
+
+- name: install haproxy (Debian)
+  apt:
+    name: "{{ haproxy_debs }}"
+    state: absent
+  become: yes
+  when: ansible_os_family == 'Debian'
+
+- name: copy certificate files (Debian)
+  file:
+    path: "/etc/ssl/certs/{{ item }}"
+    state: absent
+  become: yes
+  when: ansible_os_family == 'Debian'
+  with_items:
+      - "acme.es.pem"
+      - "cacert.pem"

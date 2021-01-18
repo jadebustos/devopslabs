@@ -1,0 +1,15 @@
+---
+
+- name: install httpd (Red Hat)
+  dnf:
+    name: "{{ httpd_rpms }}"
+    state: absent
+  become: yes
+  when: ansible_os_family == 'RedHat'
+
+- name: install httpd (Debian)
+  apt:
+    name: "{{ httpd_debs }}"
+    state: absent
+  become: yes
+  when: ansible_os_family == 'Debian'

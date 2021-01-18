@@ -1,0 +1,12 @@
+<html>
+<body>
+<center><h1>Saludos desde el servidor {{ ansible_fqdn }}</h1></center><br>
+
+<br>&emsp;<b>Sistema Operativo:</b> {{ ansible_distribution }} {{ ansible_distribution_major_version }} <br>
+{% for item in ansible_default_ipv4 %}
+  <br>&emsp;
+    <b>{{ item }}:</b> {{ ansible_default_ipv4[item] }}
+{% endfor %}
+
+</body>
+</html>

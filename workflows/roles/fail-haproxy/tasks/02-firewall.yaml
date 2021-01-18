@@ -1,0 +1,10 @@
+- name: firewall configuration for http
+  firewalld:
+    service: "{{ item }}"
+    permanent: yes
+    state: disabled
+    immediate: yes
+  become: true
+  with_items:
+    - "http"
+    - "https"

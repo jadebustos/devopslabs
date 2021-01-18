@@ -1,0 +1,20 @@
+---
+
+DocumentRoot: '/var/www/html/webapp'
+ServerName: 'www.acme.es'
+
+# create key and csr
+# openssl req -nodes -newkey rsa:4096 -sha512 -keyout acme.es.key -out acme.es.csr -batch \
+#       -subj "/C=SP/ST=Spain/L=Madrid/O=ACME/OU=ACME-IT/CN=www.acme.es/emailAddress=webmaster@acme.es" \
+#       -addext "subjectAltName = DNS:acme.es"
+
+# firmar el csr con una CA previamente creada ACMECA
+# openssl ca -extensions server -name ACMECA -out acme.es.crt -infiles acme.es.csr
+
+
+SSLCertificateFile: '/etc/pki/tls/certs/acme.es.crt'
+SSLCertificateKeyFile: '/etc/pki/tls/private/acme.es.key'
+SSLCertificateChainFile: '/etc/pki/tls/certs/server-chain.crt'
+
+webapp_dir: '/var/www/html/webapp'
+

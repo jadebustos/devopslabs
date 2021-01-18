@@ -1,0 +1,35 @@
+---
+
+buildfiles:
+  busybox-dockerfile:
+    src: 'Dockerfile-busybox'
+    path: '/root/build/busybox/'
+    dst: 'Dockerfile'
+  busybox-script:
+    src: 'myscript.sh'
+    path: '/root/build/busybox'
+    dst: 'myscript.sh'
+  busybox-infinitescript:
+    src: 'myinfinitescript.sh'
+    path: '/root/build/busybox'
+    dst: 'myinfinitescript.sh'
+  apache-dockerfile:
+    src: 'Dockerfile-apache'
+    path: '/root/build/apache/'
+    dst: 'Dockerfile'
+  index-php:
+    src: 'index.php'
+    path: '/root/build/apache'
+    dst: 'index.php'
+  index-custom-php:
+    src: 'index-custom.php'
+    path: '/root/build/apache/custom-php'
+    dst: 'index.php'
+  virtualhost:
+    src: 'virtualhost.conf'
+    path: '/root/build/apache'
+    dst: 'virtualhost.conf'
+  start-apache:
+    src: 'start-apache.sh'
+    path: '/root/build/apache'
+    dst: 'start-apache.sh'

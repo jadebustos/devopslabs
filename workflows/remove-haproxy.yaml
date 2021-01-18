@@ -1,0 +1,9 @@
+---
+
+- name: remove haproxy
+  hosts: all
+  vars_files:
+    - "group_vars/haproxy.yaml"
+  gather_facts: true
+  roles:
+    - fail-haproxy

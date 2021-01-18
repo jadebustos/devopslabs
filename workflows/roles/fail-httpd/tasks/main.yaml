@@ -1,0 +1,4 @@
+---
+
+- include_tasks: 01-uninstall.yaml
+- include_tasks: 02-firewall.yaml

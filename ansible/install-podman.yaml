@@ -1,0 +1,13 @@
+---
+
+- name: installing podman
+  hosts: all
+  vars_files:
+    - "group_vars/common.yaml"
+    - "group_vars/podman.yaml"
+    - "group_vars/container-examples.yaml"
+  gather_facts: false
+  roles:
+    - common
+    - podman 
+    - container-examples

@@ -1,0 +1,23 @@
+---
+
+- name: enable services (Red Hat)
+  systemd:
+    name: "{{ item }}"
+    state: started
+    enabled: yes
+    masked: no
+  become: yes
+  when: ansible_os_family == 'RedHat'
+  with_items:
+    - "httpd"
+
+- name: enable services (Debian)
+  systemd:
+    name: "{{ item }}"
+    state: started
+    enabled: yes
+    masked: no
+  become: yes
+  when: ansible_os_family == 'Debian'
+  with_items:
+    - "apache2"

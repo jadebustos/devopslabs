@@ -1,0 +1,9 @@
+---
+
+- name: remove httpd servers
+  hosts: all
+  vars_files:
+    - "group_vars/httpd.yaml"
+  gather_facts: true
+  roles:
+    - fail-httpd

@@ -1,0 +1,7 @@
+---
+
+- name: instalando las herramientas para la gestion de contenedores
+  dnf:
+    name: "{{ container_rpms }}"
+    state: present
+  become: yes

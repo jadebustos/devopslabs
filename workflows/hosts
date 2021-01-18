@@ -1,0 +1,16 @@
+[rhlb]
+lb.acme.es ansible_user=executor
+
+[rhapache]
+apache1.acme.es ansible_user=executor
+apache2.acme.es ansible_user=executor
+
+[deblb]
+deblb.acme.es ansible_user=executor ansible_python_interpreter=/usr/bin/python3
+
+[debapache]
+debapache1.acme.es ansible_user=executor ansible_python_interpreter=/usr/bin/python3
+debapache2.acme.es ansible_user=executor ansible_python_interpreter=/usr/bin/python3
+
+[lab]
+192.168.1.200 ansible_user=jadebustos

@@ -1,0 +1,25 @@
+---
+
+- name: create build examples directories
+  file:
+    path: "{{ item.value.path }}"
+    owner: root
+    group: root
+    mode: 0755
+    setype: 'admin_home_t'
+    state: directory
+  become: yes
+  with_dict:
+    - "{{ buildfiles }}"
+
+- name: copy busybox build examples
+  copy:
+     src: "{{ item.value.src }}"
+     dest: "{{ item.value.path }}/{{ item.value.dst }}"
+     owner: root
+     group: root
+     mode: 0644
+     setype: 'admin_home_t'
+  become: yes
+  with_dict:
+    - "{{ buildfiles }}"

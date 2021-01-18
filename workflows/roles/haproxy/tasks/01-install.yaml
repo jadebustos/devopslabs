@@ -1,0 +1,63 @@
+---
+
+- name: install haproxy (Red Hat)
+  dnf:
+    name: "{{ haproxy_rpms }}"
+    state: present
+  become: yes
+  when: ansible_os_family == 'RedHat'
+
+- name: copy haproxy configuration file (Red Hat)
+  template:
+    src: haproxy.cfg.j2
+    dest: /etc/haproxy/haproxy.cfg
+    owner: root
+    group: root
+    mode: 0644
+    setype: etc_t
+  become: yes
+  when: ansible_os_family == 'RedHat'
+
+- name: copy certificate files (Red Hat)
+  copy:
+    src: "{{ item }}"
+    dest: "/etc/ssl/certs/{{ item }}"
+    owner: root
+    group: root
+    mode: 0644
+    setype: cert_t
+  become: yes
+  when: ansible_os_family == 'RedHat'
+  with_items:
+      - "acme.es.pem"
+      - "cacert.pem"
+
+- name: install haproxy (Debian)
+  apt:
+    name: "{{ haproxy_debs }}"
+    state: present
+  become: yes
+  when: ansible_os_family == 'Debian'
+  
+- name: copy haproxy configuration file (Debian)
+  template:
+    src: haproxy.cfg.j2
+    dest: /etc/haproxy/haproxy.cfg
+    owner: root
+    group: root
+    mode: 0644
+  become: yes
+  when: ansible_os_family == 'Debian'
+
+- name: copy certificate files (Debian)
+  copy:
+    src: "{{ item }}"
+    dest: "/etc/ssl/certs/{{ item }}"
+    owner: root
+    group: root
+    mode: 0644
+  become: yes
+  when: ansible_os_family == 'Debian'
+  with_items:
+      - "acme.es.pem"
+      - "cacert.pem"

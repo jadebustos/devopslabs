@@ -1,0 +1,5 @@
+---
+
+- include_tasks: 01-repositories.yaml
+- include_tasks: 02-rpms.yaml
+- include_tasks: 03-services.yaml

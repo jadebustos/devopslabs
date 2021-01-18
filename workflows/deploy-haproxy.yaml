@@ -1,0 +1,9 @@
+---
+
+- name: deploy haproxy
+  hosts: all
+  vars_files:
+    - "group_vars/haproxy.yaml"
+  gather_facts: true
+  roles:
+    - haproxy

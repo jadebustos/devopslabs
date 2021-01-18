@@ -1,0 +1,9 @@
+---
+
+- name: deploy webapp
+  hosts: all
+  vars_files:
+    - "group_vars/webapp.yaml"
+  gather_facts: true
+  roles:
+    - webapp

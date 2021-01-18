@@ -1,0 +1,155 @@
+---
+
+- name: copy certificate files (Red Hat)
+  copy:
+    src: "{{ item.file }}"
+    dest: "{{ item.path }}"
+    owner: root
+    group: root
+    mode: "{{ item.mode }}"
+    setype: "{{ item.setype }}"
+  become: yes
+  when: ansible_os_family == 'RedHat'
+  with_items:
+    - { file: 'acme.es.crt', path: '/etc/pki/tls/certs/acme.es.crt', mode: 0644, setype: 'cert_t' }
+    - { file: 'acme.es.key', path: '/etc/pki/tls/private/acme.es.key', mode: 0644, setype: 'cert_t' }
+    - { file: 'cacert.pem', path: '/etc/pki/tls/certs/server-chain.crt', mode: 0644, setype: 'cert_t' }
+
+- name: copy virtual host file (Red Hat)
+  template:
+    src: devops.conf.j2
+    dest: /etc/httpd/conf.d/devops.conf
+    owner: root
+    group: root
+    mode: 0644
+    setype: 'httpd_config_t'
+  become: yes
+  when: ansible_os_family == 'RedHat'
+
+- name: webapp directory creation (Red Hat)
+  file:
+    path: "{{ webapp_dir }}"
+    state: directory
+    mode: 0755
+    setype: 'httpd_sys_content_t'
+  become: yes
+  when: ansible_os_family == 'RedHat'
+
+- name: copy webapp files (Red Hat)
+  template:
+    src: index.html.j2
+    dest: "{{ webapp_dir }}/index.html"
+    owner: root
+    group: root
+    mode: 0644
+    setype: 'httpd_sys_content_t'
+  become: yes
+  when: ansible_os_family == 'RedHat'
+
+- name: remove httpd welcome page (Red Hat)
+  file: path=/etc/httpd/conf.d/welcome.conf state=absent
+  become: yes
+  when: ansible_os_family == 'RedHat'
+
+- name: restart httpd (Red Hat)
+  systemd:
+    name: httpd
+    state: restarted
+    daemon_reload: yes
+  become: yes
+  when: ansible_os_family == 'RedHat'
+
+- name: certificate directories creation (Debian)
+  file:
+    path: "{{ item }}"
+    state: directory
+    mode: 0755
+  become: yes
+  when: ansible_os_family == 'Debian'
+  with_items:
+    - "/etc/pki/tls/certs"
+    - "/etc/pki/tls/private"  
+
+- name: copy certificate files (Debian)
+  copy:
+    src: "{{ item.file }}"
+    dest: "{{ item.path }}"
+    owner: root
+    group: root
+    mode: "{{ item.mode }}"
+  become: yes
+  when: ansible_os_family == 'Debian'
+  with_items:
+    - { file: 'acme.es.crt', path: '/etc/pki/tls/certs/acme.es.crt', mode: 0644 }
+    - { file: 'acme.es.key', path: '/etc/pki/tls/private/acme.es.key', mode: 0644 }
+    - { file: 'cacert.pem', path: '/etc/pki/tls/certs/server-chain.crt', mode: 0644 }
+
+- name: copy virtual host file (Debian)
+  template:
+    src: devops.conf.j2
+    dest: /etc/apache2/sites-available/devops.conf
+    owner: root
+    group: root
+    mode: 0644
+  become: yes
+  when: ansible_os_family == 'Debian'
+
+- name: enable site (Debian)
+  file:
+    src: /etc/apache2/sites-available/devops.conf
+    dest: /etc/apache2/sites-enabled/devops.conf
+    owner: root
+    group: root
+    state: link
+  become: yes
+  when: ansible_os_family == 'Debian'
+
+- name: enable ssl on apache (Debian)
+  file:
+    src: "{{ item.src }}"
+    dest: "{{ item.dest }}"
+    owner: root
+    group: root
+    state: link
+  become: yes
+  when: ansible_os_family == 'Debian'
+  with_items:
+    - { src: '/etc/apache2/mods-available/ssl.conf', dest: '/etc/apache2/mods-enabled/ssl.conf' }
+    - { src: '/etc/apache2/mods-available/ssl.load', dest: '/etc/apache2/mods-enabled/ssl.load' }
+    - { src: '/etc/apache2/mods-available/socache_shmcb.load', dest: '/etc/apache2/mods-enabled/socache_shmcb.load' }
+
+- name: create log directory (Debian)
+  file:
+    src: /var/log/apache2
+    dest: /var/log/httpd
+    owner: root
+    group: adm
+    state: link
+  become: yes
+  when: ansible_os_family == 'Debian'
+
+- name: webapp directory creation (Debian)
+  file:
+    path: "{{ webapp_dir }}"
+    state: directory
+    mode: 0755
+  become: yes
+  when: ansible_os_family == 'Debian'
+
+- name: copy webapp files (Debian)
+  template:
+    src: index.html.j2
+    dest: "{{ webapp_dir }}/index.html"
+    owner: root
+    group: root
+    mode: 0644
+  become: yes
+  when: ansible_os_family == 'Debian'
+
+- name: restart httpd (Debian)
+  systemd:
+    name: apache2
+    state: restarted
+    daemon_reload: yes
+  become: yes
+  when: ansible_os_family == 'Debian'

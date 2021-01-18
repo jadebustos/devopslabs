@@ -1,0 +1,5 @@
+---
+
+httpd_rpms: ['httpd', 'mod_ssl', 'openssl']
+
+httpd_debs: ['apache2', 'apache2-bin', 'openssl']

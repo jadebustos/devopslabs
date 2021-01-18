@@ -1,0 +1,101 @@
+---
+
+- name: remove certificate files (Red Hat)
+  file:
+    path: "{{ item.path }}"
+    state: absent
+  become: yes
+  when: ansible_os_family == 'RedHat'
+  with_items:
+    - { file: 'acme.es.crt', path: '/etc/pki/tls/certs/acme.es.crt', mode: 0644, setype: 'cert_t' }
+    - { file: 'acme.es.key', path: '/etc/pki/tls/private/acme.es.key', mode: 0644, setype: 'cert_t' }
+    - { file: 'cacert.pem', path: '/etc/pki/tls/certs/server-chain.crt', mode: 0644, setype: 'cert_t' }
+
+- name: remove virtual host file (Red Hat)
+  file:
+    path: /etc/httpd/conf.d/devops.conf
+    state: absent
+  become: yes
+  when: ansible_os_family == 'RedHat'
+
+- name: remove webapp files (Red Hat)
+  file:
+    path: "{{ webapp_dir }}/index.html"
+    state: absent
+  become: yes
+  when: ansible_os_family == 'RedHat'
+
+- name: delete webapp directory (Red Hat)
+  file:
+    path: "{{ webapp_dir }}"
+    state: absent
+  become: yes
+  when: ansible_os_family == 'RedHat'
+
+- name: remove certificate files (Debian)
+  file:
+    path: "{{ item.path }}"
+    state: absent
+  become: yes
+  when: ansible_os_family == 'Debian'
+  with_items:
+    - { file: 'acme.es.crt', path: '/etc/pki/tls/certs/acme.es.crt', mode: 0644 }
+    - { file: 'acme.es.key', path: '/etc/pki/tls/private/acme.es.key', mode: 0644 }
+    - { file: 'cacert.pem', path: '/etc/pki/tls/certs/server-chain.crt', mode: 0644 }
+
+- name: remove certificate directories (Debian)
+  file:
+    path: "{{ item }}"
+    state: absent
+  become: yes
+  when: ansible_os_family == 'Debian'
+  with_items:
+    - "/etc/pki/tls/certs"
+    - "/etc/pki/tls/private" 
+
+- name: disable site (Debian)
+  file:
+    path: /etc/apache2/sites-enable/devops.conf
+    state: absent
+  become: yes
+  when: ansible_os_family == 'Debian'
+
+- name: delete virtual host file (Debian)
+  file:
+    path: /etc/apache2/sites-available/devops.conf
+    state: absent
+  become: yes
+  when: ansible_os_family == 'Debian'
+
+- name: disable ssl on apache (Debian)
+  file:
+    path: "{{ item.dest }}"
+    state: absent
+  become: yes
+  when: ansible_os_family == 'Debian'
+  with_items:
+    - { src: '/etc/apache2/mods-available/ssl.conf', dest: '/etc/apache2/mods-enabled/ssl.conf' }
+    - { src: '/etc/apache2/mods-available/ssl.load', dest: '/etc/apache2/mods-enabled/ssl.load' }
+    - { src: '/etc/apache2/mods-available/socache_shmcb.load', dest: '/etc/apache2/mods-enabled/socache_shmcb.load' }
+
+- name: create log directory (Debian)
+  file:
+    path: /var/log/httpd
+    state: absent
+  become: yes
+  when: ansible_os_family == 'Debian'
+
+- name: remove webapp files (Debian)
+  file:
+    path: "{{ webapp_dir }}/index.html"
+    state: absent
+  become: yes
+  when: ansible_os_family == 'Debian'
+
+- name: remove webapp directory (Debian)
+  file:
+    path: "{{ webapp_dir }}"
+    state: directory
+    mode: 0755
+  become: yes
+  when: ansible_os_family == 'Debian'
