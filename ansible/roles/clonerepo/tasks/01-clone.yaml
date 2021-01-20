@@ -1,0 +1,7 @@
+---
+
+- name: clona repositorio git privado
+  git:
+    repo: "https://{{ user }}:{{ password }}@github.com/{{ user }}/{{ private_repo_name }}.git"
+    dest: "{{ target_dir }}"
+  no_log: true

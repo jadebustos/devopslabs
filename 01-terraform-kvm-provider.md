@@ -1,6 +1,6 @@
 # Instalando el provider de KVM para terraform
 
-KVM no se encuentra entre los proveedores deistribuidos con terraform, con lo cual podemos descargarlo desde [aquí](https://github.com/dmacvicar/terraform-provider-libvirt/releases/).
+KVM no se encuentra entre los proveedores distribuidos con terraform, con lo cual podemos descargarlo desde [aquí](https://github.com/dmacvicar/terraform-provider-libvirt/releases/).
 
 En este caso descargaremos la versión 0.63 para [Fedora](https://github.com/dmacvicar/terraform-provider-libvirt/releases/download/v0.6.3/terraform-provider-libvirt-0.6.3+git.1604843676.67f4f2aa.Fedora_32.x86_64.tar.gz). La descargaremos en tgz aunque hay versiones paquetizadas en RPM y DEB.
 

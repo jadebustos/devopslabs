@@ -1,6 +1,6 @@
 ---
 
-rpms: ['chrony', 'bind-utils', 'nmap', 'dnf-plugins-core', 'elinks', 'net-tools']
+rpms: ['chrony', 'bind-utils', 'nmap', 'dnf-plugins-core', 'elinks', 'net-tools', 'jq']
 
 services: ['chronyd', 'firewalld']
 

@@ -1,0 +1,10 @@
+---
+
+- name: crear configuracion de red
+  template:
+    src: network.j2
+    dest: /tmp/ifcfg-{{ ansible_default_ipv4['interface'] }}
+    owner: root
+    group: root
+    mode: 0644
+  become: yes

@@ -1,0 +1,10 @@
+---
+
+- name: clonar repositorio privado
+  hosts: all
+  vars_files:
+    - "group_vars/clonerepo.yaml"
+    - "group_vars/vault-file.yaml"
+  gather_facts: false
+  roles:
+    - clonerepo

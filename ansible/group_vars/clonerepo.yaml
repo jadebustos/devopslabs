@@ -1,0 +1,7 @@
+---
+
+private_repo_name: 'devops'
+
+user: 'jadebustos'
+
+target_dir: '/tmp/git'

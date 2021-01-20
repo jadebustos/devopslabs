@@ -1,0 +1,21 @@
+---
+
+- name: desplegar instancia en amazon
+  hosts: all
+  vars_files:
+    -  "group_vars/secret.yaml"
+  gather_facts: false
+  tasks:
+    - name: despliega instancia
+      amazon.aws.ec2:
+        aws_access_key: "{{ aws_access_key }}"
+        aws_secret_key: "{{ aws_secret_key }}"
+        key_name: mykey
+        instance_type: t2.micro
+        image: ami-123456
+        wait: yes
+        group: webserver
+        count: 3
+        vpc_subnet_id: subnet-29e63245
+        assign_public_ip: yes
+      no_log: true

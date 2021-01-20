@@ -378,14 +378,26 @@ b3e62591ee8b   webapp    "start-apache"   6 seconds ago   Up 4 seconds   80/tcp 
 Ahora que tenemos el contenedor corriendo obtenemos su ip:
 
 ```bash
-[root@lab-docker apache]# docker inspect    -f '{{range .NetworkSettings.Networks}}{{.IPAddress}}{{end}}'    f90ff30a811d
+[root@lab-docker apache]# docker inspect -f '{{range .NetworkSettings.Networks}}{{.IPAddress}}{{end}}' f90ff30a811d
 172.17.0.2
 [root@lab-docker apache]# 
 ```
 
 > TIP: **docker inspect <CONTAINER>**
 
-Ejecutamos en la consola:
+En linux existe una utilidad llamada **jq** que nos permite extraer información de un json. No se suele instalar por defecto, normalmente el paquete se llama **jq**. Si está instalada:
+
+```bash
+[root@lab-docker apache]# docker inspect f90ff30a811d | jq '.[] | .NetworkSettings.Networks.bridge.IPAddress'
+172.17.0.2
+[root@lab-docker apache]# 
+```
+
+Como la salida de inspect nos devuelve un array de jsons mediante **.[]** indicamos que va a procesar un array y con el pipe, **|**, le indicamos la propiedad que queremos ver. En este caso el array solo tiene un json, por lo tanto la salida será una única ip.
+
+Si solo quisiéramos procesar un elemento bastaría con poner el índice del elemento a procesar entre los corchetes, por ejemplo **[0]** solo procesaría el primer elemento de array.
+
+Ejecutamos en la consola
 
 ```bash
 [root@lab-docker apache]# elinks http://172.17.0.2
