@@ -77,7 +77,7 @@ Providers required by configuration:
 [jadebustos@beast kvm]$ 
 ```
 
-Ahora completamos el [plan](libvirt.tf).
+Ahora completamos el [plan](terraform/kvm/docker/libvirt.tf).
 
 Para ejecutar el plan:
 
