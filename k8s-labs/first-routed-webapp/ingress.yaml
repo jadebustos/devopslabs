@@ -1,0 +1,21 @@
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: webapp-ingress
+  namespace: webapp-routed
+  labels:
+    app: webapp-routed
+  annotations:
+      haproxy.org/path-rewrite: "/"
+spec:
+  rules:
+  - host: foo.bar
+    http:
+      paths:
+      - path: /webapp
+        pathType: "Prefix"
+        backend:
+          service:
+            name: webapp-service
+            port:
+              number: 80

@@ -18,6 +18,8 @@ Para instalarlo una vez iniciada sesión si vamos a la esquina superior derecha 
 
 Vamos a utilizar como ejemplo la aplicación en el repositorio de git [webapp](https://github.com/jadebustos/webapp). Es la misma aplicación que hemos utilizado en la parte de docker.
 
+Hazte un fork del repositorio y sustituye la url por la tuya para realizar los cambios al Dockerfile.
+
 Una vez hemos iniciado la sesión en OpenShift cambiamos a la vista de **Developer**:
 
 ![developer](imgs/developer-view.png)

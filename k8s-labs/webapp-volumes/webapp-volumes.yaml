@@ -1,0 +1,82 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: webapp-volumes
+  namespace: webapp-volumes
+  labels:
+    app: webapp-volumes
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: webapp-volumes
+  template:
+    metadata:
+      labels:
+        app: webapp-volumes
+    spec:
+      containers:
+      - name: webapp-volumes
+        image: quay.io/rhte_2019/webapp:v1
+        ports:
+        - containerPort: 80
+        readinessProbe:
+          httpGet:
+            path: /
+            port: 80 
+          initialDelaySeconds: 5
+          periodSeconds: 5
+          successThreshold: 1
+        volumeMounts:
+        - name: site-pvc
+          mountPath: /var/www/public
+      volumes:
+      - name: site-pvc
+        persistentVolumeClaim:
+          claimName: nfs-pvc
+---
+apiVersion: v1
+kind: Service
+metadata:
+    name: volumes-service
+    namespace: webapp-volumes
+spec:
+    selector:
+      app: webapp-volumes
+    ports:
+    - name: http
+      protocol: TCP
+      port: 80
+      targetPort: 80
+---
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: volumes-ingress
+  namespace: webapp-volumes
+  labels:
+    app: webapp-volumes
+  annotations:
+      haproxy.org/path-rewrite: "/"
+spec:
+  rules:
+  - host: foo-volumes.bar
+    http:
+      paths:
+      - path: /volumes
+        pathType: "Prefix"
+        backend:
+          service:
+            name: volumes-service
+            port:
+              number: 80
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: haproxy-configmap
+  namespace: webapp-volumes
+data:
+  servers-increment: "42"
+  ssl-redirect: "OFF"
+

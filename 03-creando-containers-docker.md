@@ -251,6 +251,21 @@ CONTAINER ID   IMAGE       COMMAND                  CREATED          STATUS     
 [root@lab-docker busybox]# 
 ```
 
+Podemos ejecutar una shell:
+
+```bash
+[root@lab-docker apache]# docker exec -it 4f94e272bac8 bash
+root@4f94e272bac8:/var/www/html# 
+```
+
+Para salir de la shell bastaría con ejecutar **exit**:
+
+```bash
+root@4f94e272bac8:/var/www/html# exit
+exit
+[root@lab-docker apache]#
+```
+
 Para ver el historial de lo que ha pasado en el contenedor:
 
 ```bash

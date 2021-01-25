@@ -4,7 +4,7 @@
 
 Iremos al directorio [terraform/kvm/docker](terraform/kvm/docker) donde tenemos el plan de terraform para desplegar una máquina virtual en KVM.
 
-La configuración de la máquina virtual, como claves ssh, dirección de red la haremos mediante [cloud-init](cloud-init.md).
+La configuración de la máquina virtual, como claves ssh, dirección de red la haremos mediante [cloud-init](doc-apoyo/cloud-init.md).
 
 Hemos creado dos ficheros de cloud-init:
 

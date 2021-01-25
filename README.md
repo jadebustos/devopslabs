@@ -1,3 +1,3 @@
 # DevOps Labs
 
-Este repositorio contiene una serie de ejemplos sobre tecnologías DevOps.
+Este repositorio contiene una serie de laboratorios sobre tecnologías DevOps.

@@ -151,6 +151,38 @@ docker.io/library/php      7-apache  2d5d57e31bd0  6 days ago      423 MB
 
 > NOTA: [Transitioning from docker to podman](https://developers.redhat.com/blog/2020/11/19/transitioning-from-docker-to-podman/)
 
+## Subiendo imágenes con podman a un repositorio remoto
+
+Podemos subir imágenes a un repositorio con podman, para ello deberemos sacar una cuenta en [quay](https://quay.io). Una vez creada iniciamos sesión:
+
+```bash
+[root@lab-podman ~]# podman login quay.io
+Username: rhte_2019
+Password: 
+Login Succeeded!
+[root@lab-podman ~]# 
+```
+
+Etiquetamos la imagen local que tenemos para subirla a **quay.io** usando tags y hacemos push:
+
+```bash
+[root@lab-podman ~]# podman images
+REPOSITORY                    TAG       IMAGE ID      CREATED      SIZE
+localhost/webapp              latest    251ed3cc660d  17 minutes ago  423 MB
+docker.io/library/php         7-apache  899ab23566b7  2 days ago      423 MB
+docker.io/library/busybox     latest    b97242f89c8a  11 days ago     1.45 MB
+[root@lab-podman ~]# podman tag localhost/webapp quay.io/rhte_2019/webapp:v1
+[root@lab-podman ~]# podman images
+REPOSITORY                    TAG       IMAGE ID      CREATED         SIZE
+quay.io/rhte_2019/webapp      v1        251ed3cc660d  19 minutes ago  423 MB
+localhost/webapp              latest    251ed3cc660d  19 minutes ago  423 MB
+docker.io/library/php         7-apache  899ab23566b7  2 days ago      423 MB
+docker.io/library/busybox     latest    b97242f89c8a  11 days ago     1.45 MB
+[root@lab-podman ~]# podman push quay.io/rhte_2019/webapp:v1
+...
+[root@lab-podman ~]# 
+```
+
 ## Skopeo
 
 Con skopeo podemos ver metadatos de las imágenes sin tener que descargarlas. Por ejemplo para la imagen que se subió antes a **DockerHub**:

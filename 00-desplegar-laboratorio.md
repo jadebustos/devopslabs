@@ -1,6 +1,8 @@
 # Instalación laboratorio
 
-Para realizar estos laboratorios tienes dos opciones.
+Se desplegaran varias máquinas virtuales, todas ellas en la misma red.
+
+Para realizar estos laboratorios tenemos dos opciones.
 
 ## Opción uno
 
@@ -9,7 +11,7 @@ Tener una máquina linux con kvm, [terraform](https://www.terraform.io/downloads
 + Instala el [provider de Terraform para kvm](01-terraform-kvm-provider.md).
 + Crea una máquina virtual con [Centos 8 o Centos 8 Stream](https://www.centos.org/download/).
 + Dejala configurada para dhcp y no configures el hostname.
-+ Haz una instalación mínima, asegurate de que el paquete **python36** se encuentra instalado y después instala [cloud-init](cloud-init.md).
++ Haz una instalación mínima, asegurate de que el paquete **python36** se encuentra instalado y después instala [cloud-init](doc-apoyo/cloud-init.md).
 + Una vez instalada actualiza todos los paquetes:
 
   ```bash
