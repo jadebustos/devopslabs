@@ -1,0 +1,22 @@
+Warning: Ignoring XDG_SESSION_TYPE=wayland on Gnome. Use QT_QPA_PLATFORM=wayland to run on Wayland anyway.
+[ALSOFT] (EE) Failed to set real-time priority for thread: Operation not permitted (1)
+error: : cannot open
+error: : cannot open
+error: : cannot open
+QTextCursor::setPosition: Position '-1' out of range
+QTextCursor::setPosition: Position '8388607' out of range
+QTextCursor::setPosition: Position '8388607' out of range
+Invalid return value 0 for stream protocol
+Invalid return value 0 for stream protocol
+[ALSOFT] (EE) Failed to set real-time priority for thread: Operation not permitted (1)
+[ALSOFT] (EE) Failed to set real-time priority for thread: Operation not permitted (1)
+[ALSOFT] (EE) Failed to set real-time priority for thread: Operation not permitted (1)
+[ALSOFT] (EE) Failed to set real-time priority for thread: Operation not permitted (1)
+[ALSOFT] (EE) Failed to set real-time priority for thread: Operation not permitted (1)
+[ALSOFT] (EE) Failed to set real-time priority for thread: Operation not permitted (1)
+[ALSOFT] (EE) Failed to set real-time priority for thread: Operation not permitted (1)
+[ALSOFT] (EE) Failed to set real-time priority for thread: Operation not permitted (1)
+QTextCursor::setPosition: Position '-1' out of range
+[ALSOFT] (EE) Failed to set real-time priority for thread: Operation not permitted (1)
+[ALSOFT] (EE) Failed to set real-time priority for thread: Operation not permitted (1)
+[ALSOFT] (EE) Failed to set real-time priority for thread: Operation not permitted (1)
