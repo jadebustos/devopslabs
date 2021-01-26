@@ -2,7 +2,7 @@
 
 ## Definimos el deployment para la aplicación
 
-Junto con el deployment definimos un servicio:
+Junto con el deployment definimos un servicio en el fichero [first-routed-webapp.yaml](first-routed-webapp/first-routed-webapp.yaml):
 
 ```yaml
 apiVersion: apps/v1
@@ -86,7 +86,7 @@ Events:            <none>
 
 ## Creamos el ingress
 
-Creamos el fichero:
+Creamos el fichero [ingress.yaml](first-routed-webapp/ingress.yaml):
 
 ```yaml
 ---
@@ -160,7 +160,7 @@ Events:  <none>
 [kubeadmin@master first-routed-app]$ 
 ```
 
-Definimos un ConfigMap:
+Definimos un ConfigMap en el fichero [configmap.yaml](first-routed-webapp/configmap.yaml):
 
 ```yaml
 apiVersion: v1

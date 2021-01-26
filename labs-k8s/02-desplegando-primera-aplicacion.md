@@ -1,6 +1,6 @@
 # Desplegando primera aplicación
 
-Creamos el fichero **first-app.yaml**:
+Creamos el fichero [first-app.yaml](first-app/first-app.yaml):
 
 ```yaml
 apiVersion: apps/v1
@@ -177,7 +177,7 @@ LAST SEEN   TYPE     REASON             OBJECT                         MESSAGE
 
 Como en el deployment se le indicaba que el número de replicas era 1 cuando el POD muere kubernetes los reinicia de forma automática:
 
-```
+```yaml
 spec:
   replicas: 1
   selector:
@@ -217,7 +217,7 @@ webapp   1/1     1            1           11m
 
 Editará el deployment en el editor por defecto. Iremos a las especificaciones y en el campo **replica** especificaremos cuantas replicas queremos:
 
-```
+```yaml
 spec:
   progressDeadlineSeconds: 600
   replicas: 2
