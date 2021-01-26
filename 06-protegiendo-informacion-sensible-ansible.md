@@ -19,8 +19,8 @@ Ansible permite el uso de herramientas de terceras partes para almacenar las con
 
 Cuando necesitemos incluir un dato confidencial en una variable necesitaremos encryptar su valor y para ello necesitaremos suministrar una contraseña. Eso lo podemos hacer de dos formas. La primera es facilitar la contraseña por teclado:
 
-```bash
-$ ansible-vault encrypt_string --ask-vault-pass '12345' --name 'password'
+```console
+[jadebustos@archimedes ansible]$ ansible-vault encrypt_string --ask-vault-pass '12345' --name 'password'
 New Vault password: 
 Confirm New Vault password: 
 password: !vault |
@@ -31,7 +31,7 @@ password: !vault |
           6134353938633038380a326562626638393763363861656564633563353266636262613162663765
           3439
 Encryption successful
-$ 
+[jadebustos@archimedes ansible]$ 
 ```
 
 Creamos un fichero llamado **secret.yaml**:
@@ -48,20 +48,20 @@ password: !vault |
 
 Para recuperarlo:
 
-```bash
-$ ansible localhost -m debug -a var="password" -e "@secret.yaml" --ask-vault-pass
+```console
+[jadebustos@archimedes ansible]$ ansible localhost -m debug -a var="password" -e "@secret.yaml" --ask-vault-pass
 Vault password: 
 localhost | SUCCESS => {
     "password": "12345"
 }
-$
+[jadebustos@archimedes ansible]$
 ```
 
 También podemos guardar la contraseña en un fichero:
 
-```bash
-$ echo "hola" > passwd-file
-$ ansible-vault encrypt_string --vault-password-file passwd-file '12345' --name 'password'
+```console
+[jadebustos@archimedes ansible]$ echo "hola" > passwd-file
+[jadebustos@archimedes ansible]$ ansible-vault encrypt_string --vault-password-file passwd-file '12345' --name 'password'
 password: !vault |
           $ANSIBLE_VAULT;1.1;AES256
           65383334353136646432653136303565656237636230653537663833646462386163393237623638
@@ -70,7 +70,7 @@ password: !vault |
           3863383436316437330a383231633061646564366164646666313961376635636638306432353533
           6437
 Encryption successful
-$ 
+[jadebustos@archimedes ansible]$ 
 ```
 
 Hemos encriptado el valor **12345** con la clave **hola** como valor de la variable **password**. Creamos el fichero **secret.yaml**:
@@ -87,27 +87,27 @@ Hemos encriptado el valor **12345** con la clave **hola** como valor de la varia
 
  Para acceder al valor de la variable leyendo la clave de encriptación de un fichero:
 
- ```bash
- $ ansible localhost -m debug -a var="password" -e "@secret.yaml" --vault-password-file passwd-file
+ ```console
+ [jadebustos@archimedes ansible]$ ansible localhost -m debug -a var="password" -e "@secret.yaml" --vault-password-file passwd-file
 localhost | SUCCESS => {
     "password": "12345"
 }
-$
+[jadebustos@archimedes ansible]$
  ```
 
 Podemos encriptar varias variables con diferentes contraseñas y añadir ids para distinguirlas. Creamos un fichero de claves:
 
- ```bash
-$ echo "hola" > jose-key
-$ echo "mundo" > manuel-key
-$ echo "nuevo" > jesus-key
+ ```console
+[jadebustos@archimedes ansible]$ echo "hola" > jose-key
+[jadebustos@archimedes ansible]$ echo "mundo" > manuel-key
+[jadebustos@archimedes ansible]$ echo "nuevo" > jesus-key
  ```
 
 Utilizando estas claves encriptamos la contraseña de cada uno de estos usuarios:
 
-```bash
-$ ansible-vault encrypt_string --vault-id jose@jose-key '12345' --name 'password' > secret-jose.yaml
-$ cat secret-jose.yaml 
+```console
+[jadebustos@archimedes ansible]$ ansible-vault encrypt_string --vault-id jose@jose-key '12345' --name 'password' > secret-jose.yaml
+[jadebustos@archimedes ansible]$ cat secret-jose.yaml 
 password: !vault |
           $ANSIBLE_VAULT;1.2;AES256;jose
           63306438393932313433353264303561656362353031306464363630313832346439343035386633
@@ -115,15 +115,15 @@ password: !vault |
           39393230396638653432333866313733626130373331393237623861353464393165353231643263
           3038303436336664330a636135333630333432306333343463333436316534363063653735356162
           3538
-$ ansible-vault encrypt_string --vault-id manuel@manuel-key '67890' --name 'password' > secret-manuel.yaml
-$ ansible-vault encrypt_string --vault-id jesus@jesus-key 'abcde' --name 'password' > secret-jesus.yaml
-$
+[jadebustos@archimedes ansible]$ ansible-vault encrypt_string --vault-id manuel@manuel-key '67890' --name 'password' > secret-manuel.yaml
+[jadebustos@archimedes ansible]$ ansible-vault encrypt_string --vault-id jesus@jesus-key 'abcde' --name 'password' > secret-jesus.yaml
+[jadebustos@archimedes ansible]$
 ```
 
 Para recuperar las contraseñas:
 
-```bash
-$ ansible localhost -m debug -a var="password" -e "@secret-jose.yaml" --vault-id jose@jose-key
+```console
+[jadebustos@archimedes ansible]$ ansible localhost -m debug -a var="password" -e "@secret-jose.yaml" --vault-id jose@jose-key
 localhost | SUCCESS => {
     "password": "12345"
 }
@@ -135,7 +135,7 @@ $ ansible localhost -m debug -a var="password" -e "@secret-jesus.yaml" --vault-i
 localhost | SUCCESS => {
     "password": "abcde"
 }
-$ 
+[jadebustos@archimedes ansible]$ 
 ```
 
 ## Encriptando variables (Ejemplo)
@@ -150,7 +150,7 @@ https://jadebustos@PASSWDgithub.com/jadebustos/devops
 
 La tarea de ansible sería:
 
-```
+```yaml
 - name: clona repositorio git privado
   git:
     repo: https://jadebustos:PASSWD{@github.com/jadebustos/devops.git
@@ -161,7 +161,7 @@ Por lo tanto la contraseña del usuario sería accesible para todas las personas
 
 Para ello encriptaremos la variable tal y como hemos visto reescribiendo la tarea:
 
-```
+```yaml
 - name: clona repositorio git privado
   git:
     repo: "https://{{ user }}:{{ password }}@github.com/{{ user }}/{{ private_repo_name }}.git
@@ -172,14 +172,14 @@ Donde hemos definido las variables en el fichero [clonerepo.yaml](ansible/group_
 
 La contraseña de acceso la encriptamos en la variable **password** y almacenada en el fichero **group_vars/vault-file.yaml**:
 
-```bash
-$ ansible-vault encrypt_string --vault-password-file git-password 'MICONTRASEÑA' --name password > group_vars/vault-file.yaml
+```console
+[jadebustos@archimedes ansible]$ ansible-vault encrypt_string --vault-password-file git-password 'MICONTRASEÑA' --name password > group_vars/vault-file.yaml
 ```
 
 En el fichero **git-password** almacenamos la clave con la que encriptamos la contraseña del usuario.
 
-```bash
-$ ansible-playbook -i hosts -l laptop clonar-git.yaml --vault-password-file git-password
+```console
+[jadebustos@archimedes ansible]$ ansible-playbook -i hosts -l laptop clonar-git.yaml --vault-password-file git-password
 
 PLAY [clonar repositorio privado] ************************************************************************************************************************************************************************************************************
 
@@ -192,7 +192,7 @@ changed: [localhost]
 PLAY RECAP ***********************************************************************************************************************************************************************************************************************************
 localhost                  : ok=2    changed=1    unreachable=0    failed=0    skipped=0    rescued=0    ignored=0   
 
-$ ls -lh /tmp/git/
+[jadebustos@archimedes ansible]$ ls -lh /tmp/git/
 total 108K
 -rw-rw-r--. 1 jadebustos jadebustos 8.1K Jan 19 23:41 01-terraform-kvm-provider.md
 -rw-rw-r--. 1 jadebustos jadebustos 6.9K Jan 19 23:41 02-instalacion-docker.md
@@ -205,13 +205,13 @@ drwxrwxr-x. 2 jadebustos jadebustos   60 Jan 19 23:41 imgs
 -rw-rw-r--. 1 jadebustos jadebustos  35K Jan 19 23:41 LICENSE
 -rw-rw-r--. 1 jadebustos jadebustos    8 Jan 19 23:41 README.md
 drwxrwxr-x. 3 jadebustos jadebustos   60 Jan 19 23:41 terraform
-$
+[jadebustos@archimedes ansible]$
 ```
 
 En este ejemplo tenemos la clave de encriptado en el fichero **git-password**:
 
-```bash
-$ git status
+```console
+[jadebustos@archimedes ansible]$ git status
 On branch main
 Your branch is up to date with 'origin/main'.
 
@@ -229,15 +229,15 @@ Untracked files:
 	roles/clonerepo/
 
 no changes added to commit (use "git add" and/or "git commit -a")
-$
+[jadebustos@archimedes ansible]$
 ```
 
 Como podemos ver hay varios ficheros pendientes de subir al repositorio. Con lo cual tendremos que tener cuidado de no hacer commit del fichero.
 
 Para evitar errores podemos crear un fichero **.gitignore** para ignorar el fichero de claves:
 
-```bash
-$ git status
+```console
+[jadebustos@archimedes ansible]$ git status
 On branch main
 Your branch is up to date with 'origin/main'.
 
@@ -255,7 +255,7 @@ Untracked files:
 	roles/clonerepo/
 
 no changes added to commit (use "git add" and/or "git commit -a")
-$
+[jadebustos@archimedes ansible]$
 ```
 
 De esta forma nos aseguramos de no subir el fichero con la clave al repositorio.
@@ -268,7 +268,7 @@ La forma recomendada es utilizar vaults como [Cyberark](https://www.cyberark.com
 
 Puede ser necesario encriptar ficheros enteros, por ejemplo ficheros con claves o tokens:
 
-```bash
+```console
 [jadebustos@archimedes vault]$ cat secret.yaml
 secret:
   api_token: "32fcdcf7-e364-47e4-81ed-10265a1a3ef3"
@@ -294,7 +294,7 @@ $ANSIBLE_VAULT;1.1;AES256
 
 Podemos modificar los secrets utilizando:
 
-```bash
+```console
 [jadebustos@archimedes vault]$ ansible-vault edit secret.yaml 
 Vault password: 
 ```
@@ -303,28 +303,28 @@ Lo cual abrirá el secreto desencriptado en el editor por defecto para que lo mo
 
 Y también podemos consultarlo:
 
-```bash
-$ ansible-vault view secret.yaml --ask-vault-pass
+```console
+[jadebustos@archimedes vault]$ ansible-vault view secret.yaml --ask-vault-pass
 Vault password: 
 secret:
   api_token: "32fcdcf7-e364-47e4-81ed-10265a1a3ef3"
   licence_key: "c8695835-dd11-4886-a2a4-ab88146e17c3"
-$
+[jadebustos@archimedes vault]$
 ```
 
 ## Encriptando ficheros (Ejemplo)
 
 Vamos a desplegar una instancia en AWS encriptando el fichero de credenciales. Para ello creamos el fichero de credenciales y lo encriptamos utilizando la clave que hay en el fichero **password**:
 
-```bash
-$ cat defaults/secret.yaml                                                                            
+```console
+[jadebustos@archimedes ansible]$ cat defaults/secret.yaml                                                                            
 aws_access_key: 'f8eb724a-74b9-4a03-a009-6892e16ad9e3'
 
 aws_secret_key: '131ebc99-5e66-43d9-8bdf-c07c274384c0'
 
-$ ansible-vault encrypt defaults/secret.yaml --vault-password-file password 
+[jadebustos@archimedes ansible]$ ansible-vault encrypt defaults/secret.yaml --vault-password-file password 
 Encryption successful
-$ cat defaults/secret.yaml  
+[jadebustos@archimedes ansible]$ cat defaults/secret.yaml  
 $ANSIBLE_VAULT;1.1;AES256
 36326465653965643261663335626465383539393865316636313134356430663032376532373835
 6466643263636138353364313763373430386439373739370a613964313833383638346532666634
@@ -335,21 +335,21 @@ $ANSIBLE_VAULT;1.1;AES256
 33643663663831303835313538306132356536376634396638333739336364626534616661633865
 66303633343938323038383435613766323634303433313936666633316530336531356637666638
 33643062396231346639323663653766323636626230643864666465393265653634
-$
+[jadebustos@archimedes ansible]$
 ```
 
 El playbook [deploy-amazon-instance.yaml][ansible/deploy-amazon-instance.yaml] es un ejemplo de como se utilizaría la encriptación de un fichero para proteger las credenciales:
 
-```bash
-$ ansible-playbook -i hosts deploy-amazon-instance.yaml --vault-password-file password
+```console
+[jadebustos@archimedes ansible]$ ansible-playbook -i hosts deploy-amazon-instance.yaml --vault-password-file password
 ```
 
 ## Seguridad
 
 La protección que ofrece ansible vault se limita a cuando el dato se encuentra encriptado. Una vez que se desencripta los módulos y plugins tienen que utilizarlo de forma segura.
 
-```bash
-$ cat security.yaml 
+```console
+[jadebustos@archimedes ansible]$ cat security.yaml 
 ---
 
 - name: ejemplo seguridad
@@ -360,7 +360,7 @@ $ cat security.yaml
   tasks:
     - name: uptime
       shell: "/usr/bin/uptime --value={{ password }}"
-$ ansible-playbook -i hosts security.yaml --vault-password-file jose-key 
+[jadebustos@archimedes ansible]$ ansible-playbook -i hosts security.yaml --vault-password-file jose-key 
 
 PLAY [ejemplo seguridad] *********************************************************************************************************************************************************************************************************************
 
@@ -370,19 +370,19 @@ fatal: [localhost]: FAILED! => {"changed": true, "cmd": "/usr/bin/uptime --value
 PLAY RECAP ***********************************************************************************************************************************************************************************************************************************
 localhost                  : ok=1    changed=0    unreachable=0    failed=1    skipped=0    rescued=0    ignored=0   
 
-$ 
+[jadebustos@archimedes ansible]$ 
 ```
 
 Podemos ver en la salida del comando el secret:
 
-```
+```console
 fatal: [localhost]: FAILED! => {"changed": true, "cmd": "/usr/bin/uptime --value=12345"
 ```
 
 Podemos utilizar la directiva **no_log** para evitar esto:
 
-```bash
-$ cat security.yaml 
+```console
+[jadebustos@archimedes ansible]$ cat security.yaml 
 ---
 
 - name: ejemplo seguridad
@@ -394,7 +394,7 @@ $ cat security.yaml
     - name: uptime
       shell: "/usr/bin/uptime --value={{ password }}"
       no_log: True
-$ ansible-playbook -i hosts security.yaml --vault-password-file jose-key 
+[jadebustos@archimedes ansible]$ ansible-playbook -i hosts security.yaml --vault-password-file jose-key 
 
 PLAY [ejemplo seguridad] *********************************************************************************************************************************************************************************************************************
 
@@ -403,7 +403,7 @@ fatal: [localhost]: FAILED! => {"censored": "the output has been hidden due to t
 
 PLAY RECAP ***********************************************************************************************************************************************************************************************************************************
 localhost                  : ok=0    changed=0    unreachable=0    failed=1    skipped=0    rescued=0    ignored=0   
-$
+[jadebustos@archimedes ansible]$
 ```
 
 ## Recursos

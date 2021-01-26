@@ -54,7 +54,7 @@ spec:
 
 Creamos un namespace y desplegamos la aplicación:
 
-```bash
+```console
 [kubeadmin@master first-routed-app]$ kubectl create namespace webapp-routed
 namespace/webapp-routed created
 [kubeadmin@master first-routed-app]$ kubectl apply -f first-routed-webapp.yaml
@@ -115,7 +115,7 @@ spec:
 
 Desplegamos el ingress:
 
-```bash
+```console
 [kubeadmin@master first-routed-app]$ kubectl apply -f ingress.yaml
 ingress.networking.k8s.io/webapp-ingress created
 [kubeadmin@master first-routed-app]$ kubectl get ingress --namespace=webapp-routed
@@ -139,7 +139,7 @@ Events:       <none>
 
 Comprobamos el endpoint:
 
-```bash
+```console
 [kubeadmin@master first-routed-app]$ kubectl get ep --namespace=webapp-routed
 NAME             ENDPOINTS           AGE
 webapp-service   192.169.112.7:80   16m
@@ -173,7 +173,7 @@ data:
   ssl-redirect: "OFF"
 ```
 
-```bash
+```console
 [kubeadmin@master first-routed-app]$ kubectl apply -f configmap.yaml 
 configmap/haproxy-configmap created
 [kubeadmin@master first-routed-app]$ 
@@ -183,7 +183,7 @@ Aunque apenas hemos incluido configuración en este ConfigMap podemos incluir [c
 
 Comprobamos que es accesible desde fuera:
 
-```bash
+```console
 [kubeadmin@master first-routed-webapp]$ kubectl get svc --namespace=haproxy-controller
 NAME                      TYPE        CLUSTER-IP       EXTERNAL-IP   PORT(S)                                     AGE
 haproxy-ingress           NodePort    10.103.225.131   <none>        80:30432/TCP,443:31967/TCP,1024:31588/TCP   58m
@@ -193,7 +193,7 @@ ingress-default-backend   ClusterIP   10.96.170.15     <none>        8080/TCP   
 
 Tenemos que el puerto **30432** del master se encuentra mapeado al **80** de los contenedores, luego si desde una máquina que no sea el master hacemos:
 
-```bash
+```console
 [jadebustos@archimedes ~]$ curl -I -H 'Host: foo.bar' 'http://192.168.1.110:30432/webapp'
 HTTP/1.1 200 OK
 date: Mon, 25 Jan 2021 07:11:50 GMT
@@ -218,7 +218,7 @@ Si hacemos resolver **foo.bar** a la dirección ip del mater **192.168.1.110** p
 
 El ingress controller se encarga de enrutar el tráfico, nos conectamos al ingress controller:
 
-```bash
+```console
 [kubeadmin@master ~]$ kubectl get pods -A -o wide | grep haproxy
 haproxy-controller     haproxy-ingress-67f7c8b555-j7qdp             1/1     Running   1          6h8m    192.169.22.2     worker02.acme.es   <none>           <none>
 haproxy-controller     ingress-default-backend-78f5cc7d4c-jzfk8     1/1     Running   1          6h8m    192.169.112.11   worker01.acme.es   <none>           <none>
@@ -228,7 +228,7 @@ haproxy-controller     ingress-default-backend-78f5cc7d4c-jzfk8     1/1     Runn
 
 Veamos la configuración del **haproxy**:
 
-```bash
+```console
 / $ / $ cd /etc/haproxy/
 /etc/haproxy $ ls -lh
 total 12K    
@@ -257,7 +257,7 @@ backend webapp-routed-webapp-service-80
 
 Esta redireccionando las peticiones hacía la dirección del endpoint definido en el ingress que creamos para la aplicación:
 
-```bash
+```console
 [kubeadmin@master ~]$ kubectl get ep webapp-service --namespace=webapp-routed
 NAME             ENDPOINTS           AGE
 webapp-service   192.169.112.10:80   5h22m

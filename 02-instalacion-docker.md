@@ -15,7 +15,7 @@ Se puede consultar la [configuración de cloud-init](file:///home/jadebustos/src
 
 Una vez en el directorio para desplegar el plan de terraform:
 
-```bash
+```console
 [jadebustos@beast docker]$ terraform init
 
 Initializing the backend...
@@ -184,6 +184,6 @@ Apply complete! Resources: 4 added, 0 changed, 0 destroyed.
 
 Para instalar docker vamos al directorio [ansible](ansible):
 
-```bash
+```console
 [jadebustos@beast ansible]$ ansible-playbook -i hosts -l docker install-docker.yaml 
 ```

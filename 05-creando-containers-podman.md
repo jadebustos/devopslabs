@@ -6,14 +6,6 @@ Sin embargo con **podman**, **buildah** y **skopeo** tenemos distribuida la gest
 
 ## Construyendo imágenes con buildah
 
-Lo primero que deberemos hacer es editar el fichero **/etc/containers/registries.conf** y dejar únicamente el registry de docker:
-
-```
-[registries.search]
-#registries = ['registry.access.redhat.com', 'registry.redhat.io', 'docker.io']
-registries = ['docker.io']
-```
-
 Iniciamos sesión y lo primero que deberemos hacer es editar el fichero **/etc/containers/registries.conf** y dejar únicamente el registry de docker:
 
 ```
@@ -21,9 +13,12 @@ Iniciamos sesión y lo primero que deberemos hacer es editar el fichero **/etc/c
 #registries = ['registry.access.redhat.com', 'registry.redhat.io', 'docker.io']
 registries = ['docker.io']
 ```
+
+De esta forma solo hará pull al registry de docker cuando necesite buscar una imagen y no se indique ningún registry.
+
 Vamos a un directorio que incluya un Dockerfile:
 
-```bash
+```console
 [terraform@lab-podman ~]$ sudo su -
 Last login: Mon Jan 18 12:09:22 CET 2021 on pts/0
 [root@lab-podman ~]# cd build/
@@ -34,7 +29,7 @@ apache/  busybox/
 
 Para construir el container:
 
-```bash
+```console
 [root@lab-podman apache]# buildah bud -t webapp
 STEP 1: FROM php:7-apache
 Getting image source signatures
@@ -87,7 +82,7 @@ Storing signatures
 
 Una vez construida podemos ver si se ha creado:
 
-```bash
+```console
 [root@lab-podman apache]# buildah images
 REPOSITORY              TAG        IMAGE ID       CREATED         SIZE
 localhost/webapp        latest     09550857c857   2 minutes ago   423 MB
@@ -97,7 +92,7 @@ docker.io/library/php   7-apache   2d5d57e31bd0   6 days ago      423 MB
 
 Levantamos un contenedor basado en la imagen **webapp**:
 
-```bash
+```console
 [root@lab-podman apache]# export PORT=80
 [root@lab-podman apache]# podman run -itd --env PORT -p 8080:$PORT -v /root/build/apache/custom-php/:/var/www/public:Z webapp
 725e11ce8314c10e6b628c92f5c91fd074546232ba2c9af052b9f8b0f24ee936
@@ -129,7 +124,7 @@ Todo lo visto para la ejecución de contenedores aplica a **podman**, basta con 
 
 Por ejemplo, para descargase una imagen:
 
-```bash
+```console
 [root@lab-podman apache]# podman pull busybox
 Completed short name "busybox" with unqualified-search registries (origin: /etc/containers/registries.conf)
 Trying to pull docker.io/library/busybox:latest...
@@ -155,7 +150,7 @@ docker.io/library/php      7-apache  2d5d57e31bd0  6 days ago      423 MB
 
 Podemos subir imágenes a un repositorio con podman, para ello deberemos sacar una cuenta en [quay](https://quay.io). Una vez creada iniciamos sesión:
 
-```bash
+```console
 [root@lab-podman ~]# podman login quay.io
 Username: rhte_2019
 Password: 
@@ -165,7 +160,7 @@ Login Succeeded!
 
 Etiquetamos la imagen local que tenemos para subirla a **quay.io** usando tags y hacemos push:
 
-```bash
+```console
 [root@lab-podman ~]# podman images
 REPOSITORY                    TAG       IMAGE ID      CREATED      SIZE
 localhost/webapp              latest    251ed3cc660d  17 minutes ago  423 MB
@@ -187,7 +182,7 @@ docker.io/library/busybox     latest    b97242f89c8a  11 days ago     1.45 MB
 
 Con skopeo podemos ver metadatos de las imágenes sin tener que descargarlas. Por ejemplo para la imagen que se subió antes a **DockerHub**:
 
-```bash
+```console
 [root@lab-podman ~]# skopeo inspect docker://docker.io/jadebustos2/devops
 {
     "Name": "docker.io/jadebustos2/devops",
@@ -214,13 +209,13 @@ Con skopeo podemos ver metadatos de las imágenes sin tener que descargarlas. Po
 
 Como es una imagen sencilla y que solo tiene una versión no hay mucha información. En una máquina que tenga Skopeo instalado ejecutar lo siguiente para ver los metadatos de la imagen que utilizamos para construir la aplicación web:
 
-```bash
+```console
 $ skopeo inspect docker://docker.io/php:7-apache
 ```
 
 Podemos utilizar el comando **jq** para, por ejemplo, ver las variables de entorno que utiliza:
 
-```bash
+```console
 [root@lab-podman ~]# skopeo inspect docker://docker.io/php:7-apache | jq '.Env'
 [
   "PATH=/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin",
@@ -244,13 +239,13 @@ Podemos utilizar el comando **jq** para, por ejemplo, ver las variables de entor
 
 Con Skopeo también podemos copiar imagenes entre diferentes registries. Por ejemplo para copiar la imagen anterior al registry corporativo:
 
-```bash
+```console
 $ skopeo copy docker://docker.io/php:7-apache docker://registry.mycompany.com/php:7-apache
 ```
 
 Si necesitamos autenticarnos, por ejemplo para borrar una imagen:
 
-```bash
+```console
 $ skopeo login docker.io
 Username: jadebustos2
 Password: 
@@ -263,7 +258,7 @@ Removed login credentials for docker.io
 
 Con skopeo también podemos clonar repositorios para tener una copia:
 
-```bash
+```console
 $ skopeo sync --src docker --dest docker registry.example.com/busybox registry.mycompany.com
 ```
 

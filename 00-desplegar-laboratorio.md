@@ -14,7 +14,7 @@ Tener una máquina linux con kvm, [terraform](https://www.terraform.io/downloads
 + Haz una instalación mínima, asegurate de que el paquete **python36** se encuentra instalado y después instala [cloud-init](doc-apoyo/cloud-init.md).
 + Una vez instalada actualiza todos los paquetes:
 
-  ```bash
+  ```console
   [root@localhost ssh]# dnf update -y
   ``` 
 + Copia una clave ssh al usuario root para poder acceder con ansible mas tarde.
@@ -22,7 +22,7 @@ Tener una máquina linux con kvm, [terraform](https://www.terraform.io/downloads
   + Antes de parar edita el fichero **/etc/machine-id** y borra la línea que aparece.
   + Borra las claves de SSH:
 
-    ```bash
+    ```console
     [root@localhost ssh]# cd /etc/ssh/
 
     [root@localhost ssh]# rm -f *key*
@@ -30,7 +30,7 @@ Tener una máquina linux con kvm, [terraform](https://www.terraform.io/downloads
     ```
 + Apaga la máquina virtual y cuando esté apagada haz una copia del disco. Esta copia se utilizará para clonar las vms para los labs:
 
-  ```bash
+  ```console
   [root@kvm ~]# cd /var/lib/libvirt/images/
   [root@kvm images]# qemu-img convert -f qcow2 -O qcow2 centos8.qcow2 centos8-template.qcow2
   ```
@@ -41,7 +41,7 @@ Tener una máquina linux con kvm, [terraform](https://www.terraform.io/downloads
 
 + Clona el [repositorio devopslabs](https://github.com/jadebustos/devopslabs) en la maquina con kvm:
 
-  ```bash
+  ```console
   [user@kvm ~]$ git clone https://github.com/jadebustos/devopslabs
   ```
 
@@ -77,7 +77,7 @@ Tener una máquina linux con kvm, [terraform](https://www.terraform.io/downloads
       ```
 + Cambia la configuración de red de **cloud-init** para que coincida con la de la red en la que vas a desplegar. Se encuentra en los ficheros **network_config.cfg**:
 
-  ```
+  ```yaml
   #cloud-config
   # configuracion de red
   version: 2
@@ -93,7 +93,7 @@ Tener una máquina linux con kvm, [terraform](https://www.terraform.io/downloads
   ```
 + En el directorio donde se encuentra el plan de terraform ahora podrás desplegar la vm:
 
-  ```bash
+  ```console
   [user@kvm docker]$ terraform init
   ..
   [user@kvm docker]$ terraform apply
@@ -113,20 +113,20 @@ Crea dos máquinas virtuales con el software de virtualización que utilices, **
 + Haz una instalación mínima, asegurate de que el paquete **python36** y se encuentra instalado.
 + Una vez instalada actualiza todos los paquetes:
 
-  ```bash
+  ```console
   [root@localhost ssh]# dnf update -y
   ``` 
 + Copia una clave ssh al usuario root para poder acceder con ansible mas tarde.
 + Instala **ansible** en la máquina que ejecuta las máquinas virtuales o crea una tercera máquina e instalale ansible.
 + En el nodo donde se encuentre ansible necesitarás crear una clave ssh, para Linux:
 
-  ```bash
+  ```console
   [user@ansible ~]$ ssh-keygen -t rsa -b 4096
   ```
 
   Acepta los valores por defecto. El fichero de clave publica que se encontrará en el directorio **.ssh/id_rsa.pub** será el que tendrás que copiar las máquinas que has creado:
 
-  ```bash
+  ```console
   [user@ansible ~]$ ssh-copy-id -i .ssh/id_rsa.pub root@maquina-docker
   root@maquina-docker's password:
   [user@ansible ~]$ ssh-copy-id -i .ssh/id_rsa.pub root@maquina-podman
@@ -154,7 +154,7 @@ Crea dos máquinas virtuales con el software de virtualización que utilices, **
 
   + Utiliza los playbooks de ansible para configurarlas:
 
-    ```bash
+    ```console
     [user@ansible ansible]$ ansible-playbook -i hosts -l docker install-docker.yaml
     ...
     [user@ansible ansible]$ ansible-playbook -i hosts -l podman install-podman.yaml

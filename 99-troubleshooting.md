@@ -4,7 +4,7 @@
 
 Realizamos un deployment que se tenga que descargar una imagen:
 
-```bash
+```console
 [kubeadmin@master k8slab]$ kubectl apply -f first-app.yaml
 ...
 [kubeadmin@master k8slab]$
@@ -12,7 +12,7 @@ Realizamos un deployment que se tenga que descargar una imagen:
 
 Depués de crear el deployment podemos ver el estado del POD:
 
-```bash
+```console
 [kubeadmin@master k8slab]$ kubectl get pods --namespace=default
 NAME                      READY   STATUS              RESTARTS   AGE
 webapp-68965f4fcc-bz87h   0/1     ContainerCreating   0          2m31s
@@ -69,7 +69,7 @@ Events:
 
 Vemos que está descargandose la imagen. Podemos ver los eventos del namespace para ver que está pasando:
 
-```bash
+```console
 [kubeadmin@master k8slab]$ kubectl get events --namespace=default
 LAST SEEN   TYPE      REASON                    OBJECT                         MESSAGE
 14m         Normal    Starting                  node/master.acme.es            Starting kubelet.
@@ -120,13 +120,13 @@ LAST SEEN   TYPE      REASON                    OBJECT                         M
 
 Podemos consultar el yaml para ver exactamente la configuración del deployment:
 
-```bash
+```console
 [kubeadmin@master k8slab]$ kubectl get pod webapp-68965f4fcc-bz87h -o yaml >  webapp-68965f4fcc-bz87h.yaml
 ```
 
 También podemos ejecutar una shell en el contenedor:
 
-```bash
+```console
 [kubeadmin@master k8slab]$ kubectl get pods --namespace=default
 NAME                      READY   STATUS    RESTARTS   AGE
 webapp-68965f4fcc-bz87h   1/1     Running   0          43m

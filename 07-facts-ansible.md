@@ -2,7 +2,7 @@
 
 Cuando ansible se conecta a una máquina puede recoger información de la máquina y almacenarla en variables para su porterior uso:
 
-```bash
+```console
 [jadebustos@beast ansible]$ ansible -i hosts -l lab-docker.frontend.lab -m setup all
 lab-docker.frontend.lab | SUCCESS => {
     "ansible_facts": {
@@ -26,14 +26,14 @@ lab-docker.frontend.lab | SUCCESS => {
 
 Si queremos enviar los facts a un fichero podemos redirigir la salida estandar hacía el fichero:
 
-```bash
+```console
 [jadebustos@beast ansible]$ ansible -i hosts -l lab-docker.frontend.lab -m setup all > lab-docker_facts.json
 [jadebustos@beast ansible]$
 ```
 
 Tambien podemos indicar que se redirigan de forma automatica a un fichero. Esto es útil cuando queremos recuperar los facts de varios sistemas:
 
-```bash
+```console
 [jadebustos@beast ansible]$ ansible -i hosts -l lab-docker.frontend.lab,lab-podman.frontend.lab -m setup all --tree facts
 ...
 [jadebustos@beast ansible]$ ls -lh facts/
@@ -45,7 +45,7 @@ total 40K
 
 Si editamos los ficheros generados veremos que son un único stream, es decir que es una única línea. Si queremos consultarlos podemos reescribirlos de una forma más legible:
 
-```bash
+```console
 [jadebustos@beast ansible]$  cd facts
 [jadebustos@beast facts]$ for i in $(ls *)
 > do
@@ -62,7 +62,7 @@ total 100K
 
 También podemos utilizar el comando **jq** sobre el fichero de facts para extraer información:
 
-```bash
+```console
 [jadebustos@beast facts]$ cat lab-docker.frontend.lab | jq '.ansible_facts.ansible_fqdn'
 "lab-docker.frontend.lab"
 [jadebustos@beast facts]$ cat lab-docker.frontend.lab | jq '.ansible_facts.ansible_all_ipv4_addresses'
@@ -81,7 +81,7 @@ También podemos utilizar el comando **jq** sobre el fichero de facts para extra
 
 El playbook [configurar-red.yaml](ansible/configurar-red.yaml) recrea un fichero de configuración de red en **/tmp/ifcfg-nombre_interface** utilizando la información contenida en los facts basandose en el template [network.j2](ansible/roles/networkconf/templates/network.j2). El fichero de configuración sigue el formato utilizado en Red Hat y derivados:
 
-```bash
+```console
 [jadebustos@beast ansible]$ ansible-playbook -i hosts -l docker configurar-red.yaml 
 
 PLAY [configurar red (ejemplo utilizacion facts)] ************************************************************************************************************
@@ -103,7 +103,7 @@ lab-docker.frontend.lab    : ok=3    changed=1    unreachable=0    failed=0    s
 
 Si nos conectamos al equipo podemos comparar el fichero generado con la información de los facts y el fichero real de configuración:
 
-```bash
+```console
 [terraform@lab-docker ~]$ cat /tmp/ifcfg-ens3 
 BOOTPROTO=none
 DEFROUTE=yes
@@ -134,7 +134,7 @@ La recolección de facts lleva algo de tiempo, para la ejecución en un sistema 
 
 El playbook que hemos creado necesita el valor **gather_facts** a **true** ya que utiliza la información recolectada en los facts: 
 
-```bash
+```console
 ---
 
 - name: configurar red (ejemplo utilizacion facts)
@@ -146,7 +146,7 @@ El playbook que hemos creado necesita el valor **gather_facts** a **true** ya qu
 
 En los facts la información de red, menos los dns, se saca de la siguiente estructura:
 
-```bash
+```console
 [jadebustos@beast facts]$ cat formatted-lab-docker.frontend.lab.json | jq '.ansible_facts.ansible_default_ipv4' 
 {
   "address": "192.168.23.100",
@@ -165,7 +165,7 @@ En los facts la información de red, menos los dns, se saca de la siguiente estr
 
 La información de dns se obtiene de la siguiente estructura:
 
-```bash
+```console
 [jadebustos@beast facts]$ cat formatted-lab-docker.frontend.lab.json | jq '.ansible_facts.ansible_dns.nameservers' 
 [
   "192.168.1.200"

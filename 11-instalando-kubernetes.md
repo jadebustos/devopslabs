@@ -51,8 +51,8 @@ DOMAIN=acme.es
 
 Una vez arrancadas las máquinas, nos aseguramos que estan actualizadas a último nivel ejecutando en cada una de ellas:
 
-```bash
-# dnf update -y
+```console
+[root@host ~]# dnf update -y
 ```
 
 ## Tareas previas de configuración
@@ -61,26 +61,26 @@ Estas tareas se tendrán que realizar en todas las VMs del laboratorio:
 
 Tendremos que configurar la sincronización horaria:
 
-```bash
-# timedatectl set-timezone Europe/Madrid
-# dnf install chrony -y
+```console
+[root@host ~]# timedatectl set-timezone Europe/Madrid
+[root@host ~]# dnf install chrony -y
 ...
-# systemctl enable chronyd
-# systemctl start chronyd
-# timedatectl set-ntp true
+[root@host ~]# systemctl enable chronyd
+[root@host ~]# systemctl start chronyd
+[root@host ~]# timedatectl set-ntp true
 #
 ```
 
 Desactivamos SELinux ya que no lo vamos a utilizar con kubernetes:
 
-```bash
-# sed -i s/=enforcing/=disabled/g /etc/selinux/config
+```console
+[root@host ~]# sed -i s/=enforcing/=disabled/g /etc/selinux/config
 ```
 
 Instalamos los siguientes paquetes:
 
-```bash
-# dnf install nfs-utils nfs4-acl-tools wget -y
+```console
+[root@host ~]# dnf install nfs-utils nfs4-acl-tools wget -y
 ```
 
 > TIP: Una buena práctica es crear una VMs aplicar estas tareas que se tienen que realizar en todas las máquinas. Dejarla configurada por dhcp y sin configurar el hostname. Una vez terminada la configuración  se hace el [sellado](doc-apoyo/sellado-vm.md) y las máquinas se clonan a partir de este disco. De esta forma estas tareas se hacen solo una vez y no una vez por máquina.
@@ -91,7 +91,7 @@ Este servidor lo utilizaremos para ofrecer almacenamiento al cluster de kubernet
 
 Lo primero que haremos será configurar el NFS, para ello identificaremos el disco de datos en el sistema:
 
-```bash
+```console
 [root@nfs ~]# lsblk
 NAME        MAJ:MIN RM SIZE RO TYPE MOUNTPOINT
 vda         252:0    0  20G  0 disk 
@@ -107,7 +107,7 @@ El disco para datos es **/dev/vdb**.
 
 Vamos a crear un VG (volume group) y LV (logical volume) ya que si en un futuro es necesario ampliar el espacio lo podremos hacer de una forma rápida, fácil y transparente:
 
-```bash
+```console
 [root@nfs ~]# pvcreate /dev/vdb
   Physical volume "/dev/vdb" successfully created.
 [root@nfs ~]# vgcreate data_vg /dev/vdb
@@ -147,7 +147,7 @@ Vamos a crear un VG (volume group) y LV (logical volume) ya que si en un futuro 
 
 Ahora que tenemos creado el logical volume vamos a crear el filesystem de tipo XFS:
 
-```bash
+```console
 [root@nfs ~]# mkfs.xfs /dev/data_vg/nfs_lv 
 meta-data=/dev/data_vg/nfs_lv    isize=512    agcount=4, agsize=655104 blks
          =                       sectsz=512   attr=2, projid32bit=1
@@ -165,7 +165,7 @@ Discarding blocks...Done.
 
 Ahora crearemos el punto de montaje e incluiremos a este logical volume en **/etc/fstab** para que se monte en los inicios de la VM:
 
-```bash
+```console
 [root@nfs ~]# mkdir /srv/nfs
 [root@nfs ~]# echo "/dev/data_vg/nfs_lv        /srv/nfs                xfs     defaults        0 0" >> /etc/fstab
 [root@nfs ~]# 
@@ -173,7 +173,7 @@ Ahora crearemos el punto de montaje e incluiremos a este logical volume en **/et
 
 Para comprobar que la configuración de monaje del sistema de ficheros es correcta si ejecutamos **mount -a** deberemos ver el sistema de ficheros montado:
 
-```bash
+```console
 [root@nfs ~]# mount -a
 [root@nfs ~]# df -hP
 Filesystem                  Size  Used Avail Use% Mounted on
@@ -190,7 +190,7 @@ tmpfs                       374M     0  374M   0% /run/user/0
 
 Instalamos los paquetes de NFS y arrancamos el servicio:
 
-```bash
+```console
 [root@nfs ~]# dnf install nfs-utils net-tools -y
 ...
 [root@nfs ~]# systemctl  enable nfs-server
@@ -201,7 +201,7 @@ Created symlink /etc/systemd/system/multi-user.target.wants/nfs-server.service �
 
 Ahora tendremos que configurar el acceso al share de NFS de tal forma que el fichero **/etc/exports** sea como el que se muestra cambiando las ips por las de nuestros master y workers:
 
-```bash
+```console
 [root@nfs ~]# cat /etc/exports 
 /srv/nfs	192.168.1.110(rw,sync)
 /srv/nfs	192.168.1.111(rw,sync)
@@ -211,7 +211,7 @@ Ahora tendremos que configurar el acceso al share de NFS de tal forma que el fic
 
 Releemos el fichero **/etc/exports** para aplicar la nueva configuración:
 
-```bash
+```console
 [root@nfs ~]# exportfs -r
 [root@nfs ~]# exportfs -s
 /srv/nfs  192.168.1.110(sync,wdelay,hide,no_subtree_check,sec=sys,rw,secure,root_squash,no_all_squash)
@@ -222,7 +222,7 @@ Releemos el fichero **/etc/exports** para aplicar la nueva configuración:
 
 Por último necesitaremos abrir los puertos del firewall para que el servicio sea accesible:
 
-```bash
+```console
 [root@nfs ~]# firewall-cmd --permanent --add-service=nfs
 success
 [root@nfs ~]# firewall-cmd --permanent --add-service=rpc-bind
@@ -236,7 +236,7 @@ success
 
 Para verificar que el nodo master y los workers ven el share por nfs podemos ejecutar en cada uno de ellos:
 
-```bash
+```console
 [root@master ~]# showmount -e 192.168.1.115
 Export list for 192.168.1.115:
 /srv/nfs 192.168.1.112,192.168.1.111,192.168.1.110
@@ -256,13 +256,13 @@ Configura resolución DNS si dispones de un servidor DNS. Si no dispones de uno 
 
 Vamos a activar **transparent masquerading** para que los PODs puedan comunicarse dentro del cluster mediante VXLAN:
 
-```bash
-# modprobe br_netfilter
-# firewall-cmd --add-masquerade --permanent
+```console
+[root@host ~]# modprobe br_netfilter
+[root@host ~]# firewall-cmd --add-masquerade --permanent
 success
-# firewall-cmd --reload
+[root@host ~]# firewall-cmd --reload
 success
-# 
+[root@host ~]# 
 ```
 
 > NOTA: Los Pods se ejecutan dentro de su propia red aislados de la red en la que se encuentran las máquinas, pero es necesario que se puedan comunicar entre ellos. Para ello kubernetes utiliza un protocolo de llamado [VXLAN](https://en.wikipedia.org/wiki/Virtual_Extensible_LAN).
@@ -271,43 +271,43 @@ success
 
 Para permitir que kubernetes maneje correctamente el tráfico con el cortafuegos:
 
-```bash
-# cat <<EOF > /etc/sysctl.d/k8s.conf
+```console
+[root@host ~]# cat <<EOF > /etc/sysctl.d/k8s.conf
 > net.bridge.bridge-nf-call-ip6tables = 1
 > net.bridge.bridge-nf-call-iptables = 1
 > EOF
-# sysctl --system
+[root@host ~]# sysctl --system
 ...
 * Applying /etc/sysctl.d/k8s.conf ...
 ...
-# 
+[root@host ~]# 
 ```
 
 Si tenemos activado el swap:
 
-```bash
-# free -m
+```console
+[root@host ~]# free -m
               total        used        free      shared  buff/cache   available
 Mem:           7768         168        7407           8         191        7362
 Swap:          2047           0        2047
-#
+[root@host ~]#
 ```
 
 Para desactivarla:
 
-```bash
-# swapoff  -a
-# free -m
+```console
+[root@host ~]# swapoff  -a
+[root@host ~]# free -m
               total        used        free      shared  buff/cache   available
 Mem:           7768         167        7409           8         190        7363
 Swap:             0           0           0
-# 
+[root@host ~]# 
 ```
 
 Ahora es necesario también eliminar la línea del fichero **/etc/fstab** que monta en el arranque el swap:
 
-```bash
-# cat /etc/fstab 
+```console
+[root@host ~]# cat /etc/fstab 
 
 #
 # /etc/fstab
@@ -337,30 +337,30 @@ UUID=35d72d21-6f35-4e52-ac4d-523a28ac5b5d /boot                   xfs     defaul
 #
 /dev/mapper/cs-root     /                       xfs     defaults        0 0
 UUID=35d72d21-6f35-4e52-ac4d-523a28ac5b5d /boot                   xfs     defaults        0 0
-# 
+[root@host ~]# 
 ```
 
 > NOTA: Se desactiva para no perder rendimiento al hacer swap, ademas en el espacio de swap se puede volcar información de diferentes entornos que deberían estar aislados y se perdería el aislamiento. [Más información](https://github.com/kubernetes/kubernetes/issues/53533)
 
 Instalamos docker que será el engine para ejecutar contenedores:
 
-```bash
-# dnf config-manager --add-repo=https://download.docker.com/linux/centos/docker-ce.repo
+```console
+[root@host ~]# dnf config-manager --add-repo=https://download.docker.com/linux/centos/docker-ce.repo
 Adding repo from: https://download.docker.com/linux/centos/docker-ce.repo
-# dnf install docker-ce-19.03.14-3.el8 containerd.io -y
+[root@host ~]# dnf install docker-ce-19.03.14-3.el8 containerd.io -y
 ...
-# systemctl enable docker
+[root@host ~]# systemctl enable docker
 Created symlink /etc/systemd/system/multi-user.target.wants/docker.service → /usr/lib/systemd/system/docker.service.
-# systemctl start docker
-#
+[root@host ~]# systemctl start docker
+[root@host ~]#
 ```
 
 > NOTA: Instalamos la version **19.03** de docker por que es la última testeada en kubernetes.
 
 Configuramos el repositorio de kubernetes:
 
-```bash
-# cat <<EOF > /etc/yum.repos.d/kubernetes.repo
+```console
+[root@host ~]# cat <<EOF > /etc/yum.repos.d/kubernetes.repo
 > [kubernetes]
 > name=Kubernetes
 > baseurl=https://packages.cloud.google.com/yum/repos/kubernetes-el7-x86_64
@@ -370,25 +370,25 @@ Configuramos el repositorio de kubernetes:
 > gpgkey=https://packages.cloud.google.com/yum/doc/yum-key.gpg https://packages.cloud.google.com/yum/doc/rpm-package-key.gpg
 > exclude=kubelet kubeadm kubectl
 > EOF
-#
+[root@host ~]#
 ```
 
 Instalamos kubernetes:
 
-```bash
-# dnf install -y kubelet kubeadm kubectl --disableexcludes=kubernetes
+```console
+[root@host ~]# dnf install -y kubelet kubeadm kubectl --disableexcludes=kubernetes
 ...
-# systemctl enable kubelet
+[root@host ~]# systemctl enable kubelet
 Created symlink /etc/systemd/system/multi-user.target.wants/kubelet.service → /usr/lib/systemd/system/kubelet.service.
-# systemctl start kubelet
-#
+[root@host ~]# systemctl start kubelet
+[root@host ~]#
 ```
 
 ## Configurando kubernetes en el nodo master
 
 Configuramos el firewall para acceder a los servicios de kubernetes:
 
-```bash
+```console
 [root@master ~]# firewall-cmd --permanent --add-port=6443/tcp
 success
 [root@master ~]# firewall-cmd --permanent --add-port=2379-2380/tcp
@@ -419,7 +419,7 @@ success
 
 Configuramos **kudeadm**:
 
-```bash
+```console
 [root@master ~]# kubeadm config images pull
 [config/images] Pulled k8s.gcr.io/kube-apiserver:v1.20.2
 [config/images] Pulled k8s.gcr.io/kube-controller-manager:v1.20.2
@@ -432,7 +432,7 @@ Configuramos **kudeadm**:
 ```
 Permitiremos el acceso desde los workers:
 
-```bash
+```console
 [root@master ~]# firewall-cmd --permanent --add-rich-rule 'rule family=ipv4 source address=192.168.1.111/32 accept'
 success
 [root@master ~]# firewall-cmd --permanent --add-rich-rule 'rule family=ipv4 source address=192.168.1.112/32 accept'
@@ -446,7 +446,7 @@ success
 
 Permitimos el acceso de los contenedores a localhost:
 
-```bash
+```console
 [root@master ~]# ip a
 1: lo: <LOOPBACK,UP,LOWER_UP> mtu 65536 qdisc noqueue state UNKNOWN group default qlen 1000
     link/loopback 00:00:00:00:00:00 brd 00:00:00:00:00:00
@@ -473,7 +473,7 @@ success
 
 Instalamos el plugin CNI (Container Network Interface) de kubernetes y definimos la red de los PODs:
 
-```bash
+```console
 [root@master ~]# kubeadm init --pod-network-cidr 192.169.0.0/16
 [init] Using Kubernetes version: v1.20.2
 [preflight] Running pre-flight checks
@@ -515,7 +515,7 @@ En este caso la red que hemos configurado para los pods es de Clase C con una ca
 
 Vamos a autorizar al usuario **root** acceder al cluster para terminar la configuración:
 
-```bash
+```console
 [root@master ~]# mkdir -p /root/.kube
 [root@master ~]# cp -i /etc/kubernetes/admin.conf /root/.kube/config
 [root@master ~]# chown $(id -u):$(id -g) /root/.kube/config
@@ -533,7 +533,7 @@ Como SDN vamos a instalar [Calico](https://docs.projectcalico.org/).
 
 Instalamos el operador de Tigera:
 
-```bash
+```console
 [root@master ~]# kubectl create -f https://docs.projectcalico.org/manifests/tigera-operator.yaml
 customresourcedefinition.apiextensions.k8s.io/bgpconfigurations.crd.projectcalico.org created
 customresourcedefinition.apiextensions.k8s.io/bgppeers.crd.projectcalico.org created
@@ -563,15 +563,14 @@ deployment.apps/tigera-operator created
 
 Instalamos Calico junto con los custom resources que necesita. Para ello descargamos primero el fichero de definición:
 
-```bash
+```console
 [root@master ~]# wget https://docs.projectcalico.org/manifests/custom-resources.yaml
 [root@master ~]#
 ```
 
-Y cambiamos el **cidr** para que coincida con el de nuestra red de PODs:
+Y cambiamos el **cidr** para que coincida con el de nuestra red de PODs, el fichero [custom-resources.yaml](https://docs.projectcalico.org/manifests/custom-resources.yaml):
 
-```bash
-[root@master ~]# cat custom-resources.yaml 
+```yaml
 # This section includes base Calico installation configuration.
 # For more information, see: https://docs.projectcalico.org/v3.17/reference/installation/api#operator.tigera.io/v1.Installation
 apiVersion: operator.tigera.io/v1
@@ -588,20 +587,18 @@ spec:
       encapsulation: VXLANCrossSubnet
       natOutgoing: Enabled
       nodeSelector: all()
-
-[root@master ~]# 
 ```
 
 Instalamos Calico:
 
-```bash
+```console
 [root@master ~]# kubectl apply -f custom-resources.yaml
 installation.operator.tigera.io/default created
 [root@master ~]# 
 ```
 Después de unos minutos veremos el clúster como **Ready**:
 
-```bash
+```console
 [root@master ~]# kubectl get nodes
 NAME             STATUS   ROLES                  AGE   VERSION
 master.acme.es   Ready    control-plane,master   18m   v1.20.2
@@ -625,7 +622,7 @@ Aunque hemos utilizado [Calico](https://docs.projectcalico.org/getting-started/k
 
 Podemos ver la configuración del master de red:
 
-```bash
+```console
 [root@master ~]# ip a 
 1: lo: <LOOPBACK,UP,LOWER_UP> mtu 65536 qdisc noqueue state UNKNOWN group default qlen 1000
     link/loopback 00:00:00:00:00:00 brd 00:00:00:00:00:00
@@ -672,7 +669,7 @@ Podemos ver la configuración del master de red:
 
 Lo primero que tenemos que hacer en los workers es abrir los puertos:
 
-```bash
+```console
 [root@worker0X ~]# firewall-cmd --zone=public --permanent --add-port={10250,30000-32767}/tcp
 success
 [root@worker0X ~]# firewall-cmd --reload
@@ -682,7 +679,7 @@ success
 
 Ahora para unirse al clúster tendremos que ejecutar en los nodos el comando de **kubeadm** que nos produjo la ejecución de **kubadmin init**:
 
-```bash
+```console
 [root@worker0X ~]# kubeadm join 192.168.1.110:6443 --token gmk4le.8gsfpknu99k78qut --discovery-token-ca-cert-hash sha256:d2cd35c9ab95f4061aa9d9b993f7e8742b2307516a3632b27ea10b64baf8cd71 
 ...
 
@@ -697,7 +694,7 @@ Run 'kubectl get nodes' on the control-plane to see this node join the cluster.
 
 Puede llevar unos minutos que los workers aparezcan como **Ready**:
 
-```bash
+```console
 [root@master ~]# kubectl get nodes
 NAME               STATUS   ROLES                  AGE   VERSION
 master.acme.es     Ready    control-plane,master   36m   v1.20.2
@@ -727,7 +724,7 @@ tigera-operator   tigera-operator-657cc89589-wqgd6           1/1     Running   0
 
 En los workers:
 
-```bash
+```console
 [root@worker01 ~]# ip a
 1: lo: <LOOPBACK,UP,LOWER_UP> mtu 65536 qdisc noqueue state UNKNOWN group default qlen 1000
     link/loopback 00:00:00:00:00:00 brd 00:00:00:00:00:00
@@ -754,7 +751,7 @@ En los workers:
 [root@worker01 ~]# 
 ```
 
-```bash
+```console
 [root@worker02 ~]# ip a
 1: lo: <LOOPBACK,UP,LOWER_UP> mtu 65536 qdisc noqueue state UNKNOWN group default qlen 1000
     link/loopback 00:00:00:00:00:00 brd 00:00:00:00:00:00
@@ -795,7 +792,7 @@ rtt min/avg/max/mdev = 0.464/1.625/4.665/1.758 ms
 
 Para poder acceder a los PODs desde fuera de kubernetes necesitaremos instalar un ingress controller:
 
-```bash
+```console
 [root@master ~]# kubectl apply -f https://raw.githubusercontent.com/haproxytech/kubernetes-ingress/v1.5/deploy/haproxy-ingress.yaml
 namespace/haproxy-controller created
 serviceaccount/haproxy-ingress-service-account created
@@ -813,7 +810,7 @@ service/haproxy-ingress created
 
 Se crea un namespace para el ingress controller:
 
-```bash
+```console
 [root@master ~]# kubectl get namespaces
 NAME                 STATUS   AGE
 calico-system        Active   39m
@@ -832,7 +829,7 @@ ingress-default-backend-78f5cc7d4c-jzfk8   1/1     Running   0          2m57s
 
 Vemos los servicios:
 
-```bash
+```console
 [root@master ~]# kubectl get svc -A
 NAMESPACE            NAME                      TYPE        CLUSTER-IP      EXTERNAL-IP   PORT(S)                                     AGE
 calico-system        calico-typha              ClusterIP   10.111.29.122    <none>        5473/TCP                                    40m
@@ -857,7 +854,7 @@ Según lo anterior tenemos:
 
 Creamos un usuario no administrador para la gestión del clúster:
 
-```bash
+```console
 [root@master ~]# useradd -md /home/kubeadmin kubeadmin
 [root@master ~]# passwd kubeadmin
 Changing password for user kubeadmin.

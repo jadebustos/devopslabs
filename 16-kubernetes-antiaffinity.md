@@ -2,7 +2,7 @@
 
 Este deployment tiene una replica, por lo tanto hay un único contenedor en el POD:
 
-```bash
+```console
 [kubeadmin@master antiaffinity-webapp]$ kubectl get pods --namespace=webapp-routed -o wide
 NAME                             READY   STATUS    RESTARTS   AGE   IP               NODE               NOMINATED NODE   READINESS GATES
 webapp-routed-865bc5c6b4-fdqzv   1/1     Running   2          8h    192.169.112.15   worker01.acme.es   <none>           <none>
@@ -11,7 +11,7 @@ webapp-routed-865bc5c6b4-fdqzv   1/1     Running   2          8h    192.169.112.
 
 Si lo escalamos:
 
-```bash
+```console
 [kubeadmin@master antiaffinity-webapp]$ kubectl scale --replicas=2 deployment/webapp-routed --namespace=webapp-routed
 deployment.apps/webapp-routed scaled
 [kubeadmin@master antiaffinity-webapp]$ kubectl get pods --namespace=webapp-routed -o wide
@@ -120,7 +120,7 @@ data:
 
 Creamos el namespace, lo ejecutamos y podemos ver que los contenedores del pod se ejecutan en un diferentes nodos:
 
-```bash
+```console
 [kubeadmin@master antiaffinity-webapp]$ kubectl create namespace webapp-antiaffinity
 namespace/webapp-antiaffinity created
 [kubeadmin@master antiaffinity-webapp]$ kubectl apply -f antiaffinity-webapp.yaml 
@@ -137,7 +137,7 @@ webapp-antiaffinity-59d4d57956-7x8bc   1/1     Running   0          116s   192.1
 
 A continuación paramos el worker 2, esperamos un tiempo hasta que lo de por muerto (~5 minutos):
 
-```bash
+```console
 [kubeadmin@master antiaffinity-webapp]$ kubectl get nodes
 NAME               STATUS     ROLES                  AGE   VERSION
 master.acme.es     Ready      control-plane,master   10h   v1.20.2
@@ -172,7 +172,7 @@ LAST SEEN   TYPE      REASON                 OBJECT                             
 
 Como no hay ningún worker mas y en el activo ya hay un contenedor del POD no se instancia la otra replica. Arrancamos el segundo worker:
 
-```bash
+```console
 [kubeadmin@master antiaffinity-webapp]$ kubectl get nodes
 NAME               STATUS   ROLES                  AGE   VERSION
 master.acme.es     Ready    control-plane,master   10h   v1.20.2

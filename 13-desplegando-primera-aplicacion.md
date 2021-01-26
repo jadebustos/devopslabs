@@ -44,7 +44,7 @@ Este fichero define el deployment:
 
 Para realizar el deployment:
 
-```bash
+```console
 [kubeadmin@master first-app]$ kubectl apply -f first-app.yaml
 ...
 [kubeadmin@master first-app]$
@@ -52,7 +52,7 @@ Para realizar el deployment:
 
 Depués de crear el deployment:
 
-```bash
+```console
 [kubeadmin@master first-app]$ kubectl get pods --namespace=default
 NAME                      READY   STATUS              RESTARTS   AGE
 webapp-586c6d8b87-gccnl   1/1     Running   0          59s
@@ -113,7 +113,7 @@ Events:
 
 Podemos ver los eventos del namespace para ver que está pasando:
 
-```bash
+```console
 [kubeadmin@master first-app]$ kubectl get events --namespace=default
 LAST SEEN   TYPE      REASON                    OBJECT                         MESSAGE
 ...
@@ -130,7 +130,7 @@ LAST SEEN   TYPE      REASON                    OBJECT                         M
 
 Podemos consultar el yaml del pod:
 
-```bash
+```console
 [kubeadmin@master k8slab]$ kubectl get pod webapp-586c6d8b87-gccnl -o yaml > webapp-586c6d8b87-gccnl.yaml
 ```
 
@@ -140,7 +140,7 @@ Podemos consultar el yaml del pod:
 
 Podemos borrar el pod:
 
-```bash
+```console
 [kubeadmin@master first-app]$ kubectl get pods --namespace=default
 NAME                      READY   STATUS    RESTARTS   AGE
 webapp-586c6d8b87-gccnl   1/1     Running   0          5m5s
@@ -154,7 +154,7 @@ webapp-586c6d8b87-b5n5g   1/1     Running   0          100s
 
 Vemos que existe todavía, pero si nos fijamos tiene un nombre diferente:
 
-```bash
+```console
 [kubeadmin@master first-app]$ kubectl get events --namespace=default
 LAST SEEN   TYPE     REASON             OBJECT                         MESSAGE
 ...
@@ -187,7 +187,7 @@ spec:
 
 Para borrar la aplicación deberemos borrar el deployment:
 
-```bash
+```console
 [kubeadmin@master first-app]$ kubectl get deployments
 NAME     READY   UP-TO-DATE   AVAILABLE   AGE
 webapp   1/1     1            1           108m
@@ -205,7 +205,7 @@ No resources found in default namespace.
 
 Para escalar un deployment:
 
-```bash
+```console
 [kubeadmin@master first-app]$ kubectl get pods --namespace=default
 NAME                      READY   STATUS    RESTARTS   AGE
 webapp-586c6d8b87-b5n5g   1/1     Running   0          4m39s
@@ -225,7 +225,7 @@ spec:
 
 Guardamos los cambios y salimos:
 
-```bash
+```console
 [kubeadmin@master first-app]$ kubectl get pods --namespace=default
 NAME                      READY   STATUS              RESTARTS   AGE
 webapp-586c6d8b87-2xr5r   0/1     ContainerCreating   0          4s
@@ -239,7 +239,7 @@ webapp-586c6d8b87-b5n5g   1/1     Running   0          8m31s   192.169.112.3   w
 
 Como ambos contenedores se están ejecutando en el **worker01** vamos al **worker02** y hacemos un ping a sus ips:
 
-```bash
+```console
 [root@worker02 ~]# ping -c 4 192.169.112.4
 PING 192.169.112.4 (192.169.112.4) 56(84) bytes of data.
 64 bytes from 192.169.112.4: icmp_seq=1 ttl=63 time=0.744 ms
@@ -265,7 +265,7 @@ rtt min/avg/max/mdev = 0.463/0.800/1.218/0.272 ms
 
 Borramos uno de los pods:
 
-```bash
+```console
 [kubeadmin@master first-app]$ kubectl get pods --namespace=default 
 NAME                      READY   STATUS    RESTARTS   AGE
 webapp-586c6d8b87-2xr5r   1/1     Running   0          4m7s

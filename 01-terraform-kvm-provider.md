@@ -5,7 +5,7 @@ KVM no se encuentra entre los proveedores distribuidos con terraform, con lo cua
 En este caso descargaremos la versión 0.63 para [Fedora](https://github.com/dmacvicar/terraform-provider-libvirt/releases/download/v0.6.3/terraform-provider-libvirt-0.6.3+git.1604843676.67f4f2aa.Fedora_32.x86_64.tar.gz). La descargaremos en tgz aunque hay versiones paquetizadas en RPM y DEB.
 
 
-```bash
+```console
 [jadebustos@beast tmp]$ wget https://github.com/dmacvicar/terraform-provider-libvirt/releases/download/v0.6.3/terraform-provider-libvirt-0.6.3+git.1604843676.67f4f2aa.Fedora_32.x86_64.tar.gz
 [jadebustos@beast tmp]$ mkdir -p ~/.terraform.d/plugins/lab.org/beast/libvirt/0.6.3/linux_amd64/
 [jadebustos@beast tmp]$ tar zxf terraform-provider-libvirt-0.6.3+git.1604843676.67f4f2aa.Fedora_32.x86_64.tar.gz -C ~/.terraform.d/plugins/lab.org/beast/libvirt/0.6.3/linux_amd64/ 
@@ -33,7 +33,7 @@ provider "libvirt" {
 
 A continuación:
 
-```bash
+```console
 [jadebustos@beast kvm]$ terraform init
 
 Initializing the backend...
@@ -67,7 +67,7 @@ El plugin es accesible y ya podemos usarlo.
 
 Podemos ver los providers que requiere el plan:
 
-```bash
+```console
 [jadebustos@beast kvm]$ terraform providers
 
 Providers required by configuration:
@@ -81,7 +81,7 @@ Ahora completamos el [plan](terraform/kvm/docker/libvirt.tf).
 
 Para ejecutar el plan:
 
-```bash
+```console
 [jadebustos@beast kvm]$ terraform init
 ...
 [jadebustos@beast kvm]$ terraform apply
@@ -101,7 +101,7 @@ Apply complete! Resources: 3 added, 0 changed, 0 destroyed.
 
 Estado del plan:
 
-```bash
+```console
 [jadebustos@beast kvm]$ terraform state list
 libvirt_domain.terraform-rhel
 libvirt_pool.dockerstorage
@@ -111,7 +111,7 @@ libvirt_volume.rhel8
 
 Podemos ver información con mayor nivel de detalle:
 
-```bash
+```console
 [jadebustos@beast kvm]$ terraform state pull
 {
   "version": 4,

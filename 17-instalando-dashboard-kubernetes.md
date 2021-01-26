@@ -3,7 +3,7 @@
 
 Desplegamos el dashboard:
 
-```bash
+```console
 [kubeadmin@master ~]$ kubectl apply -f https://raw.githubusercontent.com/kubernetes/dashboard/v2.0.0/aio/deploy/recommended.yaml
 namespace/kubernetes-dashboard created
 serviceaccount/kubernetes-dashboard created
@@ -24,7 +24,7 @@ deployment.apps/dashboard-metrics-scraper created
 
 Por defecto solo podremos conectarnos desde el master al dashboard. Para poder acceder desde cualquier editaremos el servicio creado por el dashboard:
 
-```bash
+```console
 [kubeadmin@master ~]$ kubectl get svc -A
 NAMESPACE              NAME                        TYPE        CLUSTER-IP       EXTERNAL-IP   PORT(S)                                     AGE
 calico-system          calico-typha                ClusterIP   10.111.29.122    <none>        5473/TCP                                    4h10m
@@ -59,7 +59,7 @@ status:
 
 Guardamos y salimos:
 
-```bash
+```console
 [kubeadmin@master ~]$ kubectl get svc -A
 NAMESPACE              NAME                        TYPE        CLUSTER-IP       EXTERNAL-IP   PORT(S)                                     AGE
 calico-system          calico-typha                ClusterIP   10.111.29.122    <none>        5473/TCP                                    4h11m
@@ -78,7 +78,7 @@ Ahora que ya es accesible por red creamos un [usuario](https://github.com/kubern
 
 Para acceder necesitamos un token:
 
-```bash
+```console
 [kubeadmin@master ~]$ kubectl -n kubernetes-dashboard get secret $(kubectl -n kubernetes-dashboard get sa/admin-user -o jsonpath="{.secrets[0].name}") -o go-template="{{.data.token | base64decode}}"
 eyJhbGciOiJSUzI1NiIsImtpZCI6IndSdjVWWjh1dlUteWlzYzZ3N1Z0NHRKMV9Kc3FTSnRPbUxadW1Sc1cyYmcifQ.eyJpc3MiOiJrdWJlcm5ldGVzL3NlcnZpY2VhY2NvdW50Iiwia3ViZXJuZXRlcy5pby9zZXJ2aWNlYWNjb3VudC9uYW1lc3BhY2UiOiJrdWJlcm5ldGVzLWRhc2hib2FyZCIsImt1YmVybmV0ZXMuaW8vc2VydmljZWFjY291bnQvc2VjcmV0Lm5hbWUiOiJhZG1pbi11c2VyLXRva2VuLXI4Zmt6Iiwia3ViZXJuZXRlcy5pby9zZXJ2aWNlYWNjb3VudC9zZXJ2aWNlLWFjY291bnQubmFtZSI6ImFkbWluLXVzZXIiLCJrdWJlcm5ldGVzLmlvL3NlcnZpY2VhY2NvdW50L3NlcnZpY2UtYWNjb3VudC51aWQiOiJlNDU2ZjE4My01OGQxLTQ0NGUtYjJkOS1mMWRkMjM0MmQxMzMiLCJzdWIiOiJzeXN0ZW06c2VydmljZWFjY291bnQ6a3ViZXJuZXRlcy1kYXNoYm9hcmQ6YWRtaW4tdXNlciJ9.layvT-iZh4tfK1L-pKuJ1cOjX5MuxR4llP9a2_y_ALvB6tCxpdSx3FfvW22DhQhs0xnXdNnWgsPSKfR3lw48ihh6DqJ19pzaHqrys0H7emE0O6jtvyKzZo1AFL6ysVA0b8fsLFMcQJEQwKbBauqqkR7ERCdW7BvXJBG2Hgavl0nbkkNAMWQKYNL9yPwRHYIES6yF19Qw-SiduOScZQQwdb0GiknFA5XtMnIq0stUO-l-iPdI3TSnj8uQt4exsVQ76fmUUc3adcaGgbTEDgshyoWDFkwIMfTvm1JPn87hxinFY3mVq-L2DtnPpi81xr7nW8kbA3Up4u5RlUfZRj-_fg
 [kubeadmin@master ~]$
@@ -86,7 +86,7 @@ eyJhbGciOiJSUzI1NiIsImtpZCI6IndSdjVWWjh1dlUteWlzYzZ3N1Z0NHRKMV9Kc3FTSnRPbUxadW1S
 
 Para acceder via web:
 
-```bash
+```console
 [kubeadmin@master ~]$ kubectl get svc --namespace=kubernetes-dashboard
 NAME                        TYPE        CLUSTER-IP       EXTERNAL-IP   PORT(S)         AGE
 dashboard-metrics-scraper   ClusterIP   10.97.179.137    <none>        8000/TCP        31m

@@ -2,7 +2,7 @@
 
 Creamos un namespace:
 
-```bash
+```console
 [kubeadmin@master webapp-volumes]$ kubectl create namespace webapp-volumes
 namespace/webapp-volumes created
 [kubeadmin@master webapp-volumes]$ 
@@ -38,7 +38,7 @@ spec:
 
 Definimos el persistent volume:
 
-```bash
+```console
 [kubeadmin@master webapp-volumes]$ kubectl apply -f nfs-pv.yaml 
 persistentvolume/nfs-pv created
 [kubeadmin@master webapp-volumes]$ kubectl get pv --namespace=webapp-volumes
@@ -86,7 +86,7 @@ spec:
 
 Hacemos el claim:
 
-```bash
+```console
 [kubeadmin@master webapp-volumes]$ kubectl apply -f nfs-pvc.yaml 
 persistentvolumeclaim/nfs-pvc created
 [kubeadmin@master webapp-volumes]$ kubectl get pvc --namespace=webapp-volumes
@@ -197,7 +197,7 @@ data:
 
 Hacemos el deployment:
 
-```bash
+```console
 [kubeadmin@master webapp-volumes]$ kubectl apply -f webapp-volumes.yaml 
 deployment.apps/webapp-volumes created
 service/volumes-service created
@@ -246,7 +246,7 @@ Events:  <none>
 
 Nos conectamos al contenedor para ver que el volumen está mapeado:
 
-```bash
+```console
 [kubeadmin@master webapp-volumes]$ kubectl exec --stdin --tty webapp-volumes-5489d68846-7qxkc --namespace=webapp-volumes -- /bin/bash
 root@webapp-volumes-5489d68846-7qxkc:/var/www/html# ls
 root@webapp-volumes-5489d68846-7qxkc:/var/www/html# df
@@ -295,7 +295,7 @@ El volumen que hemos mapeado se encuentra vacío, con lo cual nos conectamos al 
 
 Ahora ya podemos acceder desde fuera del entorno:
 
-```bash
+```console
 [jadebustos@archimedes ~]$ curl -I -H 'Host: foo-volumes.bar' 'http://192.168.1.110:30432/volumes'
 HTTP/1.1 200 OK
 date: Mon, 25 Jan 2021 08:07:38 GMT
@@ -308,7 +308,7 @@ content-type: text/html; charset=UTF-8
 
 Si no hemos borrado el ejemplo anterior podemos ver que tenemos dos aplicaciones publicadas:
 
-```bash
+```console
 [kubeadmin@master webapp-volumes]$ kubectl get svc -A
 NAMESPACE            NAME                      TYPE        CLUSTER-IP       EXTERNAL-IP   PORT(S)                                     AGE
 calico-system        calico-typha              ClusterIP   10.111.29.122    <none>        5473/TCP                                    3h7m

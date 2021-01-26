@@ -2,7 +2,7 @@
 
 Revisando la configuración:
 
-```bash
+```console
 [kubeadmin@master first-routed-webapp]$ kubectl config view
 apiVersion: v1
 clusters:
@@ -30,7 +30,7 @@ users:
 
 Los namespaces se utilizarán para "aislar" los PODs:
 
-```bash
+```console
 [kubeadmin@master k8slab]$ kubectl get namespaces
 NAME                 STATUS   AGE
 calico-system        Active   44m
@@ -55,7 +55,7 @@ Un pod es la unidad mínima de elementos que podemos desplegar.
 
 Un POD puede estar formado por uno o varios contenedores.
 
-```bash
+```console
 [kubeadmin@master k8slab]$ kubectl get pods
 No resources found in default namespace.
 [kubeadmin@master k8slab]$
@@ -63,7 +63,7 @@ No resources found in default namespace.
 
 Para ver los pods de un namespace:
 
-```bash
+```console
 [kubeadmin@master k8slab]$ kubectl get pods --namespace=kube-system
 NAME                                       READY   STATUS    RESTARTS   AGE
 coredns-74ff55c5b-5cp24                  1/1     Running   0          58m
@@ -80,7 +80,7 @@ kube-scheduler-master.acme.es            1/1     Running   1          58m
 
 Con **-A** podemos ver la lista de objetos a lo largo de todos los namespaces y con **-o wide** podemos sacar más información:
 
-```bash
+```console
 [kubeadmin@master k8slab]$ kubectl get pods -A -o wide
 NAMESPACE     NAME                                       READY   STATUS    RESTARTS   AGE   IP              NODE               NOMINATED NODE   READINESS GATES
 calico-system        calico-kube-controllers-546d44f5b7-szm8j   1/1     Running   0          45m     192.169.121.67   master.acme.es     <none>           <none>
@@ -111,7 +111,7 @@ tigera-operator      tigera-operator-657cc89589-wqgd6           1/1     Running 
 
 Definimos de forma declarativa como se debe desplegar un POD.
 
-```bash
+```console
 [kubeadmin@master k8slab]$ kubectl get deployment -A -o wide
 NAMESPACE     NAME                      READY   UP-TO-DATE   AVAILABLE   AGE   CONTAINERS                IMAGES                                      SELECTOR
 calico-system        calico-kube-controllers   1/1     1            1           46m    calico-kube-controllers   docker.io/calico/kube-controllers:v3.17.1     k8s-app=calico-kube-controllers
@@ -129,7 +129,7 @@ tigera-operator      tigera-operator           1/1     1            1           
 
 Son un tipo especial de deployment, cada vez que se añada un nodo al clúster los pods definidos como **DaemonSet** se desplegarán de forma automática en el nodo:
 
-```bash
+```console
 [kubeadmin@master k8slab]$ kubectl get daemonset -A
 NAMESPACE     NAME          DESIRED   CURRENT   READY   UP-TO-DATE   AVAILABLE   NODE SELECTOR            AGE
 calico-system   calico-node   3         3         3       3            3           kubernetes.io/os=linux   46m
@@ -143,7 +143,7 @@ kube-system     kube-proxy    3         3         3       3            3        
 
 Podemos obtener información de cualquier objeto con el verbo **describe** indicando el tipo de objeto, el nombre y el namespace donde reside:
 
-```bash
+```console
 [kubeadmin@master k8slab]$ kubectl describe deployment coredns --namespace=kube-system
 Name:                   coredns
 Namespace:              kube-system
@@ -200,7 +200,7 @@ Events:
 
 Podemos obtener el yaml de cualquier objeto con el verbo **get** indicando el tipo de objeto, el nombre, el namespace donde reside e indicando el formato de salida **-o yaml**:
 
-```bash
+```console
 [kubeadmin@master k8slab]$ kubectl get deployment coredns --namespace=kube-system -o yaml
 metadata:
   annotations:

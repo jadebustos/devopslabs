@@ -6,7 +6,7 @@ Vamos a [DockerHub](https://hub.docker.com/) y buscamos una imagen para descarga
 
 En categorias seleccionamos **Base Images** y vamos a decargar **busybox**:
 
-```bash
+```console
 [root@lab-docker ~]# docker pull busybox
 Using default tag: latest
 latest: Pulling from library/busybox
@@ -19,7 +19,7 @@ docker.io/library/busybox:latest
 
 Listamos las imágenes disponibles:
 
-```bash
+```console
 [root@lab-docker ~]# docker images
 REPOSITORY   TAG       IMAGE ID       CREATED      SIZE
 busybox      latest    b97242f89c8a   4 days ago   1.23MB
@@ -28,7 +28,7 @@ busybox      latest    b97242f89c8a   4 days ago   1.23MB
 
 Instanciamos un container a partir de una imagen:
 
-```bash
+```console
 [root@lab-docker ~]# docker run -d busybox
 845308bb95594ccbc463c251bd14bb06a65c5d0b8ee4d21ec5bc9c6c1ed8db15
 [root@lab-docker ~]# docker ps
@@ -41,7 +41,7 @@ Como vemos el contenedor arranca y para.
 
 Instanciamos una nueva imagen, pero esta vez ejecutamos una shell dentro del contendor:
 
-```bash
+```console
 [root@lab-docker ~]# docker run -it --rm busybox
 / #  ip a
 1: lo: <LOOPBACK,UP,LOWER_UP> mtu 65536 qdisc noqueue qlen 1000
@@ -62,7 +62,7 @@ Instanciamos una nueva imagen, pero esta vez ejecutamos una shell dentro del con
 
 Si nos conectamos por ssh a la vm:
 
-```bash
+```console
 [root@lab-docker ~]# docker ps
 CONTAINER ID   IMAGE     COMMAND   CREATED         STATUS         PORTS     NAMES
 69d24bac6bbb   busybox   "sh"      3 minutes ago   Up 3 minutes             ecstatic_tharp
@@ -71,7 +71,7 @@ CONTAINER ID   IMAGE     COMMAND   CREATED         STATUS         PORTS     NAME
 
 Salimos del contenedor y vemos que el contenedor ya no existe:
 
-```bash
+```console
 [root@lab-docker ~]# docker run -d busybox
 845308bb95594ccbc463c251bd14bb06a65c5d0b8ee4d21ec5bc9c6c1ed8db15
 [root@lab-docker ~]# docker ps
@@ -102,7 +102,7 @@ Vamos a crear una imagen basada en la imagen **busybox** que va a ejecutar el sc
 
 Nos conectamos a la máquina de docker:
 
-```bash
+```console
 [terraform@docker ~]$ sudo su -
 Last login: Sun Jan 17 20:42:31 CET 2021 on pts/0
 [root@lab-docker ~]# cd build/busibox/
@@ -123,7 +123,7 @@ RUN chmod +x /myscript.sh
 ENTRYPOINT ["/myscript.sh"]
 ```
 
-```bash
+```console
 [root@lab-docker busybox]# docker build -t mybusybox .
 Sending build context to Docker daemon  3.072kB
 Step 1/5 : FROM busybox
@@ -153,7 +153,7 @@ busybox      latest    b97242f89c8a   4 days ago       1.23MB
 
 Ejecutamos un container basado en esa imagen:
 
-```bash
+```console
 [root@lab-docker busybox]# docker run -d mybusybox 
 811ba76fb030e02b90aeb3e1e9f047b174b30cb012310d8665374a10c7fbafb6
 [root@lab-docker busybox]# docker ps ; sleep 30
@@ -184,7 +184,7 @@ ENTRYPOINT ["/myinfinitescript.sh"]
 
 Donde **myinfinitescript.sh**:
 
-```
+```bash
 #!/bin/sh
 
 while true
@@ -196,7 +196,7 @@ done
 
 Construyamos el contenedor y ejecutemoslo:
 
-```bash
+```console
 [root@lab-docker busybox]# docker build -t mybusybox .
 ...
 [root@lab-docker busybox]# docker run -d mybusybox 
@@ -213,7 +213,7 @@ Cuando tenemos problemas o el contenedor no funciona como debería para realizar
 
 Podemos atacharnos al contenedor en ejecución y ver la salida estándar para sacar información de que está pasando:
 
-```bash
+```console
 [root@lab-docker busybox]# docker ps
 CONTAINER ID   IMAGE       COMMAND                  CREATED         STATUS         PORTS     NAMES
 bfe8f9c45c6f   mybusybox   "/myinfinitescript.sh"   7 seconds ago   Up 5 seconds             fervent_shannon
@@ -232,7 +232,7 @@ Para salir pulsar **Ctrl + c** saldremos, pero la ejecución del contenedor habr
 
 Para por salir y que el contenedor se siga ejecutando:
 
-```bash
+```console
 [root@lab-docker busybox]# docker run -itd mybusybox 
 96a78b06124be8face69201260e435ed8957eeb43bf28e9462aed2b2c436360e
 [root@lab-docker busybox]# docker attach 96a78b06124be8face69201260e435ed8957eeb43bf28e9462aed2b2c436360e
@@ -243,7 +243,7 @@ Random string: Iw7wYgSqYuwV80ZRpg7xkBOElZWN7aavXm6Z1jUHq6WvVjivL2cNAyRy0jxE5uYU
 
 Pulsamos **Ctrl + p** y **Ctrl + q**:
 
-```bash
+```console
 read escape sequence
 [root@lab-docker busybox]# docker ps
 CONTAINER ID   IMAGE       COMMAND                  CREATED          STATUS          PORTS     NAMES
@@ -253,14 +253,14 @@ CONTAINER ID   IMAGE       COMMAND                  CREATED          STATUS     
 
 Podemos ejecutar una shell:
 
-```bash
+```console
 [root@lab-docker apache]# docker exec -it 4f94e272bac8 bash
 root@4f94e272bac8:/var/www/html# 
 ```
 
 Para salir de la shell bastaría con ejecutar **exit**:
 
-```bash
+```console
 root@4f94e272bac8:/var/www/html# exit
 exit
 [root@lab-docker apache]#
@@ -268,7 +268,7 @@ exit
 
 Para ver el historial de lo que ha pasado en el contenedor:
 
-```bash
+```console
 [root@lab-docker busybox]# docker logs 96a78b06124be8face69201260e435ed8957eeb43bf28e9462aed2b2c436360e
 Random string: GiJ4o2tiOs42keRyu8xjKXQQVct67wCopuamOSPcQ9DSBIy7PkrsiIfDodCVdJZF
 Random string: e9a6GxKpeJjyJAGv2Mp5DMLpvT2myVBNooBlOl6UnNYDvzmI7pYhumGqFhCAtHD8
@@ -319,7 +319,7 @@ Random string: TLKr3flGaPrPkeiwE06UCJu59yJScSN1BUahw3cmO4OnPavYitGYMnXCK9s1IRiN
 + **docker stop <container>** para de forma ordenada un container en ejecución.
 + **docker kill <container>** para un container en ejecución de una forma no ordenada.
 
-```bash
+```console
 [root@lab-docker busybox]# docker ps
 CONTAINER ID   IMAGE       COMMAND                  CREATED         STATUS         PORTS     NAMES
 96a78b06124b   mybusybox   "/myinfinitescript.sh"   4 minutes ago   Up 4 minutes             bold_mendeleev
@@ -334,7 +334,7 @@ CONTAINER ID   IMAGE     COMMAND   CREATED   STATUS    PORTS     NAMES
 
 Nos conectamos a la máquina de docker:
 
-```bash
+```console
 [terraform@docker ~]$ sudo su -
 Last login: Sun Jan 17 20:42:31 CET 2021 on pts/0
 [root@lab-docker ~]# cd build/apache/
@@ -361,7 +361,7 @@ ENTRYPOINT ["start-apache"]
 
 Construimos la imagen:
 
-```bash
+```console
 [root@lab-docker apache]# docker build -t webapp .
 ...
 Successfully built 68d34ba47136
@@ -381,7 +381,7 @@ php          7-apache   2d5d57e31bd0   5 days ago          414MB
 
 Creamos un container a partir de la imagen:
 
-```bash
+```console
 [root@lab-docker apache]# docker run -itd webapp 
 b3e62591ee8b8e290a43b4f1340b20d5931e0fe989f3ff8eb7c51dc2d7933eaf
 [root@lab-docker apache]# docker ps
@@ -392,7 +392,7 @@ b3e62591ee8b   webapp    "start-apache"   6 seconds ago   Up 4 seconds   80/tcp 
 
 Ahora que tenemos el contenedor corriendo obtenemos su ip:
 
-```bash
+```console
 [root@lab-docker apache]# docker inspect -f '{{range .NetworkSettings.Networks}}{{.IPAddress}}{{end}}' f90ff30a811d
 172.17.0.2
 [root@lab-docker apache]# 
@@ -402,7 +402,7 @@ Ahora que tenemos el contenedor corriendo obtenemos su ip:
 
 En linux existe una utilidad llamada **jq** que nos permite extraer información de un json. No se suele instalar por defecto, normalmente el paquete se llama **jq**. Si está instalada:
 
-```bash
+```console
 [root@lab-docker apache]# docker inspect f90ff30a811d | jq '.[] | .NetworkSettings.Networks.bridge.IPAddress'
 172.17.0.2
 [root@lab-docker apache]# 
@@ -414,7 +414,7 @@ Si solo quisiéramos procesar un elemento bastaría con poner el índice del ele
 
 Ejecutamos en la consola
 
-```bash
+```console
 [root@lab-docker apache]# elinks http://172.17.0.2
 ```
 
@@ -422,7 +422,7 @@ y podremos navegar por la aplicación.
 
 Estamos acceciendo a una url interna de docker, el puerto no se encuentra expuesto. Si queremos que sea accesible desde el exterior tendremos que exponerlo:
 
-```bash
+```console
 [root@lab-docker apache]# docker run -tid -p 8080:80 --name apache_server3 --rm webapp
 65dd77308916c2b3b396c6dcdd2a2d4252e36e58b334c47c84830db00fe4549b
 [root@lab-docker apache]# docker ps
@@ -433,12 +433,12 @@ CONTAINER ID   IMAGE     COMMAND          CREATED              STATUS           
 
 Ahora la aplicación será accesible por el puerto **8080** a través de la ip de docker.frontend.lab:
 
-```bash
+```console
 [jadebustos@beast apache]$ links2 http://docker.frontend.lab:8080
 ```
 Cuando mapeamos un puerto docker incluye una regla en IPTABLES para permitir el tráfico y se encargar del reenvio del tráfico entre los puertos:
 
-```bash
+```console
 [root@lab-docker apache]# iptables -L
 Chain INPUT (policy ACCEPT)
 target     prot opt source               destination         
@@ -473,7 +473,7 @@ RETURN     all  --  anywhere             anywhere
 [root@lab-docker ~]# 
 ```
 
-```bash
+```console
 [root@lab-docker apache]# docker run -tid -p 8080:80 --rm --name apache_server3 -v /root/build/apache/custom-php/:/var/www/public:Z webapp
 9480bd0725a2753f70786e308c4697fa6e111b05e7e45e9d9f9d24f6b416fb0e
 [root@lab-docker apache]# docker ps
@@ -490,7 +490,7 @@ CONTAINER ID   IMAGE     COMMAND          CREATED         STATUS         PORTS  
 
 Como hemos definido una variable de entorno en el Dockerfile podemos utilizarla para parametrizaciones dentro del container:
 
-```bash
+```console
 [root@lab-docker apache]# export PORT=789
 [root@lab-docker apache]# docker run -itd --env PORT -p 8080:$PORT -v /root/build/apache/custom-php/:/var/www/public:Z webapp
 17f28f4e7fe6b4418535b28a2534f4b2f675c6593cba9c5684a21a8b2aea8f48
@@ -545,8 +545,8 @@ Creamos un repositorio público.
 
 Para subir una imagen a nuestro repositorio:
 
-```bash
-root@lab-docker apache]# docker images
+```console
+[root@lab-docker apache]# docker images
 REPOSITORY   TAG        IMAGE ID       CREATED         SIZE
 webapp       latest     93e345f66e51   4 minutes ago   414MB
 mybusybox    latest     a0bf925745fb   8 minutes ago   1.23MB
@@ -573,7 +573,7 @@ denied: requested access to the resource is denied
 
 Por defecto está intentando subirla al repositorio público y no al nuestro. Por ese motivo falla. Necesitamos tagearla apropiadamente:
 
-```bash
+```console
 [root@lab-docker apache]# docker tag mybusybox jadebustos2/devops
 [root@lab-docker apache]# docker ps
 CONTAINER ID   IMAGE     COMMAND   CREATED   STATUS    PORTS     NAMES
@@ -598,13 +598,13 @@ La imagen se encontrará disponible en [DockerHub](https://hub.docker.com/u/jade
 
 Si quisieramos descargarla desde docker:
 
-```bash
-# docker pull jadebustos2/devops:latest
+```console
+[root@host ~]# docker pull jadebustos2/devops:latest
 ```
 
 También podríamos añadir tags:
 
-```bash
+```console
 [root@lab-docker apache]# docker tag mybusybox jadebustos2/devops:v1
 [root@lab-docker apache]# docker push jadebustos2/devops:v1
 ```
@@ -613,7 +613,7 @@ También podríamos añadir tags:
 
 **docker save** redirige a la salida estándar por defecto pero se puede redirigir a un archivo:
 
-```bash
+```console
 [root@lab-docker apache]# docker images
 REPOSITORY           TAG        IMAGE ID       CREATED          SIZE
 webapp               latest     93e345f66e51   33 minutes ago   414MB
@@ -639,7 +639,7 @@ Podemos utilizar **docker load** para subir al engine un contenedor desde la sal
 
 Podemos exportar e importar filesystems de contenedores mediante **docker export** y **docker import**:
 
-```bash
+```console
 [root@lab-docker apache]# docker export 17f28f4e7fe6 -o webapp.tar
 [root@lab-docker apache]# ls -lh
 total 398M

@@ -62,7 +62,7 @@ Si pinchamos sobre el Pod que tiene el error y vamos a **Logs** podemos ver el e
 
 Para tener más información y poder depurar lo mejor es irse al CLI:
 
-```bash
+```console
 [jadebustos@archimedes ocp]$ ./oc debug deployment/webapp
 Starting pod/webapp-debug ...
 Pod IP: 10.129.147.158
@@ -131,7 +131,7 @@ El siguiente flujo nos lleva al comando oc para hacer login:
 
 Antes de borrrar es buena idea comprobar antes que vamos a borrar. Para ello vamos a utilizar la etiqueta, en este caso **app=webapp**:
 
-```bash
+```console
 [jadebustos@beast ocp]$ ./oc project abustosp-dev
 Now using project "abustosp-dev" on server "https://api.sandbox.x8i5.p1.openshiftapps.com:6443".
 [jadebustos@beast ocp]$ ./oc get all -l webapp
@@ -167,7 +167,7 @@ route.route.openshift.io/webapp   webapp-abustosp-dev.apps.sandbox.x8i5.p1.opens
 
 Una vez que vemos que esta todo ok, y que no hay nada etiquetado con la etiqueta que vamos a utilizar que no debamos borrar procedemos a borrar:
 
-```bash
+```console
 [jadebustos@beast ocp]$ ./oc delete all -l app=webapp
 pod "webapp-775776c94-nwwmz" deleted
 service "webapp" deleted
@@ -180,7 +180,7 @@ route.route.openshift.io "webapp" deleted
 
 Lo único que quedaría por borrar son los secrets:
 
-```bash
+```console
 [jadebustos@beast ocp]$ ./oc get secrets
 NAME                            TYPE                                  DATA   AGE
 builder-dockercfg-fv89f         kubernetes.io/dockercfg               1      19h

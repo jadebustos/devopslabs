@@ -15,7 +15,7 @@ Se puede consultar la [configuración de cloud-init](file:///home/jadebustos/src
 
 Una vez en el directorio para desplegar el plan de terraform:
 
-```bash
+```console
 [jadebustos@beast podman]$ terraform init
 ...
 [jadebustos@beast podman]$ terraform apply
@@ -29,7 +29,7 @@ Una vez en el directorio para desplegar el plan de terraform:
 
 Para instalar podman vamos al directorio [ansible](ansible):
 
-```bash
+```console
 [jadebustos@beast ansible]$ ansible-playbook -i hosts -l podman install-podman.yaml 
 ```
 
