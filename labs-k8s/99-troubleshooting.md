@@ -5,18 +5,18 @@
 Realizamos un deployment que se tenga que descargar una imagen:
 
 ```console
-[kubeadmin@master k8slab]$ kubectl apply -f first-app.yaml
+[kubeadmin@master first-app]$ kubectl apply -f first-app.yaml
 ...
-[kubeadmin@master k8slab]$
+[kubeadmin@master first-app]$
 ```
 
 Depués de crear el deployment podemos ver el estado del POD:
 
 ```console
-[kubeadmin@master k8slab]$ kubectl get pods --namespace=default
+[kubeadmin@master first-app]$ kubectl get pods --namespace=default
 NAME                      READY   STATUS              RESTARTS   AGE
 webapp-68965f4fcc-bz87h   0/1     ContainerCreating   0          2m31s
-[kubeadmin@master k8slab]$ kubectl describe pod webapp-68965f4fcc-bz87h
+[kubeadmin@master first-app]$ kubectl describe pod webapp-68965f4fcc-bz87h
 Name:           webapp-68965f4fcc-bz87h
 Namespace:      default
 Priority:       0
@@ -64,13 +64,13 @@ Events:
   ----    ------     ----   ----               -------
   Normal  Scheduled  2m51s  default-scheduler  Successfully assigned default/webapp-68965f4fcc-bz87h to worker01.acme.es
   Normal  Pulling    2m49s  kubelet            Pulling image "quay.io/rhte_2019/php:7-apache"
-[kubeadmin@master k8slab]$ 
+[kubeadmin@master first-app]$ 
 ```
 
 Vemos que está descargandose la imagen. Podemos ver los eventos del namespace para ver que está pasando:
 
 ```console
-[kubeadmin@master k8slab]$ kubectl get events --namespace=default
+[kubeadmin@master first-app]$ kubectl get events --namespace=default
 LAST SEEN   TYPE      REASON                    OBJECT                         MESSAGE
 14m         Normal    Starting                  node/master.acme.es            Starting kubelet.
 14m         Normal    NodeHasSufficientMemory   node/master.acme.es            Node master.acme.es status is now: NodeHasSufficientMemory
@@ -115,22 +115,22 @@ LAST SEEN   TYPE      REASON                    OBJECT                         M
 13m         Normal    NodeAllocatableEnforced   node/worker02.acme.es          Updated Node Allocatable limit across pods
 13m         Warning   Rebooted                  node/worker02.acme.es          Node worker02.acme.es has been rebooted, boot id: 856cf36f-be3d-4d90-b54a-553d8be4dc69
 13m         Normal    Starting                  node/worker02.acme.es          Starting kube-proxy.
-[kubeadmin@master k8slab]$ 
+[kubeadmin@master first-app]$ 
 ```
 
 Podemos consultar el yaml para ver exactamente la configuración del deployment:
 
 ```console
-[kubeadmin@master k8slab]$ kubectl get pod webapp-68965f4fcc-bz87h -o yaml >  webapp-68965f4fcc-bz87h.yaml
+[kubeadmin@master first-app]$ kubectl get pod webapp-68965f4fcc-bz87h -o yaml >  webapp-68965f4fcc-bz87h.yaml
 ```
 
 También podemos ejecutar una shell en el contenedor:
 
 ```console
-[kubeadmin@master k8slab]$ kubectl get pods --namespace=default
+[kubeadmin@master first-app]$ kubectl get pods --namespace=default
 NAME                      READY   STATUS    RESTARTS   AGE
 webapp-68965f4fcc-bz87h   1/1     Running   0          43m
-[kubeadmin@master k8slab]$ kubectl exec --stdin --tty webapp-68965f4fcc-bz87h -- /bin/bash
+[kubeadmin@master first-app]$ kubectl exec --stdin --tty webapp-68965f4fcc-bz87h -- /bin/bash
 root@webapp-68965f4fcc-bz87h:/var/www/html# root@webapp-68965f4fcc-bz87h:/var/www/html# whoami
 root
 root@webapp-68965f4fcc-bz87h:/var/www/html# 
