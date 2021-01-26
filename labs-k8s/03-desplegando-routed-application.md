@@ -278,4 +278,4 @@ Events:  <none>
 [kubeadmin@master ~]$  
 ```
 
-![ingress](imgs/kubernetes-networking.png)
+![ingress](../imgs/kubernetes-networking.png)
