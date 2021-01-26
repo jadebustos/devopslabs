@@ -96,6 +96,6 @@ kubernetes-dashboard        NodePort    10.100.128.232   <none>        443:31278
 
 Accediendo al nodo master al puerto **31278** accederemos al dashboard y seleccionando token introducimos el token generado:
 
-![dashboard login](imgs/k8s-dashboard-login.png)
+![dashboard login](../imgs/k8s-dashboard-login.png)
 
-![dashboard login](imgs/k8s-dashboard.png)
+![dashboard login](../imgs/k8s-dashboard.png)
