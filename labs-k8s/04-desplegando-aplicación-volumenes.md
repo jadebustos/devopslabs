@@ -12,7 +12,7 @@ Cuando necesitemos que un pod almacene información que no se pierda al destruir
 
 ## Definiendo el almacenamiento
 
-Creamos el fichero:
+Creamos el fichero [nfs-pv.yaml](webapp-volumes/nfs-pv.yaml) para definir un persistent volume:
 
 ```yaml
 apiVersion: v1
@@ -35,6 +35,8 @@ spec:
     path: /srv/nfs
     server: 192.168.1.115
 ```
+
+Previamente hemos creado un share NFS exportado a todos los nodos del clúster.
 
 Definimos el persistent volume:
 
@@ -67,7 +69,7 @@ Events:        <none>
 [kubeadmin@master webapp-volumes]
 ```
 
-Para crear el **claim** y poder asignarle el volumen a un POD creamos el fichero:
+Para crear el **claim** y poder asignarle el volumen a un POD creamos el fichero [nfs-pvc.yaml](webapp-volumes/nfs-pvc.yaml):
 
 ```yaml
 apiVersion: v1
@@ -110,13 +112,15 @@ Events:        <none>
 [kubeadmin@master webapp-volumes]$ 
 ```
 
+Al hacer el **claim** se asigna el volumen a uno o varios pods, en este aso a uno. Si se quisiera asignar otro persistent volume para otro pod kubernetes no consideraría este ya que con el claim se encuentra asignado y no esta libre.
+
 > NOTA: [Persistent Volumes](https://kubernetes.io/docs/concepts/storage/persistent-volumes)
 
 > NOTA: [NFS volume example](https://github.com/kubernetes/examples/tree/master/staging/volumes/nfs)
 
 ## Creamos el deployment
 
-Basándonos en el de la aplicación que hemos creado anteriormente creamos un fichero yaml, incluyendo del deployment, service, ingress y el configmap:
+Basándonos en el de la aplicación que hemos creado anteriormente creamos el fichero yaml [webapp-volumes.yaml](webapp-volumes/webapp-volumes.yaml), incluyendo del deployment, service, ingress y el configmap:
 
 ```yaml
 apiVersion: apps/v1
