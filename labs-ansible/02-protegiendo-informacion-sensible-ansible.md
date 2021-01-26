@@ -140,7 +140,7 @@ localhost | SUCCESS => {
 
 ## Encriptando variables (Ejemplo)
 
-El playbook [clonar-git.yaml](ansible/clonar-git.yaml) se encarga de clonar un repositorio privado para lo cual hace falta la clave del usuario.
+El playbook [clonar-git.yaml](clonar-git.yaml) se encarga de clonar un repositorio privado para lo cual hace falta la clave del usuario.
 
 Para clonar el repositorio [https://github.com/jadebustos/devops](https://github.com/jadebustos/devops) la url que se utilizará:
 
@@ -168,7 +168,7 @@ Para ello encriptaremos la variable tal y como hemos visto reescribiendo la tare
     dest: "{{ target_dir }}"
 ```
 
-Donde hemos definido las variables en el fichero [clonerepo.yaml](ansible/group_vars/clonerepo.yaml).
+Donde hemos definido las variables en el fichero [clonerepo.yaml](group_vars/clonerepo.yaml).
 
 La contraseña de acceso la encriptamos en la variable **password** y almacenada en el fichero **group_vars/vault-file.yaml**:
 
@@ -338,7 +338,7 @@ $ANSIBLE_VAULT;1.1;AES256
 [jadebustos@archimedes ansible]$
 ```
 
-El playbook [deploy-amazon-instance.yaml][ansible/deploy-amazon-instance.yaml] es un ejemplo de como se utilizaría la encriptación de un fichero para proteger las credenciales:
+El playbook [deploy-amazon-instance.yaml][deploy-amazon-instance.yaml] es un ejemplo de como se utilizaría la encriptación de un fichero para proteger las credenciales:
 
 ```console
 [jadebustos@archimedes ansible]$ ansible-playbook -i hosts deploy-amazon-instance.yaml --vault-password-file password

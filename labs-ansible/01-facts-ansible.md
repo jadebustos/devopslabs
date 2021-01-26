@@ -79,7 +79,7 @@ También podemos utilizar el comando **jq** sobre el fichero de facts para extra
 
 ## Utilizando facts (Ejemplo)
 
-El playbook [configurar-red.yaml](ansible/configurar-red.yaml) recrea un fichero de configuración de red en **/tmp/ifcfg-nombre_interface** utilizando la información contenida en los facts basandose en el template [network.j2](ansible/roles/networkconf/templates/network.j2). El fichero de configuración sigue el formato utilizado en Red Hat y derivados:
+El playbook [configurar-red.yaml](configurar-red.yaml) recrea un fichero de configuración de red en **/tmp/ifcfg-nombre_interface** utilizando la información contenida en los facts basandose en el template [network.j2](roles/networkconf/templates/network.j2). El fichero de configuración sigue el formato utilizado en Red Hat y derivados:
 
 ```console
 [jadebustos@beast ansible]$ ansible-playbook -i hosts -l docker configurar-red.yaml 
