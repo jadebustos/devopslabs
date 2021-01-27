@@ -30,7 +30,7 @@ apache/  busybox/
 Para construir el container:
 
 ```console
-[root@lab-podman apache]# buildah bud -t webapp
+[root@lab-podman apache]# buildah bud -t webapp .
 STEP 1: FROM php:7-apache
 Getting image source signatures
 Copying blob 60b09083723b done  

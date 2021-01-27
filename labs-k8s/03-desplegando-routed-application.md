@@ -229,7 +229,7 @@ haproxy-controller     ingress-default-backend-78f5cc7d4c-jzfk8     1/1     Runn
 Veamos la configuración del **haproxy**:
 
 ```console
-/ $ / $ cd /etc/haproxy/
+/ $ cd /etc/haproxy/
 /etc/haproxy $ ls -lh
 total 12K    
 drwxr-xr-x    5 haproxy  haproxy       47 Jan 25 09:14 certs

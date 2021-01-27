@@ -131,7 +131,7 @@ LAST SEEN   TYPE      REASON                    OBJECT                         M
 Podemos consultar el yaml del pod:
 
 ```console
-[kubeadmin@master k8slab]$ kubectl get pod webapp-586c6d8b87-gccnl -o yaml > webapp-586c6d8b87-gccnl.yaml
+[kubeadmin@master first-app]$ kubectl get pod webapp-586c6d8b87-gccnl -o yaml > webapp-586c6d8b87-gccnl.yaml
 ```
 
 > TIP: Probar con **-o json**.
