@@ -12,7 +12,7 @@ El CLI no es necesario, pero si se quiere realizar alguna operación a nivel de 
 
 Para instalarlo una vez iniciada sesión si vamos a la esquina superior derecha y pinchamos en el circulo con una interrogación al lado del nombre del usuario nos apareceraá un menú en **Command Line Tools** tendremos los enlaces para descargar **oc** para nuestro sistema operativo.
 
-![cli](imgs/cli.png)
+![cli](../imgs/cli.png)
 
 ## Construyendo y desplegando una aplicación desde un Dockerfile
 
@@ -22,15 +22,15 @@ Hazte un fork del repositorio y sustituye la url por la tuya para realizar los c
 
 Una vez hemos iniciado la sesión en OpenShift cambiamos a la vista de **Developer**:
 
-![developer](imgs/developer-view.png)
+![developer](../imgs/developer-view.png)
 
 Pinchamos en **+Add** y luego seleccionamos **From Dockerfile**:
 
-![developer](imgs/dockerfile-deployment-01.png)
+![developer](../imgs/dockerfile-deployment-01.png)
 
 A continuación rellenamos los datos de la aplicación:
 
-![developer](imgs/dockerfile-deployment-02.png)
+![developer](../imgs/dockerfile-deployment-02.png)
 
 + **Git Repo URL** repositorio de git donde se encuentra el Dockerfile. Si el repositorio es privado en **Show Advanced Git Options** se pueden configurar más opciones.
 + **Dockerfile** ruta dentro del repositorio al Dockerfile.
@@ -38,11 +38,11 @@ A continuación rellenamos los datos de la aplicación:
 + **Application Name** nombre de la aplicación.
 + **Name** etiqueta que se utilizará para etiquetar todos los recursos asociados a la aplicación.
 
-![developer](imgs/dockerfile-deployment-03.png)
+![developer](../imgs/dockerfile-deployment-03.png)
 
 + Como tenemos definida una variable de entorno, tendremos que especificarla y lo haremos en **Deployment**.
 
-![developer](imgs/dockerfile-deployment-04.png)
+![developer](../imgs/dockerfile-deployment-04.png)
 
 + Añadimos las variables con los valores.
 
@@ -50,15 +50,15 @@ A continuación rellenamos los datos de la aplicación:
 
 Nos puede sar un error similar a este:
 
-![create](imgs/create-error.png)
+![create](../imgs/create-error.png)
 
 Cambiar a la vista de **Administrador** e ir a **Workloads -> Pods**:
 
-![create](imgs/webapp-build-error-01.png)
+![create](../imgs/webapp-build-error-01.png)
 
 Si pinchamos sobre el Pod que tiene el error y vamos a **Logs** podemos ver el error:
 
-![create](imgs/webapp-build-error-02.png)
+![create](../imgs/webapp-build-error-02.png)
 
 Para tener más información y poder depurar lo mejor es irse al CLI:
 
@@ -84,7 +84,7 @@ $
 
 Si vamos ahora a la vista de **Administrador** y a **Workloads -> Pods** podemos ver el pod que ha lanzado el proceso de debug:
 
-![create](imgs/webapp-build-error-03.png)
+![create](../imgs/webapp-build-error-03.png)
 
 El problema que estamos teniendo es que como el ENTRYPOINT no se ejecuta como root no va a poder sobreescribir el fichero de configuración del virtualhost y por lo tanto el apache se va a intentar arrancar en el puerto 80 que al ser un puerto privilegiado, por debajo del 1024, solo el usuario root puede levantar servicios en esos puertos.
 
@@ -113,19 +113,19 @@ La guía para crear imágenes para OpenShift se puede encontrar en la [documenta
 
 Borramos el deployment y volvemos a desplegar pero especificando un puerto por encima del 1024:
 
-![create](imgs/webapp-build-error-04.png)
+![create](../imgs/webapp-build-error-04.png)
 
 ## Autenticación para utilizar el CLI
 
 El siguiente flujo nos lleva al comando oc para hacer login:
 
-![developer](imgs/cli-auth-01.png)
+![developer](../imgs/cli-auth-01.png)
 
-![developer](imgs/cli-auth-02.png)
+![developer](../imgs/cli-auth-02.png)
 
-![developer](imgs/cli-auth-03.png)
+![developer](../imgs/cli-auth-03.png)
 
-![developer](imgs/cli-auth-04.png)
+![developer](../imgs/cli-auth-04.png)
 
 ## Borrando un deployment completo desde el CLI
 

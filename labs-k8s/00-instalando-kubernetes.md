@@ -47,7 +47,7 @@ DNS1=192.168.1.200
 DOMAIN=acme.es
 ```
 
-> NOTA: El nombre del interface de red puede cambiar.
+> ![WARNING](../imgs/warning-icon.png): El nombre del interface de red puede cambiar.
 
 Una vez arrancadas las máquinas, nos aseguramos que estan actualizadas a último nivel ejecutando en cada una de ellas:
 
@@ -83,7 +83,7 @@ Instalamos los siguientes paquetes:
 [root@host ~]# dnf install nfs-utils nfs4-acl-tools wget -y
 ```
 
-> TIP: Una buena práctica es crear una VMs aplicar estas tareas que se tienen que realizar en todas las máquinas. Dejarla configurada por dhcp y sin configurar el hostname. Una vez terminada la configuración  se hace el [sellado](doc-apoyo/sellado-vm.md) y las máquinas se clonan a partir de este disco. De esta forma estas tareas se hacen solo una vez y no una vez por máquina.
+> ![TIP](../imgs/tip-icon.png): Una buena práctica es crear una VMs aplicar estas tareas que se tienen que realizar en todas las máquinas. Dejarla configurada por dhcp y sin configurar el hostname. Una vez terminada la configuración  se hace el [sellado](doc-apoyo/sellado-vm.md) y las máquinas se clonan a partir de este disco. De esta forma estas tareas se hacen solo una vez y no una vez por máquina.
 
 ## Instalación del servidor NFS
 
@@ -265,9 +265,9 @@ success
 [root@host ~]# 
 ```
 
-> NOTA: Los Pods se ejecutan dentro de su propia red aislados de la red en la que se encuentran las máquinas, pero es necesario que se puedan comunicar entre ellos. Para ello kubernetes utiliza un protocolo de llamado [VXLAN](https://en.wikipedia.org/wiki/Virtual_Extensible_LAN).
+> ![INFORMATION](../imgs/information-icon.png): Los Pods se ejecutan dentro de su propia red aislados de la red en la que se encuentran las máquinas, pero es necesario que se puedan comunicar entre ellos. Para ello kubernetes utiliza un protocolo de llamado [VXLAN](https://en.wikipedia.org/wiki/Virtual_Extensible_LAN).
 
-> NOTA: Existen otros protocolos para el mismo propósito como son [GRE](https://en.wikipedia.org/wiki/Generic_Routing_Encapsulation) y [Geneve](https://en.wikipedia.org/wiki/Generic_Networking_Virtualization_Encapsulation) que son utilizados por otras tecnologías cloud como Openstack además de utilizar VXLAN también.
+> ![INFORMATION](../imgs/information-icon.png): Existen otros protocolos para el mismo propósito como son [GRE](https://en.wikipedia.org/wiki/Generic_Routing_Encapsulation) y [Geneve](https://en.wikipedia.org/wiki/Generic_Networking_Virtualization_Encapsulation) que son utilizados por otras tecnologías cloud como Openstack además de utilizar VXLAN también.
 
 Para permitir que kubernetes maneje correctamente el tráfico con el cortafuegos:
 
@@ -340,7 +340,7 @@ UUID=35d72d21-6f35-4e52-ac4d-523a28ac5b5d /boot                   xfs     defaul
 [root@host ~]# 
 ```
 
-> NOTA: Se desactiva para no perder rendimiento al hacer swap, ademas en el espacio de swap se puede volcar información de diferentes entornos que deberían estar aislados y se perdería el aislamiento. [Más información](https://github.com/kubernetes/kubernetes/issues/53533)
+> ![IMPORTANT](../imgs/important-icon.png): Se desactiva para no perder rendimiento al hacer swap, ademas en el espacio de swap se puede volcar información de diferentes entornos que deberían estar aislados y se perdería el aislamiento. [Más información](https://github.com/kubernetes/kubernetes/issues/53533)
 
 Instalamos docker que será el engine para ejecutar contenedores:
 
@@ -355,7 +355,7 @@ Created symlink /etc/systemd/system/multi-user.target.wants/docker.service → /
 [root@host ~]#
 ```
 
-> NOTA: Instalamos la version **19.03** de docker por que es la última testeada en kubernetes.
+> ![INFORMATION](../imgs/information-icon.png): Instalamos la version **19.03** de docker por que es la última testeada en kubernetes.
 
 Configuramos el repositorio de kubernetes:
 
@@ -415,7 +415,7 @@ success
 | TCP | Inbound  | 10252 | kube-controller-manager| self |
 | TCP | Inbound  | 10255 | Statistics | Master nodes |
 
-> NOTA: Como ese puerto se utilizar para recoger estadísticas solo debería ser poder accedido por los masters.
+> ![INFORMATION](../imgs/information-icon.png): Como ese puerto se utilizar para recoger estadísticas solo debería ser poder accedido por los masters.
 
 Configuramos **kudeadm**:
 
@@ -442,7 +442,7 @@ success
 [root@master ~]
 ```
 
-> NOTA: Esto no es una buena práctica. En un entorno en producción deberíamos permitir únicamente el tráfico necesario y no todo el tráfico entre el master y los workers.
+> ![IMPORTANT](../imgs/important-icon.png): Esto no es una buena práctica. En un entorno en producción deberíamos permitir únicamente el tráfico necesario y no todo el tráfico entre el master y los workers.
 
 Permitimos el acceso de los contenedores a localhost:
 
@@ -505,13 +505,13 @@ kubeadm join 192.168.1.110:6443 --token gmk4le.8gsfpknu99k78qut \
 [root@master ~]# 
 ```
 
-> IMPORTANTE: Guarda el comando kubeadm ya que lo necesitarás para unir los workers al clúster.
+> ![IMPORTANT](../imgs/important-icon.png): Guarda el comando kubeadm ya que lo necesitarás para unir los workers al clúster.
 
 Es muy importante que la red que utilicemos para los PODs tenga IPs suficientes para el número de contenedores que queramos arrancar y no debe tener solapamiento con las redes ya existentes.
 
 En este caso la red que hemos configurado para los pods es de Clase C con una cantidad total de IPs de **65.536**.
 
-> TIP: [Installing a POD network](https://kubernetes.io/docs/setup/production-environment/tools/kubeadm/create-cluster-kubeadm/#pod-network)
+> ![TIP](../imgs/tip-icon.png): [Installing a POD network](https://kubernetes.io/docs/setup/production-environment/tools/kubeadm/create-cluster-kubeadm/#pod-network)
 
 Vamos a autorizar al usuario **root** acceder al cluster para terminar la configuración:
 
@@ -661,9 +661,9 @@ Podemos ver la configuración del master de red:
 [root@master ~]# 
 ```
 
-> NOTA: [Calico Quickstart](https://docs.projectcalico.org/getting-started/kubernetes/quickstart)
+> ![INFORMATION](../imgs/information-icon.png): [Calico Quickstart](https://docs.projectcalico.org/getting-started/kubernetes/quickstart)
 
-> NOTA: [Calico Requirements](https://docs.projectcalico.org/getting-started/kubernetes/requirements)
+> ![INFORMATION](../imgs/information-icon.png): [Calico Requirements](https://docs.projectcalico.org/getting-started/kubernetes/requirements)
 
 ## Configurando los workers
 
@@ -806,7 +806,7 @@ service/haproxy-ingress created
 [root@master ~]#
 ```
 
-> NOTA: Existen diferentes ingress controller que se pueden desplegar e incluso podemos desplegar varios que convivan en kubernetes. En este caso será necesario utilizar [annotations](https://kubernetes.io/docs/concepts/overview/working-with-objects/annotations/) para especificar que ingress controller se deberá utilizar en cada deployment.
+> ![NOTA](../imgs/note-icon.png): Existen diferentes ingress controller que se pueden desplegar e incluso podemos desplegar varios que convivan en kubernetes. En este caso será necesario utilizar [annotations](https://kubernetes.io/docs/concepts/overview/working-with-objects/annotations/) para especificar que ingress controller se deberá utilizar en cada deployment.
 
 Se crea un namespace para el ingress controller:
 
@@ -846,9 +846,9 @@ Según lo anterior tenemos:
 + El puerto del host **31967** se encuentra mapeado al **443** de los contenedores.
 + El puerto del host **31588** se encuentra mapeado al **1024** de los contenedores. Este puerto se utiliza para estadísticas de haproxy.
 
-> NOTA: [Ingress Controller](https://kubernetes.io/docs/concepts/services-networking/ingress-controllers/) 
+> ![INFORMATION](../imgs/information-icon.png): [Ingress Controller](https://kubernetes.io/docs/concepts/services-networking/ingress-controllers/) 
 
-> NOTA: [HAproxy ingress controller](https://github.com/haproxytech/kubernetes-ingress#readme)
+> ![INFORMATION](../imgs/information-icon.png): [HAproxy ingress controller](https://github.com/haproxytech/kubernetes-ingress#readme)
 
 ## Creamos un usuario no administrador
 

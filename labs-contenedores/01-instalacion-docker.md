@@ -2,16 +2,16 @@
 
 ## Desplegando la máquina virtual
 
-Iremos al directorio [terraform/kvm/docker](terraform/kvm/docker) donde tenemos el plan de terraform para desplegar una máquina virtual en KVM.
+Iremos al directorio [terraform/kvm/docker](../terraform/kvm/docker) donde tenemos el plan de terraform para desplegar una máquina virtual en KVM.
 
-La configuración de la máquina virtual, como claves ssh, dirección de red la haremos mediante [cloud-init](doc-apoyo/cloud-init.md).
+La configuración de la máquina virtual, como claves ssh, dirección de red la haremos mediante [cloud-init](../doc-apoyo/cloud-init.md).
 
 Hemos creado dos ficheros de cloud-init:
 
-+ [Configuración de usuario](terraform/kvm/docker/user_config.cfg)
-+ [Configuracion de red](terraform/kvm/docker/network_config.cfg)
++ [Configuración de usuario](../terraform/kvm/docker/user_config.cfg)
++ [Configuracion de red](../terraform/kvm/docker/network_config.cfg)
 
-Se puede consultar la [configuración de cloud-init](file:///home/jadebustos/src/terraform-provider-libvirt/docs/build/r/cloudinit.html#example-usage) que admite el provider que estamos utilizando.
+Se puede consultar la configuración de cloud-init que admite el provider que estamos utilizando.
 
 Una vez en el directorio para desplegar el plan de terraform:
 
@@ -182,7 +182,7 @@ Apply complete! Resources: 4 added, 0 changed, 0 destroyed.
 
 ## Instalando docker
 
-Para instalar docker vamos al directorio [ansible](ansible):
+Para instalar docker y los ejemplos vamos al directorio [ansible](../ansible):
 
 ```console
 [jadebustos@beast ansible]$ ansible-playbook -i hosts -l docker install-docker.yaml 

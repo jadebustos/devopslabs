@@ -108,15 +108,15 @@ CONTAINER ID  IMAGE                    COMMAND  CREATED        STATUS           
 | Podman | podman run -itd --env PORT -p 8080:$PORT -v /root/build/apache/custom-php/:/var/www/public:Z webapp |
 
 
-> NOTA: [buildahimage](https://github.com/containers/buildah/tree/master/contrib/buildahimage)
+> ![INFORMATION](../imgs/information-icon.png): [buildahimage](https://github.com/containers/buildah/tree/master/contrib/buildahimage)
 
-> NOTA: [Getting started with buildah](https://developers.redhat.com/blog/2021/01/11/getting-started-with-buildah/)
+> ![INFORMATION](../imgs/information-icon.png): [Getting started with buildah](https://developers.redhat.com/blog/2021/01/11/getting-started-with-buildah/)
 
-> NOTA: [Podman and buildah for docker users](https://developers.redhat.com/blog/2019/02/21/podman-and-buildah-for-docker-users/)
+> ![INFORMATION](../imgs/information-icon.png): [Podman and buildah for docker users](https://developers.redhat.com/blog/2019/02/21/podman-and-buildah-for-docker-users/)
 
-> NOTA: [Best practices for running buildah in a container](https://developers.redhat.com/blog/2019/08/14/best-practices-for-running-buildah-in-a-container/)
+> ![INFORMATION](../imgs/information-icon.png): [Best practices for running buildah in a container](https://developers.redhat.com/blog/2019/08/14/best-practices-for-running-buildah-in-a-container/)
 
-> NOTA: [Build and run buildah inside a podman container](https://developers.redhat.com/blog/2019/04/04/build-and-run-buildah-inside-a-podman-container/)
+> ![INFORMATION](../imgs/information-icon.png): [Build and run buildah inside a podman container](https://developers.redhat.com/blog/2019/04/04/build-and-run-buildah-inside-a-podman-container/)
 
 ## Podman
 
@@ -142,9 +142,9 @@ docker.io/library/php      7-apache  2d5d57e31bd0  6 days ago      423 MB
 [root@lab-podman apache]# 
 ```
 
-> NOTA: [Podman for docker users](https://dzone.com/articles/podman-for-docker-users)
+> ![INFORMATION](../imgs/information-icon.png): [Podman for docker users](https://dzone.com/articles/podman-for-docker-users)
 
-> NOTA: [Transitioning from docker to podman](https://developers.redhat.com/blog/2020/11/19/transitioning-from-docker-to-podman/)
+> ![INFORMATION](../imgs/information-icon.png): [Transitioning from docker to podman](https://developers.redhat.com/blog/2020/11/19/transitioning-from-docker-to-podman/)
 
 ## Subiendo imágenes con podman a un repositorio remoto
 
@@ -266,6 +266,6 @@ $ skopeo sync --src docker --dest docker registry.example.com/busybox registry.m
 + **registry.example.com/busybox** indica el registry y la imagen que vamos a replicar, **busybox**.
 + **registry.mycompany.com** indica el registry al cual se sincronizará la imagen.
 
-> NOTA: [Más información sobre la sincronización de imágenes](https://github.com/containers/skopeo/blob/master/docs/skopeo-sync.1.md)
+> ![INFORMATION](../imgs/information-icon.png): [Más información sobre la sincronización de imágenes](https://github.com/containers/skopeo/blob/master/docs/skopeo-sync.1.md)
 
-> NOTA: [Skopeo](https://github.com/containers/skopeo)
+> ![INFORMATION](../imgs/information-icon.png): [Skopeo](https://github.com/containers/skopeo)

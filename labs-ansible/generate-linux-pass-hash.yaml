@@ -1,0 +1,31 @@
+---
+
+- hosts: localhost
+  gather_facts: false
+  vars_prompt:
+
+    # pregunta por teclado una contraseña y la almacena en la variable password
+    # con private controlamos si queremos que la contraseña introducida se vea en la terminal al escribirla,
+    # con esta configuración no se verá
+    - name: password
+      prompt: Introduce una contraseña para generar el hash
+      private: yes
+
+  tasks:
+
+    # generamos un valor aleatorio para usarlo como salt y lo guardamos en una variable
+    # con delegate_to ejecutamos la tarea en local
+    - name: generamos un valor aleatorio como salt para generar la contraseña
+      command: /usr/bin/openssl rand -base64 32
+      register: random_pass
+      delegate_to: 127.0.0.1
+
+    - name: creamos el hash (sha512)
+      command: "/usr/bin/openssl passwd -6 -salt {{ random_pass.stdout }} {{ password }}"
+      register: password_sha512
+      delegate_to: 127.0.0.1
+
+    - name: debug
+      debug: msg="El hash del password introducido es {{ password_sha512.stdout }}"
+      delegate_to: 127.0.0.1
+

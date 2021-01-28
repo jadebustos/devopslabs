@@ -47,7 +47,7 @@ Los namespaces nos dan un espacio donde crear recursos y se utilizan para aislar
 
 Si no especificamos un namespace en concreto las operaciones se realizarán en el namespace **default**. Para indicar un namespace utilizaremos **-namespace=<MI NAMESPACE>.
 
-> NOTA: [Namespaces](https://kubernetes.io/docs/concepts/overview/working-with-objects/namespaces/)
+> ![INFORMATION](../imgs/information-icon.png): [Namespaces](https://kubernetes.io/docs/concepts/overview/working-with-objects/namespaces/)
 
 ## PODs
 
@@ -105,7 +105,7 @@ tigera-operator      tigera-operator-657cc89589-wqgd6           1/1     Running 
 [kubeadmin@master k8slab]$
 ```
 
-> NOTA: [PODs](https://kubernetes.io/docs/concepts/workloads/pods/)
+> ![INFORMATION](../imgs/information-icon.png): [PODs](https://kubernetes.io/docs/concepts/workloads/pods/)
 
 ## Deployments
 
@@ -123,7 +123,7 @@ tigera-operator      tigera-operator           1/1     1            1           
 [kubeadmin@master k8slab]$
 ```
 
-> NOTA: [Deployments](https://kubernetes.io/docs/concepts/workloads/controllers/deployment/)
+> ![INFORMATION](../imgs/information-icon.png): [Deployments](https://kubernetes.io/docs/concepts/workloads/controllers/deployment/)
 
 ## DaemonSets
 
@@ -137,7 +137,7 @@ kube-system     kube-proxy    3         3         3       3            3        
 [kubeadmin@master k8slab]$ 
 ```
 
-> NOTA: [DaemonSet](https://kubernetes.io/docs/concepts/workloads/controllers/daemonset/)
+> ![INFORMATION](../imgs/information-icon.png): [DaemonSet](https://kubernetes.io/docs/concepts/workloads/controllers/daemonset/)
 
 ## Obteniendo información de objetos
 
@@ -232,4 +232,4 @@ status:
 [kubeadmin@master k8slab]$  
 ```
 
-> NOTA: También podemos utilizar **-o json**.
+> ![NOTA](../imgs/note-icon.png): También podemos utilizar **-o json**.

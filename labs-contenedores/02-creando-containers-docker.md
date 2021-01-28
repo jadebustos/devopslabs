@@ -58,7 +58,7 @@ Instanciamos una nueva imagen, pero esta vez ejecutamos una shell dentro del con
 + **--it** indica que abra una sesión interactiva y que le asigne una TTY (terminal).
 + **--rm** indica que se borre la imagen del contendor al terminar.
 
-> NOTA: **docker run --help** para ver mas opciones del comando **run**.
+> ![NOTA](../imgs/note-icon.png): **docker run --help** para ver mas opciones del comando **run**.
 
 Si nos conectamos por ssh a la vm:
 
@@ -98,7 +98,7 @@ CONTAINER ID   IMAGE     COMMAND   CREATED   STATUS    PORTS     NAMES
 
 ## Creando una imagen simple
 
-Vamos a crear una imagen basada en la imagen **busybox** que va a ejecutar el script [myscript.sh](ansible/roles/container-examples/files/myscript.sh).
+Vamos a crear una imagen basada en la imagen **busybox** que va a ejecutar el script [myscript.sh](../ansible/roles/container-examples/files/myscript.sh).
 
 Nos conectamos a la máquina de docker:
 
@@ -113,7 +113,7 @@ total 8.0K
 [root@lab-docker busibox]#
 ```
 
-El fichero que se encarga de definir la imagen es [Dockerfile](ansible/roles/container-examples/files/Dockerfile-busybox):
+El fichero que se encarga de definir la imagen es [Dockerfile](../ansible/roles/container-examples/files/Dockerfile-busybox):
 
 ```dockerfile
 FROM busybox
@@ -172,7 +172,7 @@ CONTAINER ID   IMAGE     COMMAND   CREATED   STATUS    PORTS     NAMES
 
 Podemos observar que después de unos segundos, 60, termina la ejecución del contenedor.
 
-Cambiemos **myscript.sh** por **myinfinitescript.sh** en el [Dockerfile](ansible/roles/container-examples/files/Dockerfile-busybox) de tal forma que:
+Cambiemos **myscript.sh** por **myinfinitescript.sh** en el [Dockerfile](../ansible/roles/container-examples/files/Dockerfile-busybox) de tal forma que:
 
 ```dockerfile
 FROM busybox 
@@ -345,7 +345,7 @@ total 8.0K
 [root@lab-docker apache]#
 ```
 
-Vamos a crear una aplicación web. El [Dockerfile](ansible/roles/container-examples/files/Dockerfile):
+Vamos a crear una aplicación web. El [Dockerfile](../ansible/roles/container-examples/files/Dockerfile):
 
 ```dockerfile
 FROM php:7-apache
@@ -377,7 +377,7 @@ php          7-apache   2d5d57e31bd0   5 days ago          414MB
 [root@lab-docker apache]#
 ```
 
-> NOTA: [Buenas prácticas para crear imágenes de containers](https://docs.openshift.com/container-platform/4.6/openshift_images/create-images.html). Aunque se centra en OpenShift es aplicable a cualquier tecnología de contenedores OCI.
+> ![INFORMATION](../imgs/information-icon.png): [Buenas prácticas para crear imágenes de containers](https://docs.openshift.com/container-platform/4.6/openshift_images/create-images.html). Aunque se centra en OpenShift es aplicable a cualquier tecnología de contenedores OCI.
 
 Creamos un container a partir de la imagen:
 
@@ -398,7 +398,7 @@ Ahora que tenemos el contenedor corriendo obtenemos su ip:
 [root@lab-docker apache]# 
 ```
 
-> TIP: **docker inspect <CONTAINER>**
+> ![TIP](../imgs/tip-icon.png): **docker inspect CONTAINER**
 
 En linux existe una utilidad llamada **jq** que nos permite extraer información de un json. No se suele instalar por defecto, normalmente el paquete se llama **jq**. Si está instalada:
 
@@ -434,7 +434,7 @@ CONTAINER ID   IMAGE     COMMAND          CREATED              STATUS           
 Ahora la aplicación será accesible por el puerto **8080** a través de la ip de docker.frontend.lab:
 
 ```console
-[jadebustos@beast apache]$ links2 http://docker.frontend.lab:8080
+[jadebustos@beast apache]$ links2 http://lab-docker.frontend.lab:8080
 ```
 Cuando mapeamos un puerto docker incluye una regla en IPTABLES para permitir el tráfico y se encargar del reenvio del tráfico entre los puertos:
 
@@ -484,9 +484,9 @@ CONTAINER ID   IMAGE     COMMAND          CREATED         STATUS         PORTS  
 
 + **-v /root/build/apache/custom-php/:/var/www/public:Z** si la máquina que ejecuta el engine de containers, docker en este caso, tiene SELinux activado se debe utilizar **:Z** para que el contenedor internamente se etiquete con el contexto de SELinux que se ejecuta el contenedor y de esta forma evitar que SELinux bloquee el correcto funcionamiento.
 
-> TIP: [Volumes](https://docs.docker.com/storage/volumes/)
+> ![INFORMATION](../imgs/information-icon.png): [Volumes](https://docs.docker.com/storage/volumes/)
 
-> TIP: [Bind Mounts](https://docs.docker.com/storage/bind-mounts/)
+> ![INFORMATION](../imgs/information-icon.png): [Bind Mounts](https://docs.docker.com/storage/bind-mounts/)
 
 Como hemos definido una variable de entorno en el Dockerfile podemos utilizarla para parametrizaciones dentro del container:
 

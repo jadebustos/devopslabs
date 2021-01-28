@@ -114,9 +114,9 @@ Events:        <none>
 
 Al hacer el **claim** se asigna el volumen a uno o varios pods, en este aso a uno. Si se quisiera asignar otro persistent volume para otro pod kubernetes no consideraría este ya que con el claim se encuentra asignado y no esta libre.
 
-> NOTA: [Persistent Volumes](https://kubernetes.io/docs/concepts/storage/persistent-volumes)
+> ![INFORMATION](../imgs/information-icon.png): [Persistent Volumes](https://kubernetes.io/docs/concepts/storage/persistent-volumes)
 
-> NOTA: [NFS volume example](https://github.com/kubernetes/examples/tree/master/staging/volumes/nfs)
+> ![INFORMATION](../imgs/information-icon.png): [NFS volume example](https://github.com/kubernetes/examples/tree/master/staging/volumes/nfs)
 
 ## Creamos el deployment
 

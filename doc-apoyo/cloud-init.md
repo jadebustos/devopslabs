@@ -25,7 +25,7 @@ Será necesario activar los servicios de cloud-init:
 # systemctl enable cloud-final.service
 ```
 
-> **NOTA**: No instalar **cloud-init** en el hipervisor.
+> ![IMPORTANT](../imgs/important-icon.png): No instalar **cloud-init** en el hipervisor.
 
 ## Recursos
 

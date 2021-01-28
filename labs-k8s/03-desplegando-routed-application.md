@@ -208,11 +208,11 @@ Como obtenemos un código **HTTP/1.1 200 OK** ya estaría accesible desde el ext
 
 Si hacemos resolver **foo.bar** a la dirección ip del mater **192.168.1.110** podremos acceder a nuestra aplicación accediendo a **http://foo.bar:30432/webapp**.
 
-> NOTE: [Service](https://kubernetes.io/docs/concepts/services-networking/service/)
+> ![INFORMATION](../imgs/information-icon.png): [Service](https://kubernetes.io/docs/concepts/services-networking/service/)
 
-> NOTE: [HAproxy Ingress](https://www.haproxy.com/documentation/kubernetes/latest/)
+> ![INFORMATION](../imgs/information-icon.png): [HAproxy Ingress](https://www.haproxy.com/documentation/kubernetes/latest/)
 
-> NOTE: [Dissecting the haproxy kubernetes ingress controller](https://www.haproxy.com/blog/dissecting-the-haproxy-kubernetes-ingress-controller/)
+> ![INFORMATION](../imgs/information-icon.png): [Dissecting the haproxy kubernetes ingress controller](https://www.haproxy.com/blog/dissecting-the-haproxy-kubernetes-ingress-controller/)
 
 ## Como funciona el Ingress
 

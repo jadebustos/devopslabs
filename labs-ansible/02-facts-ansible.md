@@ -75,7 +75,7 @@ También podemos utilizar el comando **jq** sobre el fichero de facts para extra
 [jadebustos@beast facts]$  
 ```
 
-> NOTA: [Ansible Facts](https://docs.ansible.com/ansible/latest/user_guide/playbooks_vars_facts.html)
+> ![INFORMATION](../imgs/information-icon.png): [Ansible Facts](https://docs.ansible.com/ansible/latest/user_guide/playbooks_vars_facts.html)
 
 ## Utilizando facts (Ejemplo)
 
