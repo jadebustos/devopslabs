@@ -58,7 +58,7 @@ Instanciamos una nueva imagen, pero esta vez ejecutamos una shell dentro del con
 + **--it** indica que abra una sesión interactiva y que le asigne una TTY (terminal).
 + **--rm** indica que se borre la imagen del contendor al terminar.
 
-> ![NOTA](../imgs/note-icon.png): **docker run --help** para ver mas opciones del comando **run**.
+> ![NOTA](../imgs/note-icon.png) **docker run --help** para ver mas opciones del comando **run**.
 
 Si nos conectamos por ssh a la vm:
 
@@ -377,7 +377,7 @@ php          7-apache   2d5d57e31bd0   5 days ago          414MB
 [root@lab-docker apache]#
 ```
 
-> ![INFORMATION](../imgs/information-icon.png): [Buenas prácticas para crear imágenes de containers](https://docs.openshift.com/container-platform/4.6/openshift_images/create-images.html). Aunque se centra en OpenShift es aplicable a cualquier tecnología de contenedores OCI.
+> ![INFORMATION](../imgs/information-icon.png) [Buenas prácticas para crear imágenes de containers](https://docs.openshift.com/container-platform/4.6/openshift_images/create-images.html). Aunque se centra en OpenShift es aplicable a cualquier tecnología de contenedores OCI.
 
 Creamos un container a partir de la imagen:
 
@@ -398,7 +398,7 @@ Ahora que tenemos el contenedor corriendo obtenemos su ip:
 [root@lab-docker apache]# 
 ```
 
-> ![TIP](../imgs/tip-icon.png): **docker inspect CONTAINER**
+> ![TIP](../imgs/tip-icon.png) **docker inspect CONTAINER**
 
 En linux existe una utilidad llamada **jq** que nos permite extraer información de un json. No se suele instalar por defecto, normalmente el paquete se llama **jq**. Si está instalada:
 
@@ -484,9 +484,9 @@ CONTAINER ID   IMAGE     COMMAND          CREATED         STATUS         PORTS  
 
 + **-v /root/build/apache/custom-php/:/var/www/public:Z** si la máquina que ejecuta el engine de containers, docker en este caso, tiene SELinux activado se debe utilizar **:Z** para que el contenedor internamente se etiquete con el contexto de SELinux que se ejecuta el contenedor y de esta forma evitar que SELinux bloquee el correcto funcionamiento.
 
-> ![INFORMATION](../imgs/information-icon.png): [Volumes](https://docs.docker.com/storage/volumes/)
+> ![INFORMATION](../imgs/information-icon.png) [Volumes](https://docs.docker.com/storage/volumes/)
 
-> ![INFORMATION](../imgs/information-icon.png): [Bind Mounts](https://docs.docker.com/storage/bind-mounts/)
+> ![INFORMATION](../imgs/information-icon.png) [Bind Mounts](https://docs.docker.com/storage/bind-mounts/)
 
 Como hemos definido una variable de entorno en el Dockerfile podemos utilizarla para parametrizaciones dentro del container:
 

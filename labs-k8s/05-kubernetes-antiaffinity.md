@@ -21,7 +21,7 @@ webapp-routed-865bc5c6b4-wh8gx   0/1     Running   0          12s   192.169.112.
 [kubeadmin@master webapp-antiaffinity]$
 ```
 
-> ![NOTA](../imgs/note-icon.png): Habíamos visto como escalar un deployment con **kubectl edit deployment webapp-routed --namespace=webapp-routed**.
+> ![NOTA](../imgs/note-icon.png) Habíamos visto como escalar un deployment con **kubectl edit deployment webapp-routed --namespace=webapp-routed**.
 
 Vemos que los dos contenedores se encuentran en el mismo nodo.
 
@@ -210,13 +210,13 @@ LAST SEEN   TYPE      REASON                 OBJECT                             
 [kubeadmin@master webapp-antiaffinity]$ 
 ```
 
-> ![INFORMATION](../imgs/information-icon.png): [Assign pod to node](https://kubernetes.io/docs/concepts/scheduling-eviction/assign-pod-node/)
+> ![INFORMATION](../imgs/information-icon.png) [Assign pod to node](https://kubernetes.io/docs/concepts/scheduling-eviction/assign-pod-node/)
 
-> ![INFORMATION](../imgs/information-icon.png): [POD Lifecycle](https://kubernetes.io/docs/concepts/workloads/pods/pod-lifecycle/)
+> ![INFORMATION](../imgs/information-icon.png) [POD Lifecycle](https://kubernetes.io/docs/concepts/workloads/pods/pod-lifecycle/)
 
-> ![INFORMATION](../imgs/information-icon.png): [Pod Topology Spread Constraints](https://kubernetes.io/docs/concepts/workloads/pods/pod-topology-spread-constraints/)
+> ![INFORMATION](../imgs/information-icon.png) [Pod Topology Spread Constraints](https://kubernetes.io/docs/concepts/workloads/pods/pod-topology-spread-constraints/)
 
-> ![INFORMATION](../imgs/information-icon.png): [Advanced Scheduling in Kubernetes](https://kubernetes.io/blog/2017/03/advanced-scheduling-in-kubernetes/)
+> ![INFORMATION](../imgs/information-icon.png) [Advanced Scheduling in Kubernetes](https://kubernetes.io/blog/2017/03/advanced-scheduling-in-kubernetes/)
 
 ## Affinity
 

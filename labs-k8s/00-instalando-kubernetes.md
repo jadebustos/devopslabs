@@ -47,7 +47,7 @@ DNS1=192.168.1.200
 DOMAIN=acme.es
 ```
 
-> ![WARNING](../imgs/warning-icon.png): El nombre del interface de red puede cambiar.
+> ![WARNING](../imgs/warning-icon.png) El nombre del interface de red puede cambiar.
 
 Una vez arrancadas las máquinas, nos aseguramos que estan actualizadas a último nivel ejecutando en cada una de ellas:
 
