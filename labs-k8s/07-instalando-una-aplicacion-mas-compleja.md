@@ -662,8 +662,6 @@ Para solucionar esto hay varias alternativas:
   ```
   Luego habría que modificar el código html para que el script de arranque modificará el código html cogiendo el valor de la variable de entorno **ROUTE_PATH**.
 
-+ Reescribir la ruta para que las rutas coincidan.
-
 + Eliminar la ruta **/game** en el Ingress. La definición del Ingress de la aplicación sería:
 
   ```yaml
@@ -806,7 +804,7 @@ spec:
               number: 80
 ```
 
-Vemos que tenemos un rewrite, [path-rewrite](https://www.haproxy.com/documentation/kubernetes/1.4.5/configuration/ingress/), que reescribe la URL. Como es la única reescritura que hemos encontrado vamos a probar a eliminarla y relanzar el despliegue:
+Vemos que tenemos un rewrite, [path-rewrite](https://www.haproxy.com/documentation/kubernetes/1.4.5/configuration/ingress/), que reescribe la URL. Como es la única reescritura que hemos encontrado vamos a probar a eliminarla y relanzar el despliegue utilizando [game.yaml](2048/-game/game.yaml):
 
 ```console
 [kubeadmin@master 2048-game]$ kubectl delete namespace game
@@ -820,6 +818,11 @@ ingress.networking.k8s.io/game created
 configmap/haproxy-configmap created
 [kubeadmin@master 2048-game]$ 
 ```
+
+> ![INFORMATION](../imgs/information-icon.png) [Annotations](https://kubernetes.io/es/docs/concepts/overview/working-with-objects/annotations/)
+
+> ![INFORMATION](../imgs/information-icon.png) [Utilizando Annotations en el Ingress Controller](https://www.haproxy.com/documentation/kubernetes/1.4.5/configuration/ingress/)
+
 Ataquemos al Ingress Controller y al enpoint interno a ver si hay cambios:
 
 ```console
