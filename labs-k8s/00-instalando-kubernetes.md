@@ -507,7 +507,7 @@ kubeadm join 192.168.1.110:6443 --token gmk4le.8gsfpknu99k78qut \
 
 > ![IMPORTANT](../imgs/important-icon.png) Guarda el comando kubeadm ya que lo necesitarás para unir los workers al clúster.
 
-> ![IMPORTANT](../imgs/important-icon.png) Si automatizas el despliegue de kubernetes con ansible necesitarás guardar la salida del último comando para poder añadir workers al cluster. Como en la ejecución de ansible no se ve la salida del comando podemos almacenar la salida del comando en una variable y mostrarla. En [../labs-ansible/01-playbooks.md](https://github.com/jadebustos/devopslabs/blob/master/labs-ansible/01-playbooks.md) se puede ver un ejemplo de un playbook que almacena la salida de un comando en una variable y luego se imprime en la salida estándar el valor de dicha variable.
+> ![TIP](../imgs/tip-icon.png) Si automatizas el despliegue de kubernetes con ansible necesitarás guardar la salida del último comando para poder añadir workers al cluster. Como en la ejecución de ansible no se ve la salida del comando podemos almacenar la salida del comando en una variable y mostrarla. En [01-playbooks.md](../labs-ansible/01-playbooks.md) se puede ver un ejemplo de un playbook que almacena la salida de un comando en una variable y luego se imprime en la salida estándar el valor de dicha variable.
 
 Es muy importante que la red que utilicemos para los PODs tenga IPs suficientes para el número de contenedores que queramos arrancar y no debe tener solapamiento con las redes ya existentes.
 
