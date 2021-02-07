@@ -44,9 +44,9 @@ The key's randomart image is:
 [jadebustos@beast ~]$
 ```
 
-> ![IMPORTANT](../imgs/important-icon.png): No poner contraseña a la clave para que ansible se pueda conectar de forma desasistida.
+> ![IMPORTANT](../imgs/important-icon.png) No poner contraseña a la clave para que ansible se pueda conectar de forma desasistida.
 
-> ![IMPORTANT](../imgs/important-icon.png): Si se cambia el nombre del fichero para las claves **id_rsa** cuando queramos utilizarla deberemos especificar el fichero con el flag **-i nombre_fichero_claves**.
+> ![IMPORTANT](../imgs/important-icon.png) Si se cambia el nombre del fichero para las claves **id_rsa** cuando queramos utilizarla deberemos especificar el fichero con el flag **-i nombre_fichero_claves**.
 
 Una vez generada tendremos que copiar la clave pública a los hosts que queramos gestionar y a la cuenta del usuario con el que se conectará ansible. Si queremos ejecutar desde el host **beast** con el usuario **jadebustos** tareas en el host **nodo1** conectándonos con el usuario **ansible** a dicho nodo podemos copiar la clave:
 
@@ -144,3 +144,60 @@ La ejecución de un playbook sobre el grupo **contenedores** definido en el fich
 ```console
 [jadebustos@beast ansible]$ ansible-playbook -i hosts -l contenedors playbook.yaml
 ```
+
+## Ejecución de tareas de ansible en los nodos
+
+Para que en un nodo se pueda ejecutar una tarea con ansible será necesario que esté instalado python:
+
+```console
+[jadebustos@archimedes ansible]$ ansible -i hosts -m ping all
+master.frontend.lab | FAILED! => {
+    "changed": false,
+    "module_stderr": "Shared connection to master.frontend.lab closed.\r\n",
+    "module_stdout": "/bin/sh: /usr/bin/python3: No such file or directory\r\n",
+    "msg": "The module failed to execute correctly, you probably need to set the interpreter.\nSee stdout/stderr for the exact error",
+    "rc": 127
+}
+worker01.frontend.lab | FAILED! => {
+    "changed": false,
+    "module_stderr": "Shared connection to worker01.frontend.lab closed.\r\n",
+    "module_stdout": "/bin/sh: /usr/bin/python3: No such file or directory\r\n",
+    "msg": "The module failed to execute correctly, you probably need to set the interpreter.\nSee stdout/stderr for the exact error",
+    "rc": 127
+}
+worker02.frontend.lab | FAILED! => {
+    "changed": false,
+    "module_stderr": "Shared connection to worker02.frontend.lab closed.\r\n",
+    "module_stdout": "/bin/sh: /usr/bin/python3: No such file or directory\r\n",
+    "msg": "The module failed to execute correctly, you probably need to set the interpreter.\nSee stdout/stderr for the exact error",
+    "rc": 127
+}
+[jadebustos@archimedes ansible]$ 
+```
+
+En los nodos **master.frontend.lab**, **worker01.frontend.lab** y **worker02.frontend.lab** no es posible ejecutar tareas con ansible ya que no tienen instalado python, con lo cual será necesario instalar el paquete **python3**:
+
+```console
+[root@nodo ~]# dnf install python3 -y
+```
+
+Una vez instalado ya será posible ejecutar tareas con ansible en el nodo:
+
+```console
+[jadebustos@archimedes ansible]$ ansible -i hosts -m ping all
+worker02.frontend.lab | SUCCESS => {
+    "changed": false,
+    "ping": "pong"
+}
+master.frontend.lab | SUCCESS => {
+    "changed": false,
+    "ping": "pong"
+}
+worker01.frontend.lab | SUCCESS => {
+    "changed": false,
+    "ping": "pong"
+}
+[jadebustos@archimedes ansible]$
+```
+
+> ![TIP](../imgs/tip-icon.png) Con el comando anterior se ha ejecutado el módulo ping de ansible sobre todos los equipos definidos en el inventario incluido en el fichero **hosts**. Esto nos indica que ansible puede conectarse a los nodos para ejecutar tareas con el usuario indicado por la variable **ansible_user** del fichero de inventario.
