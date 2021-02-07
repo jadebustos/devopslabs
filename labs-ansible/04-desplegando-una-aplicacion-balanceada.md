@@ -60,7 +60,7 @@ apache2.acme.es
 >haproxy.acme.es
 >apache1.acme.es 
 >apache2.acme.es
-```
+>```
 
 Para comprobar que ansible puede conectarse a los nodos y ejecutar tareas haremos lo siguiente:
 
