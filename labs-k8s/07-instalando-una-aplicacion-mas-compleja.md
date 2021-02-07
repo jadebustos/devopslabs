@@ -49,7 +49,7 @@ EXPOSE 80
 CMD ["nginx", "-g", "daemon off;"]
 ```
 
-Como se copia todo el contenido del directorio 2048 automáticamente se copian las modificaciones que hemos hecho. Por lo tanto vamos generar la imagen:
+Como se copia todo el contenido del directorio 2048 automáticamente se copian las modificaciones que hemos hecho. Por lo tanto vamos a generar la imagen del contenedor:
 
 ```console
 [terraform@lab-podman docker-2048]$ buildah bud -t 2048-game .
@@ -88,7 +88,7 @@ nginx: [emerg] open() "/run/nginx/nginx.pid" failed (2: No such file or director
 [terraform@lab-podman docker-2048]$ 
 ```
 
-El problema es que no puede crear el fichero de pid para el proceso de nginx. Esto puede ser debido a dos cosas a que no exista el directorio o no tenga permisos de escritura. Ejecutemos una shell en el contenedor:
+El problema es que no puede crear el fichero de pid para el proceso de nginx. Esto puede ser debido a dos cosas, a que no exista el directorio o a que no tenga permisos de escritura. Ejecutemos una shell en el contenedor:
 
 ```console
 [terraform@lab-podman docker-2048]$ podman run -it -p 8080:80 localhost/2048-game /bin/ash
@@ -301,7 +301,7 @@ REPOSITORY                TAG     IMAGE ID      CREATED         SIZE
 localhost/2048-game       latest  5b926764e9f4  19 minutes ago  9.96 MB
 <none>                    <none>  fd338acb5eb5  3 hours ago     9.97 MB
 docker.io/library/alpine  latest  e50c909a8df2  4 days ago      5.88 MB
-[terraform@lab-podman docker-2048]$ [terraform@lab-podman docker-2048]$ podman login quay.io
+[terraform@lab-podman docker-2048]$ podman login quay.io
 Username: rhte_2019
 Password: 
 Login Succeeded!
