@@ -68,7 +68,7 @@ Tendremos que configurar la sincronización horaria:
 [root@host ~]# systemctl enable chronyd
 [root@host ~]# systemctl start chronyd
 [root@host ~]# timedatectl set-ntp true
-#
+[root@host ~]#
 ```
 
 Desactivamos SELinux ya que no lo vamos a utilizar con kubernetes:
@@ -415,7 +415,7 @@ success
 | TCP | Inbound  | 10252 | kube-controller-manager| self |
 | TCP | Inbound  | 10255 | Statistics | Master nodes |
 
-> ![INFORMATION](../imgs/information-icon.png) Como ese puerto se utilizar para recoger estadísticas solo debería ser poder accedido por los masters.
+> ![INFORMATION](../imgs/information-icon.png) El puerto 10255 se utiliza para recoger estadísticas y solo debería ser poder accedido por los masters.
 
 Configuramos **kudeadm**:
 
@@ -620,7 +620,7 @@ tigera-operator   tigera-operator-657cc89589-wqgd6           1/1     Running   0
 [root@master ~]# 
 ```
 
-Aunque hemos utilizado [Calico](https://docs.projectcalico.org/getting-started/kubernetes/) como [SDN](https://en.wikipedia.org/wiki/Software-defined_networking) podemos utilizar otras SDNs [Kubernetes Networking](https://kubernetes.io/docs/concepts/cluster-administration/networking/).
+Aunque hemos utilizado [Calico](https://docs.projectcalico.org/getting-started/kubernetes/) como [SDN](https://en.wikipedia.org/wiki/Software-defined_networking) podemos utilizar otras SDNs. Mas información en [Kubernetes Networking](https://kubernetes.io/docs/concepts/cluster-administration/networking/).
 
 Podemos ver la configuración del master de red:
 
