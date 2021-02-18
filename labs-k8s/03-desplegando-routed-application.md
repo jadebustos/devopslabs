@@ -222,7 +222,7 @@ El ingress controller se encarga de enrutar el tráfico, nos conectamos al ingre
 [kubeadmin@master ~]$ kubectl get pods -A -o wide | grep haproxy
 haproxy-controller     haproxy-ingress-67f7c8b555-j7qdp             1/1     Running   1          6h8m    192.169.22.2     worker02.acme.es   <none>           <none>
 haproxy-controller     ingress-default-backend-78f5cc7d4c-jzfk8     1/1     Running   1          6h8m    192.169.112.11   worker01.acme.es   <none>           <none>
-[kubeadmin@master ~]$ [kubeadmin@master ~]$ kubectl exec --stdin --tty haproxy-ingress-67f7c8b555-j7qdp --namespace=haproxy-controller -- /bin/sh
+[kubeadmin@master ~]$ kubectl exec --stdin --tty haproxy-ingress-67f7c8b555-j7qdp --namespace=haproxy-controller -- /bin/sh
 / $ 
 ```
 
