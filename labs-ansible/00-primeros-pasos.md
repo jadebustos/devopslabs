@@ -76,7 +76,7 @@ runcmd:
 
 ## Escalado de privilegios
 
-Si queremos ejecutar tareas privilegiadas con ansible necesitaremos escalar privilegios. Para ello será necesario configurar en sudoers que el usuario que va a ejecutar las tareas de ansible pueda escalar privilegios sin autenticación. Si ese usuario fuera el usuario ansible tendríamos que crear el fichero **/etc/sudoers.d/andible** con el siguiente contenido:
+Si queremos ejecutar tareas privilegiadas con ansible necesitaremos escalar privilegios. Para ello será necesario configurar en sudoers que el usuario que va a ejecutar las tareas de ansible pueda escalar privilegios sin autenticación. Si ese usuario fuera el usuario ansible tendríamos que crear el fichero **/etc/sudoers.d/ansible** con el siguiente contenido:
 
 ```bash
 ansible ALL=(ALL) NOPASSWD:ALL
