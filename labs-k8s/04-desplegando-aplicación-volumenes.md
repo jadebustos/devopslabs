@@ -76,7 +76,7 @@ apiVersion: v1
 kind: PersistentVolumeClaim
 metadata:
   name: nfs-pvc
-  metadata: webapp-volumes
+  namespace: webapp-volumes
 spec:
   storageClassName: nfs
   accessModes:
