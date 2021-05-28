@@ -390,20 +390,31 @@ UUID=35d72d21-6f35-4e52-ac4d-523a28ac5b5d /boot                   xfs     defaul
 
 > ![IMPORTANT](../imgs/important-icon.png) Se desactiva para no perder rendimiento al hacer swap, ademas en el espacio de swap se puede volcar información de diferentes entornos que deberían estar aislados y se perdería el aislamiento. [Más información](https://github.com/kubernetes/kubernetes/issues/53533)
 
+> ![INFORMATION](../imgs/information-icon.png) [Kubernetes ha deprecado docker](https://kubernetes.io/blog/2020/12/02/dont-panic-kubernetes-and-docker/) y desaparecerá en futuras versiones.
+
+> ![INFORMATION](../imgs/information-icon.png) Instalamos la última versión de docker testeada para kubernetes. La podemos ver en el fichero de [dependencias](https://github.com/kubernetes/kubernetes/blob/master/build/dependencies.yaml) para compilar kubernetes. En este caso:
+
+```yaml
+  # Docker
+  - name: "docker"
+    version: 20.10
+    refPaths:
+    - path: vendor/k8s.io/system-validators/validators/docker_validator.go
+      match: latestValidatedDockerVersion
+```
+
 Instalamos docker que será el engine para ejecutar contenedores:
 
 ```console
 [root@host ~]# dnf config-manager --add-repo=https://download.docker.com/linux/centos/docker-ce.repo
 Adding repo from: https://download.docker.com/linux/centos/docker-ce.repo
-[root@host ~]# dnf install docker-ce-19.03.14-3.el8 containerd.io -y
+[root@host ~]# dnf install docker-ce-20.10.6-3.el8 -y
 ...
 [root@host ~]# systemctl enable docker
 Created symlink /etc/systemd/system/multi-user.target.wants/docker.service → /usr/lib/systemd/system/docker.service.
 [root@host ~]# systemctl start docker
 [root@host ~]#
 ```
-
-> ![INFORMATION](../imgs/information-icon.png) Instalamos la version **19.03** de docker por que es la última testeada en kubernetes.
 
 Configuramos el repositorio de kubernetes:
 
@@ -557,13 +568,19 @@ kubeadm join 192.168.1.110:6443 --token gmk4le.8gsfpknu99k78qut \
 
 > ![TIP](../imgs/tip-icon.png) Si automatizas el despliegue de kubernetes con ansible necesitarás guardar la salida del último comando para poder añadir workers al cluster. Como en la ejecución de ansible no se ve la salida del comando podemos almacenar la salida del comando en una variable y mostrarla. En [01-playbooks.md](../labs-ansible/01-playbooks.md) se puede ver un ejemplo de un playbook que almacena la salida de un comando en una variable y luego se imprime en la salida estándar el valor de dicha variable.
 
-Es muy importante que la red que utilicemos para los PODs tenga IPs suficientes para el número de contenedores que queramos arrancar y no debe tener solapamiento con las redes ya existentes.
+> ![IMPORTANT](../imgs/important-icon.png) Es muy importante que la red que utilicemos para los PODs tenga IPs suficientes para el número de contenedores que queramos arrancar y no debe tener solapamiento con las redes ya existentes.
 
 En este caso la red que hemos configurado para los pods es de Clase C con una cantidad total de IPs de **65.536**.
 
 > ![TIP](../imgs/tip-icon.png) [Installing a POD network](https://kubernetes.io/docs/setup/production-environment/tools/kubeadm/create-cluster-kubeadm/#pod-network)
 
-Vamos a autorizar al usuario **root** acceder al cluster para terminar la configuración:
+Para que el usuario **root** pueda utilizar **kubectl** para operar el cluster bastaría con ejecutar:
+
+```console
+[root@master ~]# export KUBECONFIG=/etc/kubernetes/admin.conf
+```
+
+Vamos a autorizar al usuario **root** acceder al cluster para terminar la configuración de la forma habitual con la que lo haremos para el resto de usuarios:
 
 ```console
 [root@master ~]# mkdir -p /root/.kube
