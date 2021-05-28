@@ -71,7 +71,7 @@ Tendremos que configurar la sincronización horaria:
 [root@host ~]#
 ```
 
-Desactivamos SELinux ya que no lo vamos a utilizar con kubernetes:
+Si SELinux estuviera activado lo desativamos ya que no lo vamos a utilizar con kubernetes:
 
 ```console
 [root@host ~]# sed -i s/=enforcing/=disabled/g /etc/selinux/config
@@ -82,6 +82,8 @@ Instalamos los siguientes paquetes:
 ```console
 [root@host ~]# dnf install nfs-utils nfs4-acl-tools wget -y
 ```
+
+> ![IMPORTANT](../imgs/important-icon.png) Si se ha actualizado el kernel o ha sido necesario desactivar SELinux será necesario reiniciar.
 
 > ![TIP](../imgs/tip-icon.png) Una buena práctica es crear una VMs aplicar estas tareas que se tienen que realizar en todas las máquinas. Dejarla configurada por dhcp y sin configurar el hostname. Una vez terminada la configuración  se hace el [sellado](doc-apoyo/sellado-vm.md) y las máquinas se clonan a partir de este disco. De esta forma estas tareas se hacen solo una vez y no una vez por máquina. Más información [aquí](../doc-apoyo/sellado-vm.md).
 
@@ -103,7 +105,9 @@ vdb         252:16   0  10G  0 disk
 [root@nfs ~]# 
 ```
 
-El disco para datos es **/dev/vdb**.
+Añadir un disco para datos no es necesario, pero es buena práctica el tener los datos separados del sistema operativo. Si vamos a servir pocos documentos por NFS no sería necesario añadir un disco adicional.
+
+El disco para datos será **/dev/vdb**.
 
 Vamos a crear un VG (volume group) y LV (logical volume) ya que si en un futuro es necesario ampliar el espacio lo podremos hacer de una forma rápida, fácil y transparente:
 
@@ -253,6 +257,50 @@ Configura resolución DNS si dispones de un servidor DNS. Si no dispones de uno 
 192.168.1.112 worker02 worker02.acme.es5
 192.168.1.115 nfs nfs.acme.es
 ```
+
+Nos aseguramos que firewalld esté activado:
+
+```console
+[root@host ~]# systemctl status firewalld
+● firewalld.service - firewalld - dynamic firewall daemon
+   Loaded: loaded (/usr/lib/systemd/system/firewalld.service; enabled; vendor preset: enabled)
+   Active: active (running) since Fri 2021-05-28 18:15:34 CEST; 1min 41s ago
+     Docs: man:firewalld(1)
+ Main PID: 885 (firewalld)
+    Tasks: 2 (limit: 49478)
+   Memory: 37.7M
+   CGroup: /system.slice/firewalld.service
+           └─885 /usr/libexec/platform-python -s /usr/sbin/firewalld --nofork --nopid
+
+May 28 18:15:20 kubemaster.acme.es systemd[1]: Starting firewalld - dynamic firewall daemon...
+May 28 18:15:34 kubemaster.acme.es systemd[1]: Started firewalld - dynamic firewall daemon.
+[root@host ~]# 
+```
+
+Si estuviera desactivado podemos activarlo:
+
+```console
+[root@host ~]# systemctl enable firewalld
+Created symlink /etc/systemd/system/dbus-org.fedoraproject.FirewallD1.service → /usr/lib/systemd/system/firewalld.service.
+Created symlink /etc/systemd/system/multi-user.target.wants/firewalld.service → /usr/lib/systemd/system/firewalld.service. 
+[root@host ~]# systemctl start firewalld
+[root@host ~]# systemctl status firewalld
+● firewalld.service - firewalld - dynamic firewall daemon
+   Loaded: loaded (/usr/lib/systemd/system/firewalld.service; enabled; vendor preset: enabled)
+   Active: active (running) since Fri 2021-05-28 18:24:19 CEST; 26s ago
+     Docs: man:firewalld(1)
+ Main PID: 1429 (firewalld)
+    Tasks: 2 (limit: 49478)
+   Memory: 23.5M
+   CGroup: /system.slice/firewalld.service
+           └─1429 /usr/libexec/platform-python -s /usr/sbin/firewalld --nofork --nopid
+
+May 28 18:24:19 kubemaster.acme.es systemd[1]: Starting firewalld - dynamic firewall daemon...
+May 28 18:24:19 kubemaster.acme.es systemd[1]: Started firewalld - dynamic firewall daemon.
+[root@host ~]# 
+```
+
+> ![TIP](../imgs/tip-icon.png) Si al ejecutar el status de firewalld nos da el siguiente aviso **WARNING: AllowZoneDrifting is enabled. This is considered an insecure configuration option. It will be removed in a future release.** puedes desactivar **AllowZoneDrifting** en el fichero **/etc/firewalld/firewalld.conf** configurando **AllowZoneDrifting=no**.
 
 Vamos a activar **transparent masquerading** para que los PODs puedan comunicarse dentro del cluster mediante VXLAN:
 
