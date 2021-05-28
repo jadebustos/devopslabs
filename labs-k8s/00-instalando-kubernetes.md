@@ -393,15 +393,15 @@ UUID=35d72d21-6f35-4e52-ac4d-523a28ac5b5d /boot                   xfs     defaul
 > ![INFORMATION](../imgs/information-icon.png) [Kubernetes ha deprecado docker](https://kubernetes.io/blog/2020/12/02/dont-panic-kubernetes-and-docker/) y desaparecerá en futuras versiones.
 
 > ![INFORMATION](../imgs/information-icon.png) Instalamos la última versión de docker testeada para kubernetes. La podemos ver en el fichero de [dependencias](https://github.com/kubernetes/kubernetes/blob/master/build/dependencies.yaml) para compilar kubernetes. En este caso:
-
-```yaml
-  # Docker
-  - name: "docker"
-    version: 20.10
-    refPaths:
-    - path: vendor/k8s.io/system-validators/validators/docker_validator.go
-      match: latestValidatedDockerVersion
-```
+>
+>  ```yaml
+>    # Docker
+>    - name: "docker"
+>      version: 20.10
+>      refPaths:
+>      - path: vendor/k8s.io/system-validators/validators/docker_validator.go
+>        match: latestValidatedDockerVersion
+>  ```
 
 Instalamos docker que será el engine para ejecutar contenedores:
 
