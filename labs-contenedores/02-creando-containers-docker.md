@@ -33,11 +33,47 @@ Instanciamos un container a partir de una imagen:
 845308bb95594ccbc463c251bd14bb06a65c5d0b8ee4d21ec5bc9c6c1ed8db15
 [root@lab-docker ~]# docker ps
 CONTAINER ID   IMAGE     COMMAND   CREATED   STATUS    PORTS     NAMES
+[root@lab-docker ~]# docker ps --all
+CONTAINER ID   IMAGE     COMMAND   CREATED         STATUS                     PORTS     NAMES
+845308bb9559   busybox   "sh"      8 seconds ago   Exited (0) 7 seconds ago             tender_cann
 [root@lab-docker ~]#
 ```
 + **-d** lo arrancamos en background.
 
 Como vemos el contenedor arranca y para.
+
+Podemos ver que una vez parado, la imagen del contenedor existe y podemos arrancarla de nuevo:
+
+```console
+[root@lab-docker ~]# docker start 845308bb9559
+[root@lab-docker ~]# docker ps --all
+CONTAINER ID   IMAGE     COMMAND   CREATED         STATUS                     PORTS     NAMES
+845308bb9559   busybox   "sh"      About a minute ago   Exited (0) 6 seconds ago             tender_cannon
+[root@lab-docker ~]#
+```
+
+Si la imagen del contenedor parado ya no la necesitamos podemos borrarla:
+
+```console
+[root@lab-docker ~]# docker ps --all
+CONTAINER ID   IMAGE     COMMAND   CREATED         STATUS                     PORTS     NAMES
+845308bb9559   busybox   "sh"      About a minute ago   Exited (0) 6 seconds ago             tender_cannon
+[root@lab-docker ~]# docker rm 845308bb9559
+845308bb9559
+[root@lab-docker ~]# docker ps --all
+CONTAINER ID   IMAGE     COMMAND   CREATED   STATUS    PORTS     NAMES
+[root@lab-docker ~]#
+```
+
+Podemos ejecutar un contenedor y borrarlo cuando termine su ejecución:
+
+```console
+[root@lab-docker ~]# docker run --rm -d busybox 
+34098cb89892effc9c64b04fa0e99c85457e75aa92392bd95700ed2c3863147c
+[root@lab-docker ~]# docker ps --all
+CONTAINER ID   IMAGE     COMMAND   CREATED   STATUS    PORTS     NAMES
+[root@lab-docker ~]#
+```
 
 Instanciamos una nueva imagen, pero esta vez ejecutamos una shell dentro del contendor:
 
@@ -105,7 +141,7 @@ Nos conectamos a la máquina de docker:
 ```console
 [terraform@docker ~]$ sudo su -
 Last login: Sun Jan 17 20:42:31 CET 2021 on pts/0
-[root@lab-docker ~]# cd build/busibox/
+[root@lab-docker ~]# cd example1
 [root@lab-docker busibox]# ls -lh
 total 8.0K
 -rw-r--r--. 1 root root 99 Jan 17 20:33 Dockerfile
@@ -535,7 +571,7 @@ RETURN     all  --  anywhere             anywhere
 
 La aplicación mostrará algo así:
 
-![webapp](imgs/webapp.png)
+![webapp](../imgs/webapp.png)
 
 ## Publicando imágenes
 

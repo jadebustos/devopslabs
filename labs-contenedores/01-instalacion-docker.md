@@ -185,15 +185,9 @@ Apply complete! Resources: 4 added, 0 changed, 0 destroyed.
 Para instalar docker y los ejemplos vamos al directorio [ansible](../ansible):
 
 ```console
-[jadebustos@beast ansible]$ ansible-playbook -i hosts -l docker install-docker.yaml 
-```
-
-## Instalando docker de forma manual
-
-```console
-[root@docker ~]# dnf config-manager --add-repo=https://download.docker.com/linux/centos/docker-ce.repo
-[root@docker ~]# dnf install docker-ce
-[root@docker ~]# systemctl enable docker
-[root@docker ~]# systemctl start docker
-[root@docker ~]#
+[root@docker ~]# git clone https://github.com/jadebustos/devopslabs.git
+[root@docker ~]# cd devopslabs/ansible
+[root@docker ansible]# ansible-playbook -i hosts -l docker install-docker.yaml 
+...
+[root@docker ansible]#
 ```

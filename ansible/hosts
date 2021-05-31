@@ -1,9 +1,9 @@
 [all:vars]
 ansible_python_interpreter=/usr/bin/python3
-ansible_user=terraform
+ansible_connection=local
 
 [docker]
-lab-docker.frontend.lab
+localhost
 
 [podman]
-lab-podman.frontend.lab
+localhost

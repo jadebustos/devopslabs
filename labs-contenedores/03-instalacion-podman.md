@@ -25,11 +25,16 @@ Una vez en el directorio para desplegar el plan de terraform:
 [jadebustos@beast podman]$
 ```
 
-## Instalando podman
+## Instalando podman con ansible
 
 Para instalar podman vamos al directorio [ansible](../ansible):
 
 ```console
-[jadebustos@beast ansible]$ ansible-playbook -i hosts -l podman install-podman.yaml 
+```console
+[root@docker ~]# git clone https://github.com/jadebustos/devopslabs.git
+[root@docker ~]# cd devopslabs/ansible
+[root@docker ansible]# ansible-playbook -i hosts -l podman install-podman.yaml 
+...
+[root@docker ansible]#
 ```
 
