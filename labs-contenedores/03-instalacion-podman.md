@@ -1,6 +1,6 @@
 # Instalando podman, buildah y skopeo
 
-## Desplegando la máquina virtual
+## Desplegando la máquina virtual con terraform
 
 Iremos al directorio [terraform/kvm/podman](../terraform/kvm/podman) donde tenemos el plan de terraform para desplegar una máquina virtual en KVM.
 
