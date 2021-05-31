@@ -13,7 +13,7 @@ Se proporciona un playbook que se encargar de desplegar el entorno y otro para d
 Si no lo tuvieramos sería necesario instalarlo:
 
 ```console
-[root@docker ~]# dnf install epel-release -y
+[root@docker ~]# dnf install git epel-release -y
 [root@docker ~]# dnf install ansible -y
 [root@docker ~]#
 ```
