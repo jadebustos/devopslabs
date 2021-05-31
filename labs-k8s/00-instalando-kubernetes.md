@@ -71,7 +71,7 @@ Tendremos que configurar la sincronización horaria:
 [root@host ~]#
 ```
 
-Desactivamos SELinux ya que no lo vamos a utilizar con kubernetes:
+Si SELinux estuviera activado lo desativamos ya que no lo vamos a utilizar con kubernetes:
 
 ```console
 [root@host ~]# sed -i s/=enforcing/=disabled/g /etc/selinux/config
@@ -82,6 +82,8 @@ Instalamos los siguientes paquetes:
 ```console
 [root@host ~]# dnf install nfs-utils nfs4-acl-tools wget -y
 ```
+
+> ![IMPORTANT](../imgs/important-icon.png) Si se ha actualizado el kernel o ha sido necesario desactivar SELinux será necesario reiniciar.
 
 > ![TIP](../imgs/tip-icon.png) Una buena práctica es crear una VMs aplicar estas tareas que se tienen que realizar en todas las máquinas. Dejarla configurada por dhcp y sin configurar el hostname. Una vez terminada la configuración  se hace el [sellado](doc-apoyo/sellado-vm.md) y las máquinas se clonan a partir de este disco. De esta forma estas tareas se hacen solo una vez y no una vez por máquina. Más información [aquí](../doc-apoyo/sellado-vm.md).
 
@@ -103,7 +105,9 @@ vdb         252:16   0  10G  0 disk
 [root@nfs ~]# 
 ```
 
-El disco para datos es **/dev/vdb**.
+Añadir un disco para datos no es necesario, pero es buena práctica el tener los datos separados del sistema operativo. Si vamos a servir pocos documentos por NFS no sería necesario añadir un disco adicional.
+
+El disco para datos será **/dev/vdb**.
 
 Vamos a crear un VG (volume group) y LV (logical volume) ya que si en un futuro es necesario ampliar el espacio lo podremos hacer de una forma rápida, fácil y transparente:
 
@@ -171,7 +175,7 @@ Ahora crearemos el punto de montaje e incluiremos a este logical volume en **/et
 [root@nfs ~]# 
 ```
 
-Para comprobar que la configuración de monaje del sistema de ficheros es correcta si ejecutamos **mount -a** deberemos ver el sistema de ficheros montado:
+Para comprobar que la configuración de montaje del sistema de ficheros es correcta si ejecutamos **mount -a** deberemos ver el sistema de ficheros montado:
 
 ```console
 [root@nfs ~]# mount -a
@@ -253,6 +257,50 @@ Configura resolución DNS si dispones de un servidor DNS. Si no dispones de uno 
 192.168.1.112 worker02 worker02.acme.es5
 192.168.1.115 nfs nfs.acme.es
 ```
+
+Nos aseguramos que firewalld esté activado:
+
+```console
+[root@host ~]# systemctl status firewalld
+● firewalld.service - firewalld - dynamic firewall daemon
+   Loaded: loaded (/usr/lib/systemd/system/firewalld.service; enabled; vendor preset: enabled)
+   Active: active (running) since Fri 2021-05-28 18:15:34 CEST; 1min 41s ago
+     Docs: man:firewalld(1)
+ Main PID: 885 (firewalld)
+    Tasks: 2 (limit: 49478)
+   Memory: 37.7M
+   CGroup: /system.slice/firewalld.service
+           └─885 /usr/libexec/platform-python -s /usr/sbin/firewalld --nofork --nopid
+
+May 28 18:15:20 kubemaster.acme.es systemd[1]: Starting firewalld - dynamic firewall daemon...
+May 28 18:15:34 kubemaster.acme.es systemd[1]: Started firewalld - dynamic firewall daemon.
+[root@host ~]# 
+```
+
+Si estuviera desactivado podemos activarlo:
+
+```console
+[root@host ~]# systemctl enable firewalld
+Created symlink /etc/systemd/system/dbus-org.fedoraproject.FirewallD1.service → /usr/lib/systemd/system/firewalld.service.
+Created symlink /etc/systemd/system/multi-user.target.wants/firewalld.service → /usr/lib/systemd/system/firewalld.service. 
+[root@host ~]# systemctl start firewalld
+[root@host ~]# systemctl status firewalld
+● firewalld.service - firewalld - dynamic firewall daemon
+   Loaded: loaded (/usr/lib/systemd/system/firewalld.service; enabled; vendor preset: enabled)
+   Active: active (running) since Fri 2021-05-28 18:24:19 CEST; 26s ago
+     Docs: man:firewalld(1)
+ Main PID: 1429 (firewalld)
+    Tasks: 2 (limit: 49478)
+   Memory: 23.5M
+   CGroup: /system.slice/firewalld.service
+           └─1429 /usr/libexec/platform-python -s /usr/sbin/firewalld --nofork --nopid
+
+May 28 18:24:19 kubemaster.acme.es systemd[1]: Starting firewalld - dynamic firewall daemon...
+May 28 18:24:19 kubemaster.acme.es systemd[1]: Started firewalld - dynamic firewall daemon.
+[root@host ~]# 
+```
+
+> ![TIP](../imgs/tip-icon.png) Si al ejecutar el status de firewalld nos da el siguiente aviso **WARNING: AllowZoneDrifting is enabled. This is considered an insecure configuration option. It will be removed in a future release.** puedes desactivar **AllowZoneDrifting** en el fichero **/etc/firewalld/firewalld.conf** configurando **AllowZoneDrifting=no**.
 
 Vamos a activar **transparent masquerading** para que los PODs puedan comunicarse dentro del cluster mediante VXLAN:
 
@@ -342,20 +390,31 @@ UUID=35d72d21-6f35-4e52-ac4d-523a28ac5b5d /boot                   xfs     defaul
 
 > ![IMPORTANT](../imgs/important-icon.png) Se desactiva para no perder rendimiento al hacer swap, ademas en el espacio de swap se puede volcar información de diferentes entornos que deberían estar aislados y se perdería el aislamiento. [Más información](https://github.com/kubernetes/kubernetes/issues/53533)
 
+> ![INFORMATION](../imgs/information-icon.png) [Kubernetes ha deprecado docker](https://kubernetes.io/blog/2020/12/02/dont-panic-kubernetes-and-docker/) y desaparecerá en futuras versiones.
+
+> ![INFORMATION](../imgs/information-icon.png) Instalamos la última versión de docker testeada para kubernetes. La podemos ver en el fichero de [dependencias](https://github.com/kubernetes/kubernetes/blob/master/build/dependencies.yaml) para compilar kubernetes. En este caso:
+>
+>  ```yaml
+>    # Docker
+>    - name: "docker"
+>      version: 20.10
+>      refPaths:
+>      - path: vendor/k8s.io/system-validators/validators/docker_validator.go
+>        match: latestValidatedDockerVersion
+>  ```
+
 Instalamos docker que será el engine para ejecutar contenedores:
 
 ```console
 [root@host ~]# dnf config-manager --add-repo=https://download.docker.com/linux/centos/docker-ce.repo
 Adding repo from: https://download.docker.com/linux/centos/docker-ce.repo
-[root@host ~]# dnf install docker-ce-19.03.14-3.el8 containerd.io -y
+[root@host ~]# dnf install docker-ce-20.10.6-3.el8 -y
 ...
 [root@host ~]# systemctl enable docker
 Created symlink /etc/systemd/system/multi-user.target.wants/docker.service → /usr/lib/systemd/system/docker.service.
 [root@host ~]# systemctl start docker
 [root@host ~]#
 ```
-
-> ![INFORMATION](../imgs/information-icon.png) Instalamos la version **19.03** de docker por que es la última testeada en kubernetes.
 
 Configuramos el repositorio de kubernetes:
 
@@ -509,13 +568,19 @@ kubeadm join 192.168.1.110:6443 --token gmk4le.8gsfpknu99k78qut \
 
 > ![TIP](../imgs/tip-icon.png) Si automatizas el despliegue de kubernetes con ansible necesitarás guardar la salida del último comando para poder añadir workers al cluster. Como en la ejecución de ansible no se ve la salida del comando podemos almacenar la salida del comando en una variable y mostrarla. En [01-playbooks.md](../labs-ansible/01-playbooks.md) se puede ver un ejemplo de un playbook que almacena la salida de un comando en una variable y luego se imprime en la salida estándar el valor de dicha variable.
 
-Es muy importante que la red que utilicemos para los PODs tenga IPs suficientes para el número de contenedores que queramos arrancar y no debe tener solapamiento con las redes ya existentes.
+> ![IMPORTANT](../imgs/important-icon.png) Es muy importante que la red que utilicemos para los PODs tenga IPs suficientes para el número de contenedores que queramos arrancar y no debe tener solapamiento con las redes ya existentes.
 
 En este caso la red que hemos configurado para los pods es de Clase C con una cantidad total de IPs de **65.536**.
 
 > ![TIP](../imgs/tip-icon.png) [Installing a POD network](https://kubernetes.io/docs/setup/production-environment/tools/kubeadm/create-cluster-kubeadm/#pod-network)
 
-Vamos a autorizar al usuario **root** acceder al cluster para terminar la configuración:
+Para que el usuario **root** pueda utilizar **kubectl** para operar el cluster bastaría con ejecutar:
+
+```console
+[root@master ~]# export KUBECONFIG=/etc/kubernetes/admin.conf
+```
+
+Vamos a autorizar al usuario **root** acceder al cluster para terminar la configuración de la forma habitual con la que lo haremos para el resto de usuarios:
 
 ```console
 [root@master ~]# mkdir -p /root/.kube
@@ -531,204 +596,10 @@ Vemos que se muestra como **NotReady**. Eso es debido a que no hemos desplegado 
 
 ## Instalando la SDN (Calico)
 
-> ![IMPORTANT](../imgs/important-icon.png) La forma descrita aquí no funciona en [Azure](https://docs.projectcalico.org/reference/public-cloud/azure#about-calico-on-azure). Para la instalación de Calico en Azure ver el siguiente apartado.
+Ahora es necesario instalar una SDN para que los pods puedan comunicarse. Se proporcionan dos métodos:
 
-Como SDN vamos a instalar [Calico](https://docs.projectcalico.org/).
-
-Instalamos el operador de Tigera:
-
-```console
-[root@master ~]# kubectl create -f https://docs.projectcalico.org/manifests/tigera-operator.yaml
-customresourcedefinition.apiextensions.k8s.io/bgpconfigurations.crd.projectcalico.org created
-customresourcedefinition.apiextensions.k8s.io/bgppeers.crd.projectcalico.org created
-customresourcedefinition.apiextensions.k8s.io/blockaffinities.crd.projectcalico.org created
-customresourcedefinition.apiextensions.k8s.io/clusterinformations.crd.projectcalico.org created
-customresourcedefinition.apiextensions.k8s.io/felixconfigurations.crd.projectcalico.org created
-customresourcedefinition.apiextensions.k8s.io/globalnetworkpolicies.crd.projectcalico.org created
-customresourcedefinition.apiextensions.k8s.io/globalnetworksets.crd.projectcalico.org created
-customresourcedefinition.apiextensions.k8s.io/hostendpoints.crd.projectcalico.org created
-customresourcedefinition.apiextensions.k8s.io/ipamblocks.crd.projectcalico.org created
-customresourcedefinition.apiextensions.k8s.io/ipamconfigs.crd.projectcalico.org created
-customresourcedefinition.apiextensions.k8s.io/ipamhandles.crd.projectcalico.org created
-customresourcedefinition.apiextensions.k8s.io/ippools.crd.projectcalico.org created
-customresourcedefinition.apiextensions.k8s.io/kubecontrollersconfigurations.crd.projectcalico.org created
-customresourcedefinition.apiextensions.k8s.io/networkpolicies.crd.projectcalico.org created
-customresourcedefinition.apiextensions.k8s.io/networksets.crd.projectcalico.org created
-customresourcedefinition.apiextensions.k8s.io/installations.operator.tigera.io created
-customresourcedefinition.apiextensions.k8s.io/tigerastatuses.operator.tigera.io created
-namespace/tigera-operator created
-podsecuritypolicy.policy/tigera-operator created
-serviceaccount/tigera-operator created
-clusterrole.rbac.authorization.k8s.io/tigera-operator created
-clusterrolebinding.rbac.authorization.k8s.io/tigera-operator created
-deployment.apps/tigera-operator created
-[root@master ~]#
-```
-
-Instalamos Calico junto con los custom resources que necesita. Para ello descargamos primero el fichero de definición:
-
-```console
-[root@master ~]# wget https://docs.projectcalico.org/manifests/custom-resources.yaml
-[root@master ~]#
-```
-
-Y cambiamos el **cidr** para que coincida con el de nuestra red de PODs, el fichero [custom-resources.yaml](https://docs.projectcalico.org/manifests/custom-resources.yaml):
-
-```yaml
-# This section includes base Calico installation configuration.
-# For more information, see: https://docs.projectcalico.org/v3.17/reference/installation/api#operator.tigera.io/v1.Installation
-apiVersion: operator.tigera.io/v1
-kind: Installation
-metadata:
-  name: default
-spec:
-  # Configures Calico networking.
-  calicoNetwork:
-    # Note: The ipPools section cannot be modified post-install.
-    ipPools:
-    - blockSize: 26
-      cidr: 192.169.0.0/16
-      encapsulation: VXLANCrossSubnet
-      natOutgoing: Enabled
-      nodeSelector: all()
-```
-
-Instalamos Calico:
-
-```console
-[root@master ~]# kubectl apply -f custom-resources.yaml
-installation.operator.tigera.io/default created
-[root@master ~]# 
-```
-Después de unos minutos veremos el clúster como **Ready**:
-
-```console
-[root@master ~]# kubectl get nodes
-NAME             STATUS   ROLES                  AGE   VERSION
-master.acme.es   Ready    control-plane,master   18m   v1.20.2
-[root@master ~]# kubectl get pods -A
-NAMESPACE         NAME                                       READY   STATUS    RESTARTS   AGE
-calico-system     calico-kube-controllers-546d44f5b7-szm8j   1/1     Running   0          8m3s
-calico-system     calico-node-dltbq                          1/1     Running   0          8m3s
-calico-system     calico-typha-5698b66ddc-5dbxs              1/1     Running   0          8m5s
-kube-system       coredns-74ff55c5b-5cp24                    1/1     Running   0          21m
-kube-system       coredns-74ff55c5b-w68pg                    1/1     Running   0          21m
-kube-system       etcd-master.acme.es                        1/1     Running   1          21m
-kube-system       kube-apiserver-master.acme.es              1/1     Running   1          21m
-kube-system       kube-controller-manager-master.acme.es     1/1     Running   1          21m
-kube-system       kube-proxy-fftw7                           1/1     Running   1          21m
-kube-system       kube-scheduler-master.acme.es              1/1     Running   1          21m
-tigera-operator   tigera-operator-657cc89589-wqgd6           1/1     Running   0          11m
-[root@master ~]# 
-```
-
-Aunque hemos utilizado [Calico](https://docs.projectcalico.org/getting-started/kubernetes/) como [SDN](https://en.wikipedia.org/wiki/Software-defined_networking) podemos utilizar otras SDNs. Mas información en [Kubernetes Networking](https://kubernetes.io/docs/concepts/cluster-administration/networking/).
-
-Podemos ver la configuración del master de red:
-
-```console
-[root@master ~]# ip a 
-1: lo: <LOOPBACK,UP,LOWER_UP> mtu 65536 qdisc noqueue state UNKNOWN group default qlen 1000
-    link/loopback 00:00:00:00:00:00 brd 00:00:00:00:00:00
-    inet 127.0.0.1/8 scope host lo
-       valid_lft forever preferred_lft forever
-    inet6 ::1/128 scope host 
-       valid_lft forever preferred_lft forever
-2: enp1s0: <BROADCAST,MULTICAST,UP,LOWER_UP> mtu 1500 qdisc fq_codel state UP group default qlen 1000
-    link/ether 52:54:00:77:3a:3a brd ff:ff:ff:ff:ff:ff
-    inet 192.168.1.110/24 brd 192.168.1.255 scope global noprefixroute enp1s0
-       valid_lft forever preferred_lft forever
-    inet6 fe80::5054:ff:fe77:3a3a/64 scope link 
-       valid_lft forever preferred_lft forever
-3: docker0: <NO-CARRIER,BROADCAST,MULTICAST,UP> mtu 1500 qdisc noqueue state DOWN group default 
-    link/ether 02:42:a5:5e:1e:9d brd ff:ff:ff:ff:ff:ff
-    inet 172.17.0.1/16 brd 172.17.255.255 scope global docker0
-       valid_lft forever preferred_lft forever
-6: vxlan.calico: <BROADCAST,MULTICAST,UP,LOWER_UP> mtu 1450 qdisc noqueue state UNKNOWN group default 
-    link/ether 66:00:50:49:a7:f6 brd ff:ff:ff:ff:ff:ff
-    inet 192.169.121.64/32 scope global vxlan.calico
-       valid_lft forever preferred_lft forever
-    inet6 fe80::6400:50ff:fe49:a7f6/64 scope link 
-       valid_lft forever preferred_lft forever
-7: calie0e54e1fe93@if3: <BROADCAST,MULTICAST,UP,LOWER_UP> mtu 1450 qdisc noqueue state UP group default 
-    link/ether ee:ee:ee:ee:ee:ee brd ff:ff:ff:ff:ff:ff link-netnsid 0
-    inet6 fe80::ecee:eeff:feee:eeee/64 scope link 
-       valid_lft forever preferred_lft forever
-8: cali16a4c4a3288@if3: <BROADCAST,MULTICAST,UP,LOWER_UP> mtu 1450 qdisc noqueue state UP group default 
-    link/ether ee:ee:ee:ee:ee:ee brd ff:ff:ff:ff:ff:ff link-netnsid 1
-    inet6 fe80::ecee:eeff:feee:eeee/64 scope link 
-       valid_lft forever preferred_lft forever
-9: cali793ff21fd58@if3: <BROADCAST,MULTICAST,UP,LOWER_UP> mtu 1450 qdisc noqueue state UP group default 
-    link/ether ee:ee:ee:ee:ee:ee brd ff:ff:ff:ff:ff:ff link-netnsid 2
-    inet6 fe80::ecee:eeff:feee:eeee/64 scope link 
-       valid_lft forever preferred_lft forever
-[root@master ~]# 
-```
-
-> ![INFORMATION](../imgs/information-icon.png) [Calico Quickstart](https://docs.projectcalico.org/getting-started/kubernetes/quickstart)
-
-> ![INFORMATION](../imgs/information-icon.png) [Calico Requirements](https://docs.projectcalico.org/getting-started/kubernetes/requirements)
-
-## Instalando la SDN en Azure (Calico)
-
-Vamos a utilizar flannel.
-
-Deberemos verificar que en el master el controller manager está desplegado con las opciones **--cluster-cidr=<pod-cidr>** y **--allocate-node-cidrs=true**. La instalación por defecto lo hace:
-
-```console
-[kubeadmin@master ~]$ ps ax | grep cluster
-   3842 ?        Ssl    0:12 kube-controller-manager --allocate-node-cidrs=true --authentication-kubeconfig=/etc/kubernetes/controller-manager.conf --authorization-kubeconfig=/etc/kubernetes/controller-manager.conf --bind-address=127.0.0.1 --client-ca-file=/etc/kubernetes/pki/ca.crt --cluster-cidr=192.169.0.0/16 --cluster-name=kubernetes --cluster-signing-cert-file=/etc/kubernetes/pki/ca.crt --cluster-signing-key-file=/etc/kubernetes/pki/ca.key --controllers=*,bootstrapsigner,tokencleaner --kubeconfig=/etc/kubernetes/controller-manager.conf --leader-elect=true --port=0 --requestheader-client-ca-file=/etc/kubernetes/pki/front-proxy-ca.crt --root-ca-file=/etc/kubernetes/pki/ca.crt --service-account-private-key-file=/etc/kubernetes/pki/sa.key --service-cluster-ip-range=10.96.0.0/12 --use-service-account-credentials=true
-   4134 ?        Ssl    0:11 etcd --advertise-client-urls=https://192.168.1.10:2379 --cert-file=/etc/kubernetes/pki/etcd/server.crt --client-cert-auth=true --data-dir=/var/lib/etcd --initial-advertise-peer-urls=https://192.168.1.10:2380 --initial-cluster=master-vm=https://192.168.1.10:2380 --key-file=/etc/kubernetes/pki/etcd/server.key --listen-client-urls=https://127.0.0.1:2379,https://192.168.1.10:2379 --listen-metrics-urls=http://127.0.0.1:2381 --listen-peer-urls=https://192.168.1.10:2380 --name=master-vm --peer-cert-file=/etc/kubernetes/pki/etcd/peer.crt --peer-client-cert-auth=true --peer-key-file=/etc/kubernetes/pki/etcd/peer.key --peer-trusted-ca-file=/etc/kubernetes/pki/etcd/ca.crt --snapshot-count=10000 --trusted-ca-file=/etc/kubernetes/pki/etcd/ca.crt
-   4256 ?        Ssl    0:54 kube-apiserver --advertise-address=192.168.1.10 --allow-privileged=true --authorization-mode=Node,RBAC --client-ca-file=/etc/kubernetes/pki/ca.crt --enable-admission-plugins=NodeRestriction --enable-bootstrap-token-auth=true --etcd-cafile=/etc/kubernetes/pki/etcd/ca.crt --etcd-certfile=/etc/kubernetes/pki/apiserver-etcd-client.crt --etcd-keyfile=/etc/kubernetes/pki/apiserver-etcd-client.key --etcd-servers=https://127.0.0.1:2379 --insecure-port=0 --kubelet-client-certificate=/etc/kubernetes/pki/apiserver-kubelet-client.crt --kubelet-client-key=/etc/kubernetes/pki/apiserver-kubelet-client.key --kubelet-preferred-address-types=InternalIP,ExternalIP,Hostname --proxy-client-cert-file=/etc/kubernetes/pki/front-proxy-client.crt --proxy-client-key-file=/etc/kubernetes/pki/front-proxy-client.key --requestheader-allowed-names=front-proxy-client --requestheader-client-ca-file=/etc/kubernetes/pki/front-proxy-ca.crt --requestheader-extra-headers-prefix=X-Remote-Extra- --requestheader-group-headers=X-Remote-Group --requestheader-username-headers=X-Remote-User --secure-port=6443 --service-account-issuer=https://kubernetes.default.svc.cluster.local --service-account-key-file=/etc/kubernetes/pki/sa.pub --service-account-signing-key-file=/etc/kubernetes/pki/sa.key --service-cluster-ip-range=10.96.0.0/12 --tls-cert-file=/etc/kubernetes/pki/apiserver.crt --tls-private-key-file=/etc/kubernetes/pki/apiserver.key
-  10578 pts/0    S+     0:00 grep --color=auto cluster
-[kubeadmin@master ~]$
-```
-
-En el nodo master y en los workers será necesario abrir los siguientes puertos:
-
-```console
-[root@host ~]# firewall-cmd --permanent --add-port=8285/udp
-[root@host ~]# firewall-cmd --permanent --add-port=8472/udp
-[root@host ~]# firewall-cmd --reload
-```
-
-> ![INFORMATION](../imgs/information-icon.png) https://docs.projectcalico.org/getting-started/kubernetes/flannel/flannel
-
-> ![INFORMATION](../imgs/information-icon.png) https://github.com/flannel-io/flannel/blob/master/Documentation/troubleshooting.md
-
-Necesitamos descargar el siguiente fichero:
-
-```console
-[kubeadmin@master ~]$ kubectl apply -f https://docs.projectcalico.org/manifests/canal.yaml
-configmap/canal-config unchanged
-customresourcedefinition.apiextensions.k8s.io/bgpconfigurations.crd.projectcalico.org configured
-customresourcedefinition.apiextensions.k8s.io/bgppeers.crd.projectcalico.org configured
-customresourcedefinition.apiextensions.k8s.io/blockaffinities.crd.projectcalico.org configured
-customresourcedefinition.apiextensions.k8s.io/clusterinformations.crd.projectcalico.org configured
-customresourcedefinition.apiextensions.k8s.io/felixconfigurations.crd.projectcalico.org configured
-customresourcedefinition.apiextensions.k8s.io/globalnetworkpolicies.crd.projectcalico.org configured
-customresourcedefinition.apiextensions.k8s.io/globalnetworksets.crd.projectcalico.org configured
-customresourcedefinition.apiextensions.k8s.io/hostendpoints.crd.projectcalico.org configured
-customresourcedefinition.apiextensions.k8s.io/ipamblocks.crd.projectcalico.org configured
-customresourcedefinition.apiextensions.k8s.io/ipamconfigs.crd.projectcalico.org configured
-customresourcedefinition.apiextensions.k8s.io/ipamhandles.crd.projectcalico.org configured
-customresourcedefinition.apiextensions.k8s.io/ippools.crd.projectcalico.org configured
-customresourcedefinition.apiextensions.k8s.io/kubecontrollersconfigurations.crd.projectcalico.org configured
-customresourcedefinition.apiextensions.k8s.io/networkpolicies.crd.projectcalico.org configured
-customresourcedefinition.apiextensions.k8s.io/networksets.crd.projectcalico.org configured
-clusterrole.rbac.authorization.k8s.io/calico-kube-controllers unchanged
-clusterrolebinding.rbac.authorization.k8s.io/calico-kube-controllers unchanged
-clusterrole.rbac.authorization.k8s.io/calico-node unchanged
-clusterrole.rbac.authorization.k8s.io/flannel unchanged
-clusterrolebinding.rbac.authorization.k8s.io/canal-flannel unchanged
-clusterrolebinding.rbac.authorization.k8s.io/canal-calico unchanged
-daemonset.apps/canal created
-serviceaccount/canal created
-deployment.apps/calico-kube-controllers created
-serviceaccount/calico-kube-controllers created
-poddisruptionbudget.policy/calico-kube-controllers created
-[kubeadmin@master ~]$ 
-```
++ Instalación de [Calico](00-01-sdn-calico.md).
++ Instalación de [SDN en Azure](00-02-sdn-azure.md).
 
 ## Configurando los workers
 
