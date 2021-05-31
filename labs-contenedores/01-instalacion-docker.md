@@ -191,7 +191,7 @@ Para instalar docker y los ejemplos vamos al directorio [ansible](../ansible):
 ## Instalando docker de forma manual
 
 ```console
-[root@docker ~]# dnf config-manager --add-repo=https://download.docker.com/linux/centos/docker-ce.repo"
+[root@docker ~]# dnf config-manager --add-repo=https://download.docker.com/linux/centos/docker-ce.repo
 [root@docker ~]# dnf install docker-ce
 [root@docker ~]# systemctl enable docker
 [root@docker ~]# systemctl start docker
