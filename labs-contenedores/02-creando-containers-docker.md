@@ -349,7 +349,7 @@ Random string: TLKr3flGaPrPkeiwE06UCJu59yJScSN1BUahw3cmO4OnPavYitGYMnXCK9s1IRiN
 [root@lab-docker busybox]# 
 ```
 
-## Arrancando parando contenedores contenedores
+## Arrancando/parando contenedores contenedores
 
 + **docker start <container>** arranca un container ya existente.
 + **docker stop <container>** para de forma ordenada un container en ejecución.
@@ -366,7 +366,7 @@ CONTAINER ID   IMAGE     COMMAND   CREATED   STATUS    PORTS     NAMES
 [root@lab-docker busybox]#
 ```
 
-## Exponiendo un contenedor al exterior
+## Exponiendo un contenedor al exterior     
 
 Nos conectamos a la máquina de docker:
 

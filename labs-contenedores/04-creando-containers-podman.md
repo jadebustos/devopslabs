@@ -142,6 +142,8 @@ docker.io/library/php      7-apache  2d5d57e31bd0  6 days ago      423 MB
 [root@lab-podman apache]# 
 ```
 
+> ![IMPORTANT](../imgs/important-icon.png) Mientras que docker necesita un servicio que se esté ejecutando podman no lo necesita.
+
 > ![INFORMATION](../imgs/information-icon.png) [Podman for docker users](https://dzone.com/articles/podman-for-docker-users)
 
 > ![INFORMATION](../imgs/information-icon.png) [Transitioning from docker to podman](https://developers.redhat.com/blog/2020/11/19/transitioning-from-docker-to-podman/)
