@@ -366,7 +366,7 @@ CONTAINER ID   IMAGE     COMMAND   CREATED   STATUS    PORTS     NAMES
 [root@lab-docker busybox]#
 ```
 
-## Mapeando volúmenes
+## Exponiendo un contenedor al exterior
 
 Nos conectamos a la máquina de docker:
 
@@ -508,6 +508,8 @@ target     prot opt source               destination
 RETURN     all  --  anywhere             anywhere            
 [root@lab-docker ~]# 
 ```
+
+## Mapeando volúmenes
 
 ```console
 [root@lab-docker apache]# docker run -tid -p 8080:80 --rm --name apache_server3 -v /root/build/apache/custom-php/:/var/www/public:Z webapp
