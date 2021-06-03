@@ -1,0 +1,12 @@
+[all:vars]
+ansible_user=<YOUR ANSIBLE USER>
+
+[master]
+master
+
+[workers]
+worker1
+worker2
+
+[nfs]
+nfs
