@@ -292,8 +292,6 @@ OK: 8 MiB in 19 packages
 / # TOKEN=$(cat /var/run/secrets/kubernetes.io/serviceaccount/token)
 / # echo $TOKEN
 eyJhbGciOiJSUzI1NiIsImtpZCI6InlaX1ZEVjZyeVJCeEJqeXR3d190Y2lrekE5c1liY0JTY0dsUi13X1dnVVUifQ.eyJhdWQiOlsiaHR0cHM6Ly9rdWJlcm5ldGVzLmRlZmF1bHQuc3ZjLmNsdXN0ZXIubG9jYWwiXSwiZXhwIjoxNjU0ODEzNjAwLCJpYXQiOjE2MjMyNzc2MDAsImlzcyI6Imh0dHBzOi8va3ViZXJuZXRlcy5kZWZhdWx0LnN2Yy5jbHVzdGVyLmxvY2FsIiwia3ViZXJuZXRlcy5pbyI6eyJuYW1lc3BhY2UiOiJ3ZWJhcHAtc2EiLCJwb2QiOnsibmFtZSI6IndlYmFwcC1zYS01NTQ2NmJmNDQtZGxxbjUiLCJ1aWQiOiIzOTA1MTk2ZC04Y2U2LTQyMzMtODRjZi0xNDVhOTIyNTU3OGEifSwic2VydmljZWFjY291bnQiOnsibmFtZSI6IndlYmFwcC1zYSIsInVpZCI6IjdlNGJhNjI2LTljYTAtNDM2ZC05OGFjLTYxZjUxYTY0NmIwZCJ9LCJ3YXJuYWZ0ZXIiOjE2MjMyODEyMDd9LCJuYmYiOjE2MjMyNzc2MDAsInN1YiI6InN5c3RlbTpzZXJ2aWNlYWNjb3VudDp3ZWJhcHAtc2E6d2ViYXBwLXNhIn0.DuEfILK25QGnN1C8_dJm4kEC2uCvE7J_MR89iSTSWeXwxcYV_eGn6S4JrfgO2-wHgj79DBe9V6XVLniTF6aKL6pAquKL0gnzCr7ffmVA2GNQOoUOJsUVyki2u3UOiLtLn6IjLIC2e1I5CMUgG_4vJ8gCLAeSSPWiessbGviwLx14LpnQlfN6VUTyucNx7jes2J7x04yd9ePF8Bqdo-FLfVuqJq9z-ZB-s_Y06_X_55wDcUon_1DOt3esiLuUK0i-13PO1eaE8PNyYjr0z_0cTOSH7B_BKe4-s5HN8ocMJAU4GyjO8lZLfs8NoHM6Z9AmHT0_0OGQjp8pSsy7UNaHOQ
-/ # curl -H "Authorization: Bearer $TOKEN" https://192.168.1.160/api/v1/namespaces/default/pods/ --insecure
-curl: (7) Failed to connect to 192.168.1.160 port 443: Connection refused
 / # curl -H "Authorization: Bearer $TOKEN" https://192.168.1.160:6443/api/v1/namespaces/default/pods/ --insecure
 {
   "kind": "Status",
@@ -522,3 +520,7 @@ curl: (7) Failed to connect to 192.168.1.160 port 443: Connection refused
   ]
 }/ # 
 ```
+
+Mediante la **service account** que hemos creado el pod es capaz de realizar las operaciones permitidas en el namespace.
+
+El funcionamiento de **ClusterRole** es similar, pero en lugar de ceñirse a un namespace es a nivel de clúster.
