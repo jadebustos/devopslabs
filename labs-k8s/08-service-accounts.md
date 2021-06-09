@@ -131,7 +131,7 @@ Podemos ver lo siguiente en la salida anterior:
 
 Como no se ha especificado una service account se ejecuta con la service account por defecto del namespace, **default**.
 
-> ![NOTE](../imgs/note-icon.png) Con **kubectl get pods -A** podemos ver todos los pods ejecutándose. Es interesantes realizar la anterior operación para los pods desplegados por kubernetes, la SDN o el ingress controller y comprobar a ver bajo que service accounts han sido desplegados.
+> ![NOTE](../imgs/note-icon.png) Con **kubectl get pods -A** podemos ver todos los pods ejecutándose. Es interesante realizar la anterior operación para los pods desplegados por kubernetes, la SDN o el ingress controller y comprobar a ver bajo que service accounts han sido desplegados.
 
 ## User accounts y service accounts
 
@@ -194,7 +194,7 @@ Esto se indica de la siguiente manera:
 + Contra que recursos se pueden utilizar (**pods**, **services**, ...).
 + Contra que endpoints del API se pueden lanzar ([API groups](https://kubernetes.io/docs/reference/using-api/).) Los [API groups disponibles](https://kubernetes.io/docs/reference/generated/kubernetes-api/v1.21/#-strong-api-groups-strong-).
 
-Para definir un role:
+Un **role** se muestra en el fichero [role.yaml](webapp-sa/role.yaml):
 
 ```yaml
 apiVersion: rbac.authorization.k8s.io/v1
@@ -208,13 +208,15 @@ rules:
   verbs: ["get", "watch", "list"]
 ```
 
-Este role se define en el namespace **default** y permite ejecutar las acciones **get**, **watch** y **list** para los **pods**.
+Este role se define en el namespace **webapp-sa** y permite ejecutar las acciones **get**, **watch** y **list** para los **pods**.
 
 Los API groups permiten extender el API de kubernetes. Son un PATH en el API rest, al que se podrá atacar si se garantiza acceso en el **Role** o **ClusterRole**. En los ficheros YAML que se utilizan en kubernetes los API groups se definen en el campo **apiVersion**.
 
 > ![INFORMATION](../imgs/information-icon.png) [Using RBAC Authorization](https://kubernetes.io/docs/reference/access-authn-authz/rbac/) ofrece más información y ejemplos de **ClusterRole**.
 
-Una vez que tenemos definido un **Role** (o un **ClusterRole**) será necesario asociarlo a una service account (o a un usuario). Para ello utilizaremos **RoleBinding** para un **Role** o **ClusterRoleBinding** para un **ClusterRole**:
+Una vez que tenemos definido un **Role** (o un **ClusterRole**) será necesario asociarlo a una service account (o a un usuario). Para ello utilizaremos **RoleBinding** para un **Role** o **ClusterRoleBinding** para un **ClusterRole**.
+
+Un **rolebinding** se muestra en el fichero [rolebinding.yaml](webapp-sa/rolebinding.yaml):
 
 ```yaml
 kind: RoleBinding
@@ -234,6 +236,8 @@ roleRef:
 ```
 
 La service account **webapp-sa** será capaz de listar los pods del namespace **webapp-sa**.
+
+Creamos un deployment utilizando una **service account** [deployment-sa.yaml](webapp-sa/deployment-sa.yaml):
 
 ```yaml
 apiVersion: apps/v1
@@ -262,10 +266,10 @@ spec:
         - "3600"
 ```
 
-Creamos el **role**, hacemos el **rolebinding** y hacemos un deployment:
+Creamos el **role**, hacemos el **rolebinding** y hacemos el deployment:
 
 ```console
-[kubeadmin@master webapp-sa]$kubectl apply -f role.yaml 
+[kubeadmin@master webapp-sa]$ kubectl apply -f role.yaml 
 role.rbac.authorization.k8s.io/list-pods created
 [kubeadmin@master webapp-sa]$ kubectl apply -f rolebinding.yaml 
 rolebinding.rbac.authorization.k8s.io/webapp-sa-list-pods created
@@ -521,6 +525,14 @@ eyJhbGciOiJSUzI1NiIsImtpZCI6InlaX1ZEVjZyeVJCeEJqeXR3d190Y2lrekE5c1liY0JTY0dsUi13
 }/ # 
 ```
 
+> ![INFORMATION](../imgs/information-icon.png) Los pods, por defecto, pueden comunicarse con la API de Kubernetes. Si no se especifica ninguna **service account** se utilizará la service account **default** del namespace donde el pod se está ejecutando.
+
+> ![INFORMATION](../imgs/information-icon.png) Para autenticarse la **service account** utiliza el token que se encuentra disponible en el filesystem de cada contenedor del pod.
+
+> ![INFORMATION](../imgs/information-icon.png) La autorización, que es lo que puede hacer el pod en el API de Kubernetes, viene definido por los permisos asignados en el **role**.
+
 Mediante la **service account** que hemos creado el pod es capaz de realizar las operaciones permitidas en el namespace.
 
-El funcionamiento de **ClusterRole** es similar, pero en lugar de ceñirse a un namespace es a nivel de clúster.
+El funcionamiento de **ClusterRole** es similar, pero en lugar de ceñirse a un namespace tiene ámbito a nivel de clúster.
+
+Se pude encontrar más información en [Configure Service Account for Pods](https://kubernetes.io/docs/tasks/configure-pod-container/configure-service-account/).
