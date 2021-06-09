@@ -1,0 +1,24 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: webapp-sa
+  namespace: webapp-sa
+  labels:
+    app: webapp-sa
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: webapp-sa
+  template:
+    metadata:
+      labels:
+        app: webapp-sa
+    spec:
+      serviceAccountName: webapp-sa
+      containers:
+      - name: alpine
+        image: "alpine:latest"
+        command:
+        - "sleep"
+        - "3600"

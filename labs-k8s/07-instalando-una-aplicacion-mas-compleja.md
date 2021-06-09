@@ -1,4 +1,4 @@
-# Instalando una aplicacición más compleja
+# Instalando una aplicación más compleja
 
 Hasta ahora hemos visto el despliegue de aplicaciones muy sencillas.
 

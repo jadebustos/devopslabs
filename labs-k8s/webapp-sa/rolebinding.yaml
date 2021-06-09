@@ -1,0 +1,14 @@
+kind: RoleBinding
+# You need to already have a Role named "list-pods" in that namespace.
+apiVersion: rbac.authorization.k8s.io/v1
+metadata:
+   name: webapp-sa-list-pods
+   namespace: webapp-sa
+subjects:
+ - kind: ServiceAccount
+   name: webapp-sa
+   namespace: webapp-sa
+roleRef:
+   kind: Role # this must be Role or ClusterRole
+   name: list-pods # this must match the name of the Role or ClusterRole you wish to bind to
+   apiGroup: rbac.authorization.k8s.io
