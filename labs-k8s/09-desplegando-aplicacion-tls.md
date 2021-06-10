@@ -16,19 +16,19 @@ Con el fin de evitar el crear certificados se suministran los siguientes fichero
 Para generar la clave del servidor y la petición de firma de la clave se ha utilizado el siguiente comando:
 
 ```console
-$ openssl req -nodes -newkey rsa:4096 -sha512 -keyout server.key -out server.csr -batch -subj "/C=SP/ST=Spain/L=Madrid/O=MyOrganization/OU=MyOrganizationUnit/CN=foo-tls.bar/emailAddress=user@domain"
+[kubeadmin@master ~]$ openssl req -nodes -newkey rsa:4096 -sha512 -keyout server.key -out server.csr -batch -subj "/C=SP/ST=Spain/L=Madrid/O=MyOrganization/OU=MyOrganizationUnit/CN=foo-tls.bar/emailAddress=user@domain"
 Generating a RSA private key
 ...................................................................................................++++
 ......................................................................................................................................................................................................++++
 writing new private key to 'server.key'
 -----
-$   
+[kubeadmin@master ~]$ 
 ```
 
 Para generar el certificado, firma del CSR, se ha utilizado el siguiente comando:
 
 ```console
-$ openssl ca -extensions server -name ACMECA -out server.crt -infiles server.csr 
+[kubeadmin@master ~]$ openssl ca -extensions server -name ACMECA -out server.crt -infiles server.csr 
 Using configuration from /etc/pki/tls/openssl.cnf
 Enter pass phrase for /etc/pki/ACMECA/private/cakey.pem:
 Check that the request matches the signature
@@ -55,18 +55,18 @@ Sign the certificate? [y/n]:y
 1 out of 1 certificate requests certified, commit? [y/n]y
 Write out database with 1 new entries
 Data Base Updated
-$
+[kubeadmin@master ~]$
 ```
 
-Una vez que tenemos el certificado es necesario crear un secret con el certificada y la clave. Creamos el **secret** en kubernetes, incluye la clave y el certificado:
+Una vez que tenemos el certificado es necesario crear un secret con el certificado y la clave. Creamos el **secret** en kubernetes, incluye la clave y el certificado:
 
 ```console
-$ kubectl create secret tls foo-tls-secret --key devopslabs/labs-k8s/webapp-tls/server.key --cert devopslabs/labs-k8s/webapp-tls/server.crt --namespace webapp-tls
+[kubeadmin@master ~]$ kubectl create secret tls foo-tls-secret --key devopslabs/labs-k8s/webapp-tls/server.key --cert devopslabs/labs-k8s/webapp-tls/server.crt --namespace webapp-tls
 secret/foo-tls-secret created
-$ kubectl get secrets/foo-tls-secret --namespace webapp-tls
+[kubeadmin@master ~]$ kubectl get secrets/foo-tls-secret --namespace webapp-tls
 NAME             TYPE                DATA   AGE
 foo-tls-secret   kubernetes.io/tls   2      87s
-$ kubectl describe secrets/foo-tls-secret --namespace webapp-tls
+[kubeadmin@master ~]$ kubectl describe secrets/foo-tls-secret --namespace webapp-tls
 Name:         foo-tls-secret
 Namespace:    webapp-tls
 Labels:       <none>
@@ -78,5 +78,27 @@ Data
 ====
 tls.crt:  6917 bytes
 tls.key:  3272 bytes
-$ 
+[kubeadmin@master ~]$
 ```
+
+Podemos obtener la definición del secret en formato YAML:
+
+```console
+[kubeadmin@master ~]$ kubectl get secret foo-tls-secret --namespace webapp-tls -o yaml
+apiVersion: v1
+kind: Secret
+metadata:
+  name: foo-tls-secret
+  namespace: webapp-tls
+type: kubernetes.io/tls
+data:
+  tls.crt: Q2VydGlmaWNhdGU6CiAgICBEYXRhOgogICAgIC...
+  tls.key: LS0tLS1CRUdJTiBQUklWQVRFIEtFWS0tLS0tCk....
+[kubeadmin@master ~]$
+```
+
+El fichero [routed-tls-webapp.yaml](webapp-tls/routed-tls-webapp.yaml) describe un deployment para una aplicación utilizando TLS y con su propio certificado.
+
+> ![IMPORTANT](../imgs/important-icon.png) En este caso el ingress controller realiza la terminación SSL y a partir del ingress controller la comunicación va en plano, no encriptada. Este tráfico no encriptado se realiza dentro de kubernetes. Es posible realizar la comunicación totalmente encriptada hasta el contenedor, será necesario configurar el ingress controller en modo **ssl-passthrough**.
+
+> ![IMPORTANT](../imgs/important-icon.png) Es posible utilizar un único certificado para todas las aplicaciones en kubernetes utilizando wildcards, **\*** y configurando el certificado en el ingress controller en lugar de en el ingress de la aplicación.

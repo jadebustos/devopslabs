@@ -12,7 +12,7 @@ spec:
   - host: foo.bar
     http:
       paths:
-      - path: /webapp
+      - path: /webapp-routed
         pathType: "Prefix"
         backend:
           service:
