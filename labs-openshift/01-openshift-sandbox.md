@@ -1,6 +1,6 @@
 # OpenShift Developer Sandbox
 
-[OpenShift Developer Sandbox(https://developers.redhat.com/developer-sandbox)] es un servicio, actualmente en estado beta, que nos permite "tener un cluster OpenShift" para poder probar aplicaciones.
+[OpenShift Developer Sandbox](https://developers.redhat.com/developer-sandbox) es un servicio, actualmente en estado beta, que nos permite "tener un cluster OpenShift" para poder probar aplicaciones.
 
 Los recursos que vamos a poder utilizar se encuentran limitados.
 
