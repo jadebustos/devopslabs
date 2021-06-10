@@ -628,6 +628,8 @@ Run 'kubectl get nodes' on the control-plane to see this node join the cluster.
 [root@worker0X ~]# 
 ```
 
+> ![TIP](../imgs/tip-icon.png) Si tenemos un clúster ya desplegado y queremos añadir un nuevo nodo deberemos seguir el siguiente [procedimiento](00-03-añadiendo-nodos.md).
+
 Puede llevar unos minutos que los workers aparezcan como **Ready**:
 
 ```console
