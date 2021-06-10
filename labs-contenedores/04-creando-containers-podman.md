@@ -239,10 +239,37 @@ Podemos utilizar el comando **jq** para, por ejemplo, ver las variables de entor
 [root@lab-podman ~]# 
 ```
 
-Con Skopeo también podemos copiar imagenes entre diferentes registries. Por ejemplo para copiar la imagen anterior al registry corporativo:
+Con Skopeo también podemos copiar imagenes entre diferentes registries. Por ejemplo para copiar una imagen previamente almacenada en el registry de **quay** a **dockerhub**:
 
 ```console
-$ skopeo copy docker://docker.io/php:7-apache docker://registry.mycompany.com/php:7-apache
+$skopeo login quay.io
+Username: rhte_2019
+Password: 
+Login Succeeded!
+$ skopeo login docker.io
+Username: jadebustos2
+Password: 
+Login Succeeded!
+$ skopeo copy docker://quay.io/rhte_2019/webapp:v1 docker://docker.io/jadebustos2/devops:v1
+Getting image source signatures
+Copying blob 6b4bbe48f3ca done  
+Copying blob 59bc7b8b9781 done  
+Copying blob 432d3b14904c done  
+Copying blob de0e986d6d89 done  
+Copying blob 4035df40b151 done  
+Copying blob d88c35f059e3 done  
+Copying blob 378d092ca04d done  
+Copying blob 698d79b62f22 done  
+Copying blob 120c097903d1 done  
+Copying blob ead984039002 done  
+Copying blob 620161df5492 done  
+Copying blob 48ec4fe5b8c1 done  
+Copying blob c6742b4afc4a done  
+Copying blob d1ea26a8245e done  
+Copying config 08485fb3c0 done  
+Writing manifest to image destination
+Storing signatures
+$
 ```
 
 Si necesitamos autenticarnos, por ejemplo para borrar una imagen:
