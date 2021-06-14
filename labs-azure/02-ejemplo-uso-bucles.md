@@ -138,3 +138,9 @@ Apply complete! Resources: 1 added, 0 changed, 0 destroyed.
 Terraform comprobará el estado real y creará lo que falta, en este caso la red **qa** que hemos definido.
 
 Observar que ahora existen tres elementos en la variable **entornos** y **count.index** tomará los valores **0**, **1** y **2**.
+
+## Eliminando redes
+
+Podemos probar a eliminar **qa** de la variable **entornos** y hacer el apply. Veremos como se elimina la red.
+
+**Ejercicio** Verificarlo.
