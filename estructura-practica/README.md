@@ -51,7 +51,20 @@ Para la corección automática el repositorio deberá tener la siguiente estruct
 
 + Los nombres de las variables no se deben cambiar, unicamente sus valores. En la corección automática este fichero se sobreescribirá con el fichero de datos del profesor corrector.
 
-+ Las credenciales deberán ir en un fichero llamado **credentials.tf**. Este fichero no se deberá subir al repositorio para evitar compartir las credenciales. Se puede bloquear incluyendolo en el fichero **.gitignore**.
++ Las credenciales deberán ir en un fichero llamado **credentials.tf**. Este fichero no se deberá subir al repositorio para evitar compartir las credenciales. Se puede bloquear subirlo al repositorio git incluyendolo en el fichero **.gitignore**.
+
+  ```yaml
+  # https://registry.terraform.io/providers/hashicorp/azurerm/latest/docs
+  # crea un service principal y rellena los siguientes datos para autenticar
+  provider "azurerm" {
+    features {}
+    subscription_id = "<SUBSCRIPTION_ID>"
+    client_id       = "<CLIENT_ID>"
+    client_secret   = "<CLIENT_SECRET>"
+    tenant_id       = "<TENANT_ID>"
+  }
+
+  ```
 
 + Ejecutar **terraform apply** dentro del directorio **terraform** tiene que realizar el despliegue en Azure.
 
