@@ -175,13 +175,42 @@ Sin embargo, si ejecutamos el apply con la salida generada anteriormente el plan
 
 ```console
 [user@terraform single-vm]$ terraform apply myplan.txt
-terraform apply myplan.txt 
 azurerm_resource_group.rg: Creating...
 azurerm_resource_group.rg: Creation complete after 0s [id=/subscriptions/7a4e1967-660f-4ee9-bafb-fd3522c7ef52/resourceGroups/kubernetes_rg]
 azurerm_public_ip.myPublicIp1: Creating...
 azurerm_virtual_network.myNet: Creating...
 azurerm_network_security_group.mySecGroup: Creating...
 azurerm_storage_account.stAccount: Creating...
-...
+azurerm_public_ip.myPublicIp1: Creation complete after 3s [id=/subscriptions/7a4e1967-660f-4ee9-bafb-fd3522c7ef52/resourceGroups/kubernetes_rg/providers/Microsoft.Network/publicIPAddresses/vmip1]
+azurerm_network_security_group.mySecGroup: Creation complete after 5s [id=/subscriptions/7a4e1967-660f-4ee9-bafb-fd3522c7ef52/resourceGroups/kubernetes_rg/providers/Microsoft.Network/networkSecurityGroups/sshtraffic]
+azurerm_virtual_network.myNet: Creation complete after 5s [id=/subscriptions/7a4e1967-660f-4ee9-bafb-fd3522c7ef52/resourceGroups/kubernetes_rg/providers/Microsoft.Network/virtualNetworks/kubernetesnet]
+azurerm_subnet.mySubnet: Creating...
+azurerm_subnet.mySubnet: Creation complete after 4s [id=/subscriptions/7a4e1967-660f-4ee9-bafb-fd3522c7ef52/resourceGroups/kubernetes_rg/providers/Microsoft.Network/virtualNetworks/kubernetesnet/subnets/terraformsubnet]
+azurerm_network_interface.myNic1: Creating...
+azurerm_storage_account.stAccount: Still creating... [10s elapsed]
+azurerm_network_interface.myNic1: Creation complete after 2s [id=/subscriptions/7a4e1967-660f-4ee9-bafb-fd3522c7ef52/resourceGroups/kubernetes_rg/providers/Microsoft.Network/networkInterfaces/vmnic1]
+azurerm_network_interface_security_group_association.mySecGroupAssociation1: Creating...
+azurerm_network_interface_security_group_association.mySecGroupAssociation1: Creation complete after 1s [id=/subscriptions/7a4e1967-660f-4ee9-bafb-fd3522c7ef52/resourceGroups/kubernetes_rg/providers/Microsoft.Network/networkInterfaces/vmnic1|/subscriptions/7a4e1967-660f-4ee9-bafb-fd3522c7ef52/resourceGroups/kubernetes_rg/providers/Microsoft.Network/networkSecurityGroups/sshtraffic]
+azurerm_storage_account.stAccount: Still creating... [20s elapsed]
+azurerm_storage_account.stAccount: Creation complete after 26s [id=/subscriptions/7a4e1967-660f-4ee9-bafb-fd3522c7ef52/resourceGroups/kubernetes_rg/providers/Microsoft.Storage/storageAccounts/stgeaccountunircp2]
+azurerm_linux_virtual_machine.myVM1: Creating...
+azurerm_linux_virtual_machine.myVM1: Still creating... [10s elapsed]
+azurerm_linux_virtual_machine.myVM1: Still creating... [20s elapsed]
+azurerm_linux_virtual_machine.myVM1: Still creating... [30s elapsed]
+azurerm_linux_virtual_machine.myVM1: Still creating... [40s elapsed]
+azurerm_linux_virtual_machine.myVM1: Still creating... [50s elapsed]
+azurerm_linux_virtual_machine.myVM1: Still creating... [1m0s elapsed]
+azurerm_linux_virtual_machine.myVM1: Still creating... [1m10s elapsed]
+azurerm_linux_virtual_machine.myVM1: Still creating... [1m20s elapsed]
+azurerm_linux_virtual_machine.myVM1: Still creating... [1m30s elapsed]
+azurerm_linux_virtual_machine.myVM1: Still creating... [1m40s elapsed]
+azurerm_linux_virtual_machine.myVM1: Still creating... [1m50s elapsed]
+azurerm_linux_virtual_machine.myVM1: Creation complete after 1m55s [id=/subscriptions/7a4e1967-660f-4ee9-bafb-fd3522c7ef52/resourceGroups/kubernetes_rg/providers/Microsoft.Compute/virtualMachines/my-first-azure-vm]
+
+Apply complete! Resources: 9 added, 0 changed, 0 destroyed.
 [user@terraform single-vm]$
 ```
+
+Podemos ver el estado ejecutando **terraform show**.
+
+> ![TIP](../imgs/tip-icon.png) El revisar el orden en el que se ejecutará el plan y asegurar que dicho orden se cumple es algo que irá cobrando importancia a medida que añadimos infraestructura ya que llegará el caso en el que haya dependencias de recursos que deberán estar creados para crear otros a medida que la infraestructura crece.
