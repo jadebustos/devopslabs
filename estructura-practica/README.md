@@ -59,11 +59,10 @@ Para la corección automática el repositorio deberá tener la siguiente estruct
   provider "azurerm" {
     features {}
     subscription_id = "<SUBSCRIPTION_ID>"
-    client_id       = "<CLIENT_ID>"
-    client_secret   = "<CLIENT_SECRET>"
-    tenant_id       = "<TENANT_ID>"
+    client_id       = "<APP_ID>"         # se obtiene al crear el service principal
+    client_secret   = "<CLIENT_SECRET>"  # se obtiene al crear el service principal
+    tenant_id       = "<TENANT_ID>"      # se obtiene al crear el service principal
   }
-
   ```
 
 + Ejecutar **terraform apply** dentro del directorio **terraform** tiene que realizar el despliegue en Azure.
