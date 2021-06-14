@@ -31,3 +31,157 @@ En el fichero [security.tf](single-vm/security.tf) incluiremos los recursos de s
 ## vm.tf
 
 En el fichero [vm.tf](single-vm/vm.tf) incluiremos la definición de la vm red que vayamos a crear.
+
+## Despliegue
+
+Para desplegar
+
+ ```console
+[user@terraform single-vm]$ terraform init
+Initializing the backend...
+
+Initializing provider plugins...
+- Reusing previous version of hashicorp/azurerm from the dependency lock file
+- Using previously-installed hashicorp/azurerm v2.46.1
+
+Terraform has been successfully initialized!
+
+You may now begin working with Terraform. Try running "terraform plan" to see
+any changes that are required for your infrastructure. All Terraform commands
+should now work.
+
+If you ever set or change modules or backend configuration for Terraform,
+rerun this command to reinitialize your working directory. If you forget, other
+commands will detect it and remind you to do so if necessary.
+[user@terraform single-vm]$ 
+...
+```
+
+Podemos revisar el plan:
+
+```console
+[user@terraform single-vm]$ terraform plan
+...
+  # azurerm_virtual_network.myNet will be created
+  + resource "azurerm_virtual_network" "myNet" {
+      + address_space         = [
+          + "10.0.0.0/16",
+        ]
+      + guid                  = (known after apply)
+      + id                    = (known after apply)
+      + location              = "westeurope"
+      + name                  = "kubernetesnet"
+      + resource_group_name   = "kubernetes_rg"
+      + subnet                = (known after apply)
+      + tags                  = {
+          + "environment" = "CP2"
+        }
+      + vm_protection_enabled = false
+    }
+
+Plan: 9 to add, 0 to change, 0 to destroy.
+
+─────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────
+
+Note: You didn't use the -out option to save this plan, so Terraform can't guarantee to take exactly these actions if you run "terraform apply" now.
+[user@terraform single-vm]$
+```
+
+Podemos revisar el plan y si está correcto podemos aplicarlo. Dado que terraform define el estado deseado, pero no como llegar a el, si ejecutamos el plan no tenemos garantías de que los pasos se ejecuten en el orden que hemos visto. En este caso no hay dependencias ([depends_on](https://www.terraform.io/docs/language/meta-arguments/depends_on.html)) con lo cual el orden no nos importa ya que no habrá error por falta de algún recurso que no haya sido creado.
+
+Si quisieramos que se ejecutara en el orden que hemos revisado será necesario generar y guardar el plan:
+
+```console
+[user@terraform single-vm]$ terraform plan -out myplan.txt
+...
+  # azurerm_subnet.mySubnet will be created
+  + resource "azurerm_subnet" "mySubnet" {
+      + address_prefix                                 = (known after apply)
+      + address_prefixes                               = [
+          + "10.0.1.0/24",
+        ]
+      + enforce_private_link_endpoint_network_policies = false
+      + enforce_private_link_service_network_policies  = false
+      + id                                             = (known after apply)
+      + name                                           = "terraformsubnet"
+      + resource_group_name                            = "kubernetes_rg"
+      + virtual_network_name                           = "kubernetesnet"
+    }
+
+  # azurerm_virtual_network.myNet will be created
+  + resource "azurerm_virtual_network" "myNet" {
+      + address_space         = [
+          + "10.0.0.0/16",
+        ]
+      + guid                  = (known after apply)
+      + id                    = (known after apply)
+      + location              = "westeurope"
+      + name                  = "kubernetesnet"
+      + resource_group_name   = "kubernetes_rg"
+      + subnet                = (known after apply)
+      + tags                  = {
+          + "environment" = "CP2"
+        }
+      + vm_protection_enabled = false
+    }
+
+Plan: 9 to add, 0 to change, 0 to destroy.
+
+─────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────
+
+Saved the plan to: myplan.txt
+
+To perform exactly these actions, run the following command to apply:
+    terraform apply "myplan.txt"
+[user@terraform single-vm]$
+```
+
+Para empezar el despliegue, sin importarnos el orden:
+
+```console
+[user@terraform single-vm]$ terraform apply
+...
+  # azurerm_virtual_network.myNet will be created
+  + resource "azurerm_virtual_network" "myNet" {
+      + address_space         = [
+          + "10.0.0.0/16",
+        ]
+      + guid                  = (known after apply)
+      + id                    = (known after apply)
+      + location              = "westeurope"
+      + name                  = "kubernetesnet"
+      + resource_group_name   = "kubernetes_rg"
+      + subnet                = (known after apply)
+      + tags                  = {
+          + "environment" = "CP2"
+        }
+      + vm_protection_enabled = false
+    }
+
+Plan: 9 to add, 0 to change, 0 to destroy.
+
+Do you want to perform these actions?
+  Terraform will perform the actions described above.
+  Only 'yes' will be accepted to approve.
+
+  Enter a value: yes
+  ...
+[user@terraform single-vm]$
+```
+
+Nos pedirá confirmación, podemos revisar el plan y el orden en el que se realizará. Solo se iniciará el despliegue si confirmamos con **yes**.
+
+Sin embargo, si ejecutamos el apply con la salida generada anteriormente el plan se ejecutará inmediatamente sin pedir confirmación:
+
+```console
+[user@terraform single-vm]$ terraform apply myplan.txt
+terraform apply myplan.txt 
+azurerm_resource_group.rg: Creating...
+azurerm_resource_group.rg: Creation complete after 0s [id=/subscriptions/7a4e1967-660f-4ee9-bafb-fd3522c7ef52/resourceGroups/kubernetes_rg]
+azurerm_public_ip.myPublicIp1: Creating...
+azurerm_virtual_network.myNet: Creating...
+azurerm_network_security_group.mySecGroup: Creating...
+azurerm_storage_account.stAccount: Creating...
+...
+[user@terraform single-vm]$
+```
