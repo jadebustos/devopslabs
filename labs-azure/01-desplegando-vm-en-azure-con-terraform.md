@@ -214,3 +214,87 @@ Apply complete! Resources: 9 added, 0 changed, 0 destroyed.
 Podemos ver el estado ejecutando **terraform show**.
 
 > ![TIP](../imgs/tip-icon.png) El revisar el orden en el que se ejecutará el plan y asegurar que dicho orden se cumple es algo que irá cobrando importancia a medida que añadimos infraestructura ya que llegará el caso en el que haya dependencias de recursos que deberán estar creados para crear otros a medida que la infraestructura crece.
+
+## Destruyendo la infraestructura
+
+Es posible eliminar toda la infraestructura para ello:
+
+```console
+[user@terraform single-vm]$ terraform destroy
+...
+  # azurerm_virtual_network.myNet will be destroyed
+  - resource "azurerm_virtual_network" "myNet" {
+      - address_space         = [
+          - "10.0.0.0/16",
+        ] -> null
+      - dns_servers           = [] -> null
+      - guid                  = "c7287f39-1d9d-4002-a968-f9b581c576f1" -> null
+      - id                    = "/subscriptions/7a4e1967-660f-4ee9-bafb-fd3522c7ef52/resourceGroups/kubernetes_rg/providers/Microsoft.Network/virtualNetworks/kubernetesnet" -> null
+      - location              = "westeurope" -> null
+      - name                  = "kubernetesnet" -> null
+      - resource_group_name   = "kubernetes_rg" -> null
+      - subnet                = [
+          - {
+              - address_prefix = "10.0.1.0/24"
+              - id             = "/subscriptions/7a4e1967-660f-4ee9-bafb-fd3522c7ef52/resourceGroups/kubernetes_rg/providers/Microsoft.Network/virtualNetworks/kubernetesnet/subnets/terraformsubnet"
+              - name           = "terraformsubnet"
+              - security_group = ""
+            },
+          - {
+              - address_prefix = "10.0.30.0/24"
+              - id             = "/subscriptions/7a4e1967-660f-4ee9-bafb-fd3522c7ef52/resourceGroups/kubernetes_rg/providers/Microsoft.Network/virtualNetworks/kubernetesnet/subnets/terraformsubnet-dev"
+              - name           = "terraformsubnet-dev"
+              - security_group = ""
+            },
+          - {
+              - address_prefix = "10.0.31.0/24"
+              - id             = "/subscriptions/7a4e1967-660f-4ee9-bafb-fd3522c7ef52/resourceGroups/kubernetes_rg/providers/Microsoft.Network/virtualNetworks/kubernetesnet/subnets/terraformsubnet-pre"
+              - name           = "terraformsubnet-pre"
+              - security_group = ""
+            },
+          - {
+              - address_prefix = "10.0.32.0/24"
+              - id             = "/subscriptions/7a4e1967-660f-4ee9-bafb-fd3522c7ef52/resourceGroups/kubernetes_rg/providers/Microsoft.Network/virtualNetworks/kubernetesnet/subnets/terraformsubnet-qa"
+              - name           = "terraformsubnet-qa"
+              - security_group = ""
+            },
+        ] -> null
+      - tags                  = {
+          - "environment" = "CP2"
+        } -> null
+      - vm_protection_enabled = false -> null
+    }
+
+Plan: 0 to add, 0 to change, 12 to destroy.
+
+Do you really want to destroy all resources?
+  Terraform will destroy all your managed infrastructure, as shown above.
+  There is no undo. Only 'yes' will be accepted to confirm.
+
+  Enter a value: yes
+...
+azurerm_virtual_network.myNet: Destruction complete after 10s
+azurerm_resource_group.rg: Destroying... [id=/subscriptions/7a4e1967-660f-4ee9-bafb-fd3522c7ef52/resourceGroups/kubernetes_rg]
+azurerm_resource_group.rg: Still destroying... [id=/subscriptions/7a4e1967-660f-4ee9-bafb-fd3522c7ef52/resourceGroups/kubernetes_rg, 10s elapsed]
+azurerm_resource_group.rg: Still destroying... [id=/subscriptions/7a4e1967-660f-4ee9-bafb-fd3522c7ef52/resourceGroups/kubernetes_rg, 20s elapsed]
+azurerm_resource_group.rg: Still destroying... [id=/subscriptions/7a4e1967-660f-4ee9-bafb-fd3522c7ef52/resourceGroups/kubernetes_rg, 30s elapsed]
+azurerm_resource_group.rg: Still destroying... [id=/subscriptions/7a4e1967-660f-4ee9-bafb-fd3522c7ef52/resourceGroups/kubernetes_rg, 40s elapsed]
+azurerm_resource_group.rg: Still destroying... [id=/subscriptions/7a4e1967-660f-4ee9-bafb-fd3522c7ef52/resourceGroups/kubernetes_rg, 50s elapsed]
+azurerm_resource_group.rg: Still destroying... [id=/subscriptions/7a4e1967-660f-4ee9-bafb-fd3522c7ef52/resourceGroups/kubernetes_rg, 1m0s elapsed]
+azurerm_resource_group.rg: Still destroying... [id=/subscriptions/7a4e1967-660f-4ee9-bafb-fd3522c7ef52/resourceGroups/kubernetes_rg, 1m10s elapsed]
+azurerm_resource_group.rg: Still destroying... [id=/subscriptions/7a4e1967-660f-4ee9-bafb-fd3522c7ef52/resourceGroups/kubernetes_rg, 1m20s elapsed]
+azurerm_resource_group.rg: Still destroying... [id=/subscriptions/7a4e1967-660f-4ee9-bafb-fd3522c7ef52/resourceGroups/kubernetes_rg, 1m30s elapsed]
+azurerm_resource_group.rg: Still destroying... [id=/subscriptions/7a4e1967-660f-4ee9-bafb-fd3522c7ef52/resourceGroups/kubernetes_rg, 1m40s elapsed]
+azurerm_resource_group.rg: Destruction complete after 1m47s
+
+Destroy complete! Resources: 12 destroyed.
+[user@terraform single-vm]$
+```
+
+## Mas opciones de Terraform
+
+Consultando la ayuda de Terraform se puede obtener mas información sobre el resto de tareas que se pueden realizar:
+
+```console
+[user@terraform single-vm]$ terraform --help
+```
