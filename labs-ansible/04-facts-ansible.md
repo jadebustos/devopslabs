@@ -165,6 +165,8 @@ DOMAIN="jadbp.lab"
 [ansible@ansibleclient ~]$ 
 ```
 
+> ![INFORMATION](../imgs/information-icon.png) En el template que hemos utilizado [roles/networkconf/templates/network.j2](roles/networkconf/templates/network.j2) no hemos incluido todos los parámetros, por lo tanto ambos ficheros serán diferentes. Observar que los parámetros que hemos incluido no se han definido en el fichero de variables del role, se cogen de los facts del host y por lo tanto serán los mismos valores que tenga ese mismo parámetro en el fichero de configuración del host.
+
 La recolección de facts lleva algo de tiempo, para la ejecución en un sistema es algo asumible. Sin embargo, cuando se ejecuta un playbook en varios equipos puede llevar mucho tiempo. Si no se necesita la información contenida en los facts se desactiva la recolección de información con **gather_facts: false**.
 
 El playbook que hemos creado necesita el valor **gather_facts** a **true** ya que utiliza la información recolectada en los facts: 
