@@ -1,0 +1,46 @@
+---
+apiVersion: v1
+kind: Service
+metadata:
+    name: balanced-service
+    namespace: webapp-balanced
+spec:
+    selector:
+      app: webapp-balanced
+    ports:
+    - name: http
+      protocol: TCP
+      port: 80
+      targetPort: 80
+    type: LoadBalancer
+---
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: balanced-ingress
+  namespace: webapp-balanced
+  labels:
+    app: webapp-balanced
+  annotations:
+      haproxy.org/path-rewrite: "/"
+spec:
+  rules:
+  - host: foo-balanced.bar
+    http:
+      paths:
+      - path: /balanced
+        pathType: "Prefix"
+        backend:
+          service:
+            name: balanced-service
+            port:
+              number: 80
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: haproxy-configmap
+  namespace: webapp-balanced
+data:
+  servers-increment: "42"
+  ssl-redirect: "OFF"
