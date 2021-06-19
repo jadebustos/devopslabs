@@ -7,7 +7,7 @@ Necesitaremos dos máquinas:
 
 ## Instalación de Ansible (CentOS)
 
-Para instalar ansible será necesario configurar el repositorio EPEL:
+Para instalar ansible será necesario configurar el repositorio EPEL en la máquina que tendrá el role de ansible controller:
 
 ```console
 [root@ansiblectrl ~]# dnf install epel-release -y
@@ -21,6 +21,36 @@ Una vez configurado el repositorio podremos instalar ansible:
 [root@ansiblectrl ~]# dnf install ansible -y
 ...
 [root@ansiblectrl ~]#
+```
+
+## Creación de usuarios
+
+Necesitaremos crear un usuario en cada una de las máquinas.
+
+En el controller crearemos un usuario que será con el que lanzaremos las tareas con ansible:
+
+```console
+[root@ansiblectrl ~]# useradd -md /home/jadebustos jadebustos
+[root@ansiblectrl ~]# passwd jadebustos
+Changing password for user jadebustos.
+New password: 
+BAD PASSWORD: The password is shorter than 8 characters
+Retype new password: 
+passwd: all authentication tokens updated successfully.
+[root@ansiblectrl ~]#
+```
+
+En el cliente crearemos un usuario que será utilizado por ansible para conectarse y ejecutar tareas:
+
+```console
+[root@ansibleclient ~]# useradd -md /home/ansible ansible
+[root@ansibleclient ~]# passwd ansible
+Changing password for user ansible.
+New password: 
+BAD PASSWORD: The password is shorter than 8 characters
+Retype new password: 
+passwd: all authentication tokens updated successfully.
+[root@ansibleclient ~]# 
 ```
 
 ## Acceso a los nodos
@@ -71,7 +101,7 @@ The key's randomart image is:
 
 > ![IMPORTANT](../imgs/important-icon.png) Si se cambia el nombre del fichero para las claves **id_rsa** cuando queramos utilizarla deberemos especificar el fichero con el flag **-i nombre_fichero_claves**.
 
-Una vez generada tendremos que copiar la clave pública a los hosts que queramos gestionar y a la cuenta del usuario con el que se conectará ansible. Si queremos ejecutar desde el host **beast** con el usuario **jadebustos** tareas en el host **nodo1** conectándonos con el usuario **ansible** a dicho nodo podemos copiar la clave:
+Una vez generada tendremos que copiar la clave pública a los hosts que queramos gestionar y a la cuenta del usuario con el que se conectará ansible. Como vamos a lanzar tareas desde el  controller de ansible con el usuario **jadebustos** al equipo client **nodo1** conectándonos con el usuario **ansible** a dicho nodo podemos copiar la clave:
 
 ```console
 [jadebustos@ansiblectrl ~]$ ssh-copy-id -i .ssh/id_rsa.pub ansible@ansibleclient
