@@ -1,0 +1,14 @@
+---
+
+- name: create users
+  user:
+    name: "{{ item.key }}"
+    comment: "{{ item.value.gecos }}"
+    home: "{{ item.value.home }}"
+    group: "{{ item.key }}"
+    shell: "{{ item.value.shell }}"
+    generate_ssh_key: "{{ item.value.generate_ssh_key }}"
+    ssh_key_size: "{{ item.value.ssh_key_size }}"
+  become: yes
+  with_dict:
+    - "{{ users }}"

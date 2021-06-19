@@ -1,0 +1,32 @@
+---
+
+# diccionario con la información de usuarios a crear
+users:
+  operator:
+    password: 'temporal123'
+    home: '/home/operador'
+    gecos: 'usuario para tareas de operacion'
+    shell: '/bin/bash'
+    generate_ssh_keys: 'yes'
+    ssh_key_size: '3072'
+  security:
+    password: '12345'
+    home: '/home/user2'
+    gecos: ''
+    shell: '/bin/bash'
+    generate_ssh_keys: 'yes'
+    ssh_key_size: '4096'
+  backup:
+    password: 'password'
+    home: '/var/lib/backup'
+    gecos: 'usuario para ejecutar el agente de backup'
+    shell: '/sbin/nologin'
+    generate_ssh_keys: 'no'
+    ssh_key_size: ''
+  monitoring:
+    password: 'enunlugardelamancha'
+    home: '/var/lib/monitoring'
+    gecos: 'usuario para ejecutar el agente de monitorizacion'
+    shell: '/sbin/nologin'
+    generate_ssh_keys: 'no'
+    ssh_key_size: ''
