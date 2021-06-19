@@ -173,7 +173,7 @@ localhost | SUCCESS => {
 localhost | SUCCESS => {
     "password": "67890"
 }
-[jadebustos@ansiblectrl ansible]$ansible localhost -m debug -a var="password" -e "@secret-jesus.yaml" --vault-id jesus@jesus-key
+[jadebustos@ansiblectrl ansible]$ ansible localhost -m debug -a var="password" -e "@secret-jesus.yaml" --vault-id jesus@jesus-key
 localhost | SUCCESS => {
     "password": "abcde"
 }
