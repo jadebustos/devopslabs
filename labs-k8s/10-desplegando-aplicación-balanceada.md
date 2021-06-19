@@ -128,6 +128,71 @@ Inicialmente crearemos una única replica.
 
 ## Creamos el servicio balanceado
 
+Creamos el servicio y el ingress tal y como hemos hecho anteriormente. En este caso en el servicio indicaremos que es del tipo **LoadBalancer**:
+
+```yaml
+apiVersion: v1
+kind: Service
+metadata:
+    name: balanced-service
+    namespace: webapp-balanced
+spec:
+    selector:
+      app: webapp-balanced
+    ports:
+    - name: http
+      protocol: TCP
+      port: 80
+      targetPort: 80
+    type: LoadBalancer
+---
+apiVersion: v1
+kind: Service
+metadata:
+    name: balanced-service
+    namespace: webapp-balanced
+spec:
+    selector:
+      app: webapp-balanced
+    ports:
+    - name: http
+      protocol: TCP
+      port: 80
+      targetPort: 80
+    type: LoadBalancer
+---
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: balanced-ingress
+  namespace: webapp-balanced
+  labels:
+    app: webapp-balanced
+  annotations:
+      haproxy.org/path-rewrite: "/"
+spec:
+  rules:
+  - host: foo-balanced.bar
+    http:
+      paths:
+      - path: /balanced
+        pathType: "Prefix"
+        backend:
+          service:
+            name: balanced-service
+            port:
+              number: 80
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: haproxy-configmap
+  namespace: webapp-balanced
+data:
+  servers-increment: "42"
+  ssl-redirect: "OFF"
+```
+
 ## Probando la aplicación balanceada
 
 Listamos los pods:
@@ -172,3 +237,63 @@ Vemos que los pods se están ejecutando en nodos diferentes, tal y como configur
 ![IMG](../imgs/webapp-balanced-2.png)
 
 Podemos ir recargando y veremos que cada vez que recargamos se muestra una ip diferente. Cada petición la está sirviendo un pod diferente.
+
+## Escalando la aplicación
+
+Escalamos la apliación para tener tres pods:
+
+```console
+[kubeadmin@kubemaster devopslabs]$ kubectl scale --replicas=3 deployment/webapp-balanced --namespace=webapp-balanced
+deployment.apps/webapp-balanced scaled
+[kubeadmin@kubemaster devopslabs]$ kubectl get pods --namespace webapp-balanced -o wide
+NAME                               READY   STATUS    RESTARTS   AGE   IP               NODE                  NOMINATED NODE   READINESS GATES
+webapp-balanced-6f4f8dcd99-28s7z   1/1     Running   0          18m   192.169.45.158   kubenode2.jadbp.lab   <none>           <none>
+webapp-balanced-6f4f8dcd99-ntd48   0/1     Pending   0          13s   <none>           <none>                <none>           <none>
+webapp-balanced-6f4f8dcd99-tl9xn   1/1     Running   0          18m   192.169.62.36    kubenode1.jadbp.lab   <none>           <none>
+[kubeadmin@kubemaster devopslabs]$
+```
+
+Vemos que el tercer pod no se ha desplegado. En el clúster tenemos dos nodos y hemos incluido una regla de antiafinidad, por lo tanto no existe ningún nodo en el clúster en el que desplegar el pod:
+
+```console
+[kubeadmin@kubemaster devopslabs]$ kubectl get nodes
+NAME                   STATUS   ROLES                  AGE   VERSION
+kubemaster.jadbp.lab   Ready    control-plane,master   11d   v1.21.1
+kubenode1.jadbp.lab    Ready    <none>                 11d   v1.21.1
+kubenode2.jadbp.lab    Ready    <none>                 9d    v1.21.1
+[kubeadmin@kubemaster devopslabs]$ 
+```
+
+Podemos ver los eventos del namespace en el que venos que no se cumplen las reglas de antiafinidad del deployment:
+
+```console
+[kubeadmin@kubemaster devopslabs]$ kubectl get events --namespace webapp-balanced
+LAST SEEN   TYPE      REASON              OBJECT                                  MESSAGE
+19m         Normal    Scheduled           pod/webapp-balanced-6f4f8dcd99-28s7z    Successfully assigned webapp-balanced/webapp-balanced-6f4f8dcd99-28s7z to kubenode2.jadbp.lab
+19m         Normal    Pulled              pod/webapp-balanced-6f4f8dcd99-28s7z    Container image "quay.io/rhte_2019/webapp:v1" already present on machine
+19m         Normal    Created             pod/webapp-balanced-6f4f8dcd99-28s7z    Created container webapp-balanced
+19m         Normal    Started             pod/webapp-balanced-6f4f8dcd99-28s7z    Started container webapp-balanced
+43s         Warning   FailedScheduling    pod/webapp-balanced-6f4f8dcd99-ntd48    0/3 nodes are available: 1 node(s) had taint {node-role.kubernetes.io/master: }, that the pod didn't tolerate, 2 node(s) didn't match pod affinity/anti-affinity rules, 2 node(s) didn't match pod anti-affinity rules.
+41s         Warning   FailedScheduling    pod/webapp-balanced-6f4f8dcd99-ntd48    0/3 nodes are available: 1 node(s) had taint {node-role.kubernetes.io/master: }, that the pod didn't tolerate, 2 node(s) didn't match pod affinity/anti-affinity rules, 2 node(s) didn't match pod anti-affinity rules.
+18m         Normal    Scheduled           pod/webapp-balanced-6f4f8dcd99-tl9xn    Successfully assigned webapp-balanced/webapp-balanced-6f4f8dcd99-tl9xn to kubenode1.jadbp.lab
+18m         Normal    Pulled              pod/webapp-balanced-6f4f8dcd99-tl9xn    Container image "quay.io/rhte_2019/webapp:v1" already present on machine
+18m         Normal    Created             pod/webapp-balanced-6f4f8dcd99-tl9xn    Created container webapp-balanced
+18m         Normal    Started             pod/webapp-balanced-6f4f8dcd99-tl9xn    Started container webapp-balanced
+19m         Normal    SuccessfulCreate    replicaset/webapp-balanced-6f4f8dcd99   Created pod: webapp-balanced-6f4f8dcd99-28s7z
+19m         Normal    SuccessfulCreate    replicaset/webapp-balanced-6f4f8dcd99   Created pod: webapp-balanced-6f4f8dcd99-tl9xn
+44s         Normal    SuccessfulCreate    replicaset/webapp-balanced-6f4f8dcd99   Created pod: webapp-balanced-6f4f8dcd99-ntd48
+19m         Normal    ScalingReplicaSet   deployment/webapp-balanced              Scaled up replica set webapp-balanced-6f4f8dcd99 to 1
+19m         Normal    ScalingReplicaSet   deployment/webapp-balanced              Scaled up replica set webapp-balanced-6f4f8dcd99 to 2
+45s         Normal    ScalingReplicaSet   deployment/webapp-balanced              Scaled up replica set webapp-balanced-6f4f8dcd99 to 3
+[kubeadmin@kubemaster devopslabs]$ 
+```
+
+```console
+[kubeadmin@kubemaster devopslabs]$ kubectl edit deployment webapp-balanced --namespace webapp-balanced
+deployment.apps/webapp-balanced edited
+[kubeadmin@kubemaster devopslabs]$ 
+```
+
+## Ejercicio
+
+Modificar el fichero [webapp-balanced/webapp-balanced.yaml](webapp-balanced/webapp-balanced.yaml) para que la aplicación sólo se pueda acceder utilizando [TLS](10-desplegando-aplicación-balanceada.md).
