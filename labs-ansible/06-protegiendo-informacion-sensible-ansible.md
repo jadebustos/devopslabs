@@ -317,7 +317,7 @@ Puede ser necesario encriptar ficheros enteros, por ejemplo ficheros con claves 
 secret:
   api_token: "32fcdcf7-e364-47e4-81ed-10265a1a3ef3"
   licence_key: "c8695835-dd11-4886-a2a4-ab88146e17c3"
-[jadebustos@archimedes vault]$ ansible-vault encrypt secret.yaml 
+[jadebustos@archimedes ansible]$ ansible-vault encrypt secret.yaml 
 New Vault password: 
 Confirm New Vault password: 
 Encryption successful
@@ -361,14 +361,14 @@ secret:
 Vamos a desplegar una instancia en AWS encriptando el fichero de credenciales. Para ello creamos el fichero de credenciales y lo encriptamos utilizando la clave que hay en el fichero **password**:
 
 ```console
-[jadebustos@archimedes ansible]$ cat defaults/secret.yaml                                                                            
+[jadebustos@archimedes labs-ansible]$ cat defaults/secret.yaml                                                                            
 aws_access_key: 'f8eb724a-74b9-4a03-a009-6892e16ad9e3'
 
 aws_secret_key: '131ebc99-5e66-43d9-8bdf-c07c274384c0'
 
-[jadebustos@archimedes ansible]$ ansible-vault encrypt defaults/secret.yaml --vault-password-file password 
+[jadebustos@archimedes labs-ansible]$ ansible-vault encrypt defaults/secret.yaml --vault-password-file password 
 Encryption successful
-[jadebustos@archimedes ansible]$ cat defaults/secret.yaml  
+[jadebustos@archimedes labs-ansible]$ cat defaults/secret.yaml  
 $ANSIBLE_VAULT;1.1;AES256
 36326465653965643261663335626465383539393865316636313134356430663032376532373835
 6466643263636138353364313763373430386439373739370a613964313833383638346532666634
@@ -379,13 +379,13 @@ $ANSIBLE_VAULT;1.1;AES256
 33643663663831303835313538306132356536376634396638333739336364626534616661633865
 66303633343938323038383435613766323634303433313936666633316530336531356637666638
 33643062396231346639323663653766323636626230643864666465393265653634
-[jadebustos@archimedes ansible]$
+[jadebustos@archimedes labs-ansible]$
 ```
 
-El playbook [deploy-amazon-instance.yaml][deploy-amazon-instance.yaml] es un ejemplo de como se utilizaría la encriptación de un fichero para proteger las credenciales:
+El playbook [deploy-amazon-instance.yaml](deploy-amazon-instance.yaml) es un ejemplo de como se utilizaría la encriptación de un fichero para proteger las credenciales:
 
 ```console
-[jadebustos@archimedes ansible]$ ansible-playbook -i hosts deploy-amazon-instance.yaml --vault-password-file password
+[jadebustos@archimedes labs-ansible]$  ansible-playbook -i hosts deploy-amazon-instance.yaml --vault-password-file password
 ```
 
 ## Seguridad
