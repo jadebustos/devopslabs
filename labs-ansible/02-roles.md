@@ -80,6 +80,55 @@ users:
 
 La estructura anterior crea un diccionario, **users**, cuyas claves son los nombres de los usuarios (**operator**, **security**, **backup** y **monitoring**) y a cada usuario se le definen sus propiedades (**password**, **home**, **gecos**, **shell**, **generate_ssh_keys** y **ssh_key_size**).
 
+A cotinuación crearemos un role llamado **users** dentro de [roles/users](roles/users):
+
+```console
+[jadebustos@ansiblectrl labs-ansible]$ tree roles/users/
+roles/users/
+└── tasks
+    ├── 01-create.yaml
+    └── main.yaml
+
+1 directory, 2 files
+[jadebustos@ansiblectrl labs-ansible]$ 
+```
+
+El fichero [roles/users/tasks/main.yaml](roles/users/tasks/main.yaml) incluye todas las tareas a realizar por el role:
+
+```yaml
+---
+
+- include_tasks: 01-create.yaml
+```
+
+En este caso las tareas las hemos incluido en un fichero [roles/users/tasks/01-create.yaml](roles/users/tasks/01-create.yaml):
+
+```console
+---
+
+- name: create users
+  user:
+    name: "{{ item.key }}"
+    comment: "{{ item.value.gecos }}"
+    home: "{{ item.value.home }}"
+    shell: "{{ item.value.shell }}"
+    generate_ssh_key: "{{ item.value.generate_ssh_keys }}"
+    ssh_key_bits: "{{ item.value.ssh_key_size }}"
+  become: yes
+  with_dict:
+    - "{{ users }}"
+```
+
+Se iterará sobre el diccionario **users**, sobre sus claves (**operator**, **security**, **backup** y **monitoring**) donde:
+
++ **item.key** será la clave sobre la que estamos iterando, el nombre del usuario.
++ **item.value.gecos** será el valor del campo **gecos** de la clave sobre la que estemos iterando.
++ **item.value.home** será el valor del campo **home** de la clave sobre la que estemos iterando.
++ **item.value.shell** será el valor del campo **shell** de la clave sobre la que estemos iterando.
++ **item.value.generate_ssh_keys** será el valor del campo **generate_ssh_keys** de la clave sobre la que estemos iterando.
++ **item.value.ssh_key_bits** será el valor del campo **ssh_key_bits** de la clave sobre la que estemos iterando.
++ **become: yes** indica que la tarea se tiene que ejecutar como usuario **root**.
+
 ## Mejoras
 
 ```console
