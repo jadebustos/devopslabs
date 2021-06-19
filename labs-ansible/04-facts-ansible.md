@@ -43,7 +43,7 @@ total 28K
 [jadebustos@ansiblectrl labs-ansible]$ 
 ```
 
-Tambien podemos indicar que se redirigan de forma automática a un directorio. Esto es útil cuando queremos recuperar los facts de varios sistemas:
+También podemos indicar que se redirigan de forma automática a un directorio. Esto es útil cuando queremos recuperar los facts de varios sistemas:
 
 ```console
 [jadebustos@ansiblectrl labs-ansible]$ ansible -i hosts -l localhost,ansibleclient.jadbp.lab -m setup all --tree /tmp/facts
@@ -126,6 +126,7 @@ ansibleclient.jadbp.lab    : ok=3    changed=1    unreachable=0    failed=0    s
 
 [jadebustos@ansiblectrl labs-ansible]$
 ```
+> ![INFORMATION](../imgs/information-icon.png) [Templates (Jinja2)](https://docs.ansible.com/ansible/latest/user_guide/playbooks_templating.html)
 
 Si nos conectamos al equipo podemos comparar el fichero generado con la información de los facts y el fichero real de configuración:
 
