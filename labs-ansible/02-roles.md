@@ -183,8 +183,8 @@ En este caso las tareas las hemos incluido en un fichero [roles/users/tasks/01-p
   with_items: "{{ sha512.results }}"
 
 # descomentando esta tarea podemos ver la estructura creada
-#- name: display passwordhashes
-#  debug: var=passwdhashes
+- name: display passwordhashes
+  debug: var=passwdhashes
 
 # cambiamos el password de los usuarios
 - name: change shadow password hash
@@ -195,6 +195,15 @@ En este caso las tareas las hemos incluido en un fichero [roles/users/tasks/01-p
   with_dict:
     - "{{ passwdhashes }}"
 ```
+
++ La primera tarea itera sobre el diccionario **users** y ejecuta un comando que imprime en la salida estándar el hash (sha512) de la contraseña y almacena estas salidas en la variable **sha512**. Si se descomentan las dos tareas siguientes se imprimirá en pantalla la almacenado en la variable **sha512** que nos permitirá ver su estructura para ser utilizada en la siguiente tarea.
+
++ La siguiente tarea itera sobre los resultados obtenidos en la ejecución de la primera tarea y que se encuentran almacenados en **sha512.results**. Se creará un diccionario cuya clave serán los nombres de los usuarios y el valor el hash (sha512) de la contraseña de ese usuario.
+
++ La siguiente tarea imprime el diccionario creado.
+
++ La última tarea itera sobre el diccionario que hemos creado, **passwdhashes** y cambia la contraseña de los usuarios.
+
 
 ## Mejoras
 
