@@ -215,13 +215,13 @@ Donde hemos definido las variables en el fichero [clonerepo.yaml](group_vars/clo
 La contraseña de acceso la encriptamos en la variable **password** y almacenada en el fichero **group_vars/vault-file.yaml**:
 
 ```console
-[jadebustos@archimedes ansible]$ ansible-vault encrypt_string --vault-password-file git-password 'MICONTRASEÑA' --name password > group_vars/vault-file.yaml
+[jadebustos@ansiblectrl ansible]$ ansible-vault encrypt_string --vault-password-file git-password 'MICONTRASEÑA' --name password > group_vars/vault-file.yaml
 ```
 
 En el fichero **git-password** almacenamos la clave con la que encriptamos la contraseña del usuario.
 
 ```console
-[jadebustos@archimedes ansible]$ ansible-playbook -i hosts -l laptop clonar-git.yaml --vault-password-file git-password
+[jadebustos@ansiblectrl ansible]$ ansible-playbook -i hosts -l laptop clonar-git.yaml --vault-password-file git-password
 
 PLAY [clonar repositorio privado] ************************************************************************************************************************************************************************************************************
 
@@ -234,7 +234,7 @@ changed: [localhost]
 PLAY RECAP ***********************************************************************************************************************************************************************************************************************************
 localhost                  : ok=2    changed=1    unreachable=0    failed=0    skipped=0    rescued=0    ignored=0   
 
-[jadebustos@archimedes ansible]$ ls -lh /tmp/git/
+[jadebustos@ansiblectrl ansible]$ ls -lh /tmp/git/
 total 108K
 -rw-rw-r--. 1 jadebustos jadebustos 8.1K Jan 19 23:41 01-terraform-kvm-provider.md
 -rw-rw-r--. 1 jadebustos jadebustos 6.9K Jan 19 23:41 02-instalacion-docker.md
@@ -247,13 +247,13 @@ drwxrwxr-x. 2 jadebustos jadebustos   60 Jan 19 23:41 imgs
 -rw-rw-r--. 1 jadebustos jadebustos  35K Jan 19 23:41 LICENSE
 -rw-rw-r--. 1 jadebustos jadebustos    8 Jan 19 23:41 README.md
 drwxrwxr-x. 3 jadebustos jadebustos   60 Jan 19 23:41 terraform
-[jadebustos@archimedes ansible]$
+[jadebustos@ansiblectrl ansible]$
 ```
 
 En este ejemplo tenemos la clave de encriptado en el fichero **git-password**:
 
 ```console
-[jadebustos@archimedes ansible]$ git status
+[jadebustos@ansiblectrl ansible]$ git status
 On branch main
 Your branch is up to date with 'origin/main'.
 
@@ -271,7 +271,7 @@ Untracked files:
 	roles/clonerepo/
 
 no changes added to commit (use "git add" and/or "git commit -a")
-[jadebustos@archimedes ansible]$
+[jadebustos@ansiblectrl ansible]$
 ```
 
 Como podemos ver hay varios ficheros pendientes de subir al repositorio. Con lo cual tendremos que tener cuidado de no hacer commit del fichero.
@@ -279,7 +279,7 @@ Como podemos ver hay varios ficheros pendientes de subir al repositorio. Con lo 
 Para evitar errores podemos crear un fichero **.gitignore** para ignorar el fichero de claves:
 
 ```console
-[jadebustos@archimedes ansible]$ git status
+[jadebustos@ansiblectrl ansible]$ git status
 On branch main
 Your branch is up to date with 'origin/main'.
 
@@ -297,7 +297,7 @@ Untracked files:
 	roles/clonerepo/
 
 no changes added to commit (use "git add" and/or "git commit -a")
-[jadebustos@archimedes ansible]$
+[jadebustos@ansiblectrl ansible]$
 ```
 
 De esta forma nos aseguramos de no subir el fichero con la clave al repositorio.
