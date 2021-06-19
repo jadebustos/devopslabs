@@ -313,15 +313,15 @@ La forma recomendada es utilizar vaults como [Cyberark](https://www.cyberark.com
 Puede ser necesario encriptar ficheros enteros, por ejemplo ficheros con claves o tokens:
 
 ```console
-[jadebustos@archimedes ansible]$ cat secret.yaml
+[jadebustos@ansiblectrl ansible]$ cat secret.yaml
 secret:
   api_token: "32fcdcf7-e364-47e4-81ed-10265a1a3ef3"
   licence_key: "c8695835-dd11-4886-a2a4-ab88146e17c3"
-[jadebustos@archimedes ansible]$ ansible-vault encrypt secret.yaml 
+[jadebustos@ansiblectrl ansible]$ ansible-vault encrypt secret.yaml 
 New Vault password: 
 Confirm New Vault password: 
 Encryption successful
-[jadebustos@archimedes ansible]$ cat secret.yaml
+[jadebustos@ansiblectrl ansible]$ cat secret.yaml
 $ANSIBLE_VAULT;1.1;AES256
 34613939653131656434663336613138386639383864623832303163376235376637633065616134
 3066633830326536363564353464663139346330363535350a646236306363366336366565306265
@@ -333,13 +333,13 @@ $ANSIBLE_VAULT;1.1;AES256
 38323237313164623830343530323464663131623235383933636534313033313131363430336662
 61393332343966653866336436303363636264373539653632383662306338633161656632383936
 3331666664373865313465623064636137626637393965343932
-[jadebustos@archimedes ansible]$
+[jadebustos@ansiblectrl ansible]$
 ```
 
 Podemos modificar los secrets utilizando:
 
 ```console
-[jadebustos@archimedes ansible]$ ansible-vault edit secret.yaml 
+[jadebustos@ansiblectrl ansible]$ ansible-vault edit secret.yaml 
 Vault password: 
 ```
 
@@ -348,12 +348,12 @@ Lo cual abrirá el secreto desencriptado en el editor por defecto para que lo mo
 Y también podemos consultarlo:
 
 ```console
-[jadebustos@archimedes ansible]$ ansible-vault view secret.yaml --ask-vault-pass
+[jadebustos@ansiblectrl ansible]$ ansible-vault view secret.yaml --ask-vault-pass
 Vault password: 
 secret:
   api_token: "32fcdcf7-e364-47e4-81ed-10265a1a3ef3"
   licence_key: "c8695835-dd11-4886-a2a4-ab88146e17c3"
-[jadebustos@archimedes ansible]$
+[jadebustos@ansiblectrl ansible]$
 ```
 
 ## Encriptando ficheros (Ejemplo)
@@ -361,14 +361,14 @@ secret:
 Vamos a desplegar una instancia en AWS encriptando el fichero de credenciales. Para ello creamos el fichero de credenciales y lo encriptamos utilizando la clave que hay en el fichero **password**:
 
 ```console
-[jadebustos@archimedes labs-ansible]$ cat defaults/secret.yaml                                                                            
+[jadebustos@ansiblectrl labs-ansible]$ cat defaults/secret.yaml                                                                            
 aws_access_key: 'f8eb724a-74b9-4a03-a009-6892e16ad9e3'
 
 aws_secret_key: '131ebc99-5e66-43d9-8bdf-c07c274384c0'
 
-[jadebustos@archimedes labs-ansible]$ ansible-vault encrypt defaults/secret.yaml --vault-password-file password 
+[jadebustos@ansiblectrl labs-ansible]$ ansible-vault encrypt defaults/secret.yaml --vault-password-file password 
 Encryption successful
-[jadebustos@archimedes labs-ansible]$ cat defaults/secret.yaml  
+[jadebustos@ansiblectrl labs-ansible]$cat defaults/secret.yaml  
 $ANSIBLE_VAULT;1.1;AES256
 36326465653965643261663335626465383539393865316636313134356430663032376532373835
 6466643263636138353364313763373430386439373739370a613964313833383638346532666634
@@ -379,13 +379,13 @@ $ANSIBLE_VAULT;1.1;AES256
 33643663663831303835313538306132356536376634396638333739336364626534616661633865
 66303633343938323038383435613766323634303433313936666633316530336531356637666638
 33643062396231346639323663653766323636626230643864666465393265653634
-[jadebustos@archimedes labs-ansible]$
+[jadebustos@ansiblectrl labs-ansible]$
 ```
 
 El playbook [deploy-amazon-instance.yaml](deploy-amazon-instance.yaml) es un ejemplo de como se utilizaría la encriptación de un fichero para proteger las credenciales:
 
 ```console
-[jadebustos@archimedes labs-ansible]$  ansible-playbook -i hosts deploy-amazon-instance.yaml --vault-password-file password
+[jadebustos@ansiblectrl labs-ansible]$  ansible-playbook -i hosts deploy-amazon-instance.yaml --vault-password-file password
 ```
 
 ## Seguridad
@@ -393,7 +393,7 @@ El playbook [deploy-amazon-instance.yaml](deploy-amazon-instance.yaml) es un eje
 La protección que ofrece ansible vault se limita a cuando el dato se encuentra encriptado. Una vez que se desencripta los módulos y plugins tienen que utilizarlo de forma segura.
 
 ```console
-[jadebustos@archimedes ansible]$ cat security.yaml 
+[jadebustos@ansiblectrl labs-ansible]$ cat security.yaml 
 ---
 
 - name: ejemplo seguridad
@@ -404,7 +404,7 @@ La protección que ofrece ansible vault se limita a cuando el dato se encuentra 
   tasks:
     - name: uptime
       shell: "/usr/bin/uptime --value={{ password }}"
-[jadebustos@archimedes ansible]$ ansible-playbook -i hosts security.yaml --vault-password-file jose-key 
+[jadebustos@ansiblectrl labs-ansible]$ ansible-playbook -i hosts security.yaml --vault-password-file jose-key 
 
 PLAY [ejemplo seguridad] *********************************************************************************************************************************************************************************************************************
 
@@ -414,7 +414,7 @@ fatal: [localhost]: FAILED! => {"changed": true, "cmd": "/usr/bin/uptime --value
 PLAY RECAP ***********************************************************************************************************************************************************************************************************************************
 localhost                  : ok=1    changed=0    unreachable=0    failed=1    skipped=0    rescued=0    ignored=0   
 
-[jadebustos@archimedes ansible]$ 
+[jadebustos@ansiblectrl labs-ansible]$
 ```
 
 Podemos ver en la salida del comando el secret:
@@ -426,7 +426,7 @@ fatal: [localhost]: FAILED! => {"changed": true, "cmd": "/usr/bin/uptime --value
 Podemos utilizar la directiva **no_log** para evitar esto:
 
 ```console
-[jadebustos@archimedes ansible]$ cat security.yaml 
+[jadebustos@ansiblectrl labs-ansible]$ cat security.yaml 
 ---
 
 - name: ejemplo seguridad
@@ -438,7 +438,7 @@ Podemos utilizar la directiva **no_log** para evitar esto:
     - name: uptime
       shell: "/usr/bin/uptime --value={{ password }}"
       no_log: True
-[jadebustos@archimedes ansible]$ ansible-playbook -i hosts security.yaml --vault-password-file jose-key 
+[jadebustos@ansiblectrl labs-ansible]$ ansible-playbook -i hosts security.yaml --vault-password-file jose-key 
 
 PLAY [ejemplo seguridad] *********************************************************************************************************************************************************************************************************************
 
@@ -447,7 +447,7 @@ fatal: [localhost]: FAILED! => {"censored": "the output has been hidden due to t
 
 PLAY RECAP ***********************************************************************************************************************************************************************************************************************************
 localhost                  : ok=0    changed=0    unreachable=0    failed=1    skipped=0    rescued=0    ignored=0   
-[jadebustos@archimedes ansible]$
+[jadebustos@ansiblectrl labs-ansible]$
 ```
 
 ## Recursos
