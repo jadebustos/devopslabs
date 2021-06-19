@@ -12,7 +12,7 @@ users:
   security:
     password: '12345'
     home: '/home/user2'
-    gecos: ''
+    gecos: 'usuario de seguridad'
     shell: '/bin/bash'
     generate_ssh_keys: 'yes'
     ssh_key_size: '4096'
