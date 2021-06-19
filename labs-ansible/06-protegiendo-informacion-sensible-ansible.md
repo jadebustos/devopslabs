@@ -449,8 +449,3 @@ PLAY RECAP *********************************************************************
 localhost                  : ok=0    changed=0    unreachable=0    failed=1    skipped=0    rescued=0    ignored=0   
 [jadebustos@ansiblectrl labs-ansible]$
 ```
-
-## Recursos
-
-+ [Using Hasicorp Vault to Secure Ansible Secrets](https://www.youtube.com/watch?v=_z0cbNP0i2g)
-+ [CyberArk-Ansible end to end demo - 3: Securing newly created accounts](https://www.youtube.com/watch?v=qgyi-T0Ab3U)
