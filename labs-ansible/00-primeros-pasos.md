@@ -1,5 +1,28 @@
 # Primeros pasos con Ansible
 
+Necesitaremos dos máquinas:
+
++ **Ansible controller**, será la máquina donde se instalará ansible.
++ **Ansible client**, será la máquina donde ejecutaremos tareas con ansible.
+
+## Instalación de Ansible (CentOS)
+
+Para instalar ansible será necesario configurar el repositorio EPEL:
+
+```console
+[root@ansiblectrl ~]# dnf install epel-release -y
+...
+[root@ansiblectrl ~]#
+```
+
+Una vez configurado el repositorio podremos instalar ansible:
+
+```console
+[root@ansiblectrl ~]# dnf install ansible -y
+...
+[root@ansiblectrl ~]#
+```
+
 ## Acceso a los nodos
 
 Para poder acceder a los nodos gestionados por ansible y poder ejecutar tareas será necesario configurar el acceso mediante clave pública.
@@ -9,18 +32,18 @@ Para ello desde el controller de ansible, equipo desde el que ejecutaremos ansib
 Para comprobar si tenemos creadas claves:
 
 ```console
-[jadebustos@beast ~]$ ls -lh .ssh/*
+[jadebustos@ansiblectrl ~]$ ls -lh .ssh/*
 -rw-------. 1 jadebustos jadebustos 1.9K Oct 14 20:00 .ssh/authorized_keys
 -rw-------. 1 jadebustos jadebustos 1.7K Apr 15  2018 .ssh/id_rsa
 -rw-r--r--. 1 jadebustos jadebustos  408 Jan 17 10:50 .ssh/id_rsa.pub
 -rw-------. 1 jadebustos jadebustos 4.1K Jan 24 16:11 .ssh/known_hosts
-[jadebustos@beast ~]$ 
+[jadebustos@ansiblectrl ~]$ 
 ```
 
 Si no tuvieramos ficheros **.pub** (clave pública) y otro con el mismo nombre pero sin la "extensión" **.pub** deberemos generar las claves ejecutando:
 
 ```console
-[jadebustos@beast ~]$ ssh-keygen -t rsa -b 4096
+[jadebustos@ansiblectrl ~]$ ssh-keygen -t rsa -b 4096
 Generating public/private rsa key pair.
 Enter file in which to save the key (/home/jadebustos/.ssh/id_rsa): 
 Enter passphrase (empty for no passphrase): 
@@ -41,7 +64,7 @@ The key's randomart image is:
 |     . = .  .o= +|
 |      +.+   .o.o.|
 +----[SHA256]-----+
-[jadebustos@beast ~]$
+[jadebustos@ansiblectrl ~]$
 ```
 
 > ![IMPORTANT](../imgs/important-icon.png) No poner contraseña a la clave para que ansible se pueda conectar de forma desasistida.
@@ -51,7 +74,7 @@ The key's randomart image is:
 Una vez generada tendremos que copiar la clave pública a los hosts que queramos gestionar y a la cuenta del usuario con el que se conectará ansible. Si queremos ejecutar desde el host **beast** con el usuario **jadebustos** tareas en el host **nodo1** conectándonos con el usuario **ansible** a dicho nodo podemos copiar la clave:
 
 ```console
-[jadebustos@beast ~]$ ssh-copy-id -i .ssh/id_rsa.pub ansible@nodo1
+[jadebustos@ansiblectrl ~]$ ssh-copy-id -i .ssh/id_rsa.pub ansible@ansibleclient
 ```
 
 Si despliegas las máquinas con terraform puedes utilizar **cloud-init** tanto para crear el usuario como para configurar la clave pública. En el código para desplegar las imágenes del laboratorio se pueden ver [ejemplos](../terraform/kvm/docker/user_config.cfg):
@@ -136,13 +159,13 @@ localhost ansible_user=jadebustos
 La ejecución de un playbook sobre todo el inventario definido en el fichero **hosts**:
 
 ```console
-[jadebustos@beast ansible]$ ansible-playbook -i hosts playbook.yaml
+[jadebustos@ansiblectrl ansible]$ ansible-playbook -i hosts playbook.yaml
 ```
 
 La ejecución de un playbook sobre el grupo **contenedores** definido en el fichero de inventario **hosts**:
 
 ```console
-[jadebustos@beast ansible]$ ansible-playbook -i hosts -l contenedors playbook.yaml
+[jadebustos@ansiblectrl ansible]$ ansible-playbook -i hosts -l contenedors playbook.yaml
 ```
 
 ## Ejecución de tareas de ansible en los nodos
@@ -150,7 +173,7 @@ La ejecución de un playbook sobre el grupo **contenedores** definido en el fich
 Para que en un nodo se pueda ejecutar una tarea con ansible será necesario que esté instalado python:
 
 ```console
-[jadebustos@archimedes ansible]$ ansible -i hosts -m ping all
+[jadebustos@ansiblectrl ansible]$ ansible -i hosts -m ping all
 master.frontend.lab | FAILED! => {
     "changed": false,
     "module_stderr": "Shared connection to master.frontend.lab closed.\r\n",
@@ -172,7 +195,7 @@ worker02.frontend.lab | FAILED! => {
     "msg": "The module failed to execute correctly, you probably need to set the interpreter.\nSee stdout/stderr for the exact error",
     "rc": 127
 }
-[jadebustos@archimedes ansible]$ 
+[jadebustos@ansiblectrl ansible]$ 
 ```
 
 En los nodos **master.frontend.lab**, **worker01.frontend.lab** y **worker02.frontend.lab** no es posible ejecutar tareas con ansible ya que no tienen instalado python, con lo cual será necesario instalar el paquete **python3**:
