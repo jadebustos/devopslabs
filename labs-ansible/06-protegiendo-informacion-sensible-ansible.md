@@ -215,7 +215,7 @@ Donde hemos definido las variables en el fichero [clonerepo.yaml](group_vars/clo
 La contraseña de acceso la encriptamos en la variable **password** y almacenada en el fichero **group_vars/vault-file.yaml**:
 
 ```console
-[jadebustos@ansiblectrl ansible]$ ansible-vault encrypt_string --vault-password-file git-password 'MICONTRASEÑA' --name password > group_vars/vault-file.yaml
+[jadebustos@ansiblectrl labs-ansible]$ ansible-vault encrypt_string --vault-password-file git-password 'MICONTRASEÑA' --name password > group_vars/vault-file.yaml
 ```
 
 En el fichero **git-password** almacenamos la clave con la que encriptamos la contraseña del usuario.
@@ -249,6 +249,8 @@ drwxrwxr-x. 2 jadebustos jadebustos   60 Jan 19 23:41 imgs
 drwxrwxr-x. 3 jadebustos jadebustos   60 Jan 19 23:41 terraform
 [jadebustos@ansiblectrl labs-ansible]$
 ```
+
+> ![IMPORTANT](../imgs/important-note.png) Será necesario modificar las variables de este role, como el repositorio a clonar, para que funcione.
 
 En este ejemplo tenemos la clave de encriptado en el fichero **git-password**:
 
