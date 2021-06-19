@@ -12,5 +12,6 @@ Los siguientes son una serie de laboratorios para aprender los fundamentos bási
 
 ## Recursos adicionales
 
++ [Red Hat Ansible Automation Platform Workshops](https://github.com/ansible/workshops)
 + [Using Hasicorp Vault to Secure Ansible Secrets](https://www.youtube.com/watch?v=_z0cbNP0i2g)
 + [CyberArk-Ansible end to end demo - 3: Securing newly created accounts](https://www.youtube.com/watch?v=qgyi-T0Ab3U)
