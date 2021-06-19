@@ -5,10 +5,9 @@
     name: "{{ item.key }}"
     comment: "{{ item.value.gecos }}"
     home: "{{ item.value.home }}"
-    group: "{{ item.key }}"
     shell: "{{ item.value.shell }}"
-    generate_ssh_key: "{{ item.value.generate_ssh_key }}"
-    ssh_key_size: "{{ item.value.ssh_key_size }}"
+    generate_ssh_key: "{{ item.value.generate_ssh_keys }}"
+    ssh_key_bits: "{{ item.value.ssh_key_size }}"
   become: yes
   with_dict:
     - "{{ users }}"

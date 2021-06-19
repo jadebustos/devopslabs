@@ -8,25 +8,25 @@ users:
     gecos: 'usuario para tareas de operacion'
     shell: '/bin/bash'
     generate_ssh_keys: 'yes'
-    ssh_key_size: '3072'
+    ssh_key_size: 3072
   security:
     password: '12345'
     home: '/home/user2'
     gecos: 'usuario de seguridad'
     shell: '/bin/bash'
     generate_ssh_keys: 'yes'
-    ssh_key_size: '4096'
+    ssh_key_size: 4096
   backup:
     password: 'password'
     home: '/var/lib/backup'
     gecos: 'usuario para ejecutar el agente de backup'
     shell: '/sbin/nologin'
     generate_ssh_keys: 'no'
-    ssh_key_size: ''
+    ssh_key_size: 0
   monitoring:
     password: 'enunlugardelamancha'
     home: '/var/lib/monitoring'
     gecos: 'usuario para ejecutar el agente de monitorizacion'
     shell: '/sbin/nologin'
     generate_ssh_keys: 'no'
-    ssh_key_size: ''
+    ssh_key_size: 0
