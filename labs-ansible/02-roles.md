@@ -2,6 +2,10 @@
 
 Los [roles](https://docs.ansible.com/ansible/latest/user_guide/playbooks_reuse_roles.html) en ansible es una forma de "empaquetar" código para poder reutilizarlo de forma fácil y sencilla.
 
+Para la reutilización del código es muy importante el no hardcodear información en el playbook. Es decir toda aquella información susceptible de depender del entorno donde se vaya a ejecutar deberemos configurarla via variables. Separando código de datos.
+
+De esta forma podremos reutilizar los roles de forma sencilla modificando únicamente el fichero de variables para proporcionar la información del entorno sobre el que vamos a realizar la ejecución.
+
 ## Estructura de un role
 
 Un role tiene definida una estructura de directorios. No es necesario incluir todos los directorios, únicamente será necesario incluir aquellos que se utilicen:
@@ -19,13 +23,62 @@ roles/
         meta/
 ```
 
-Los roles se incluiran dentro de un directorio llamado __roles__. Dentro de este directorio se creará un directorio con el nombre del role, y dentro de el estarán los directorios que definen la estructura del role.
+Los roles se incluiran dentro de un directorio llamado **roles**. Dentro de este directorio se creará un directorio con el nombre del role, y dentro de el estarán los directorios que definen la estructura del role.
 
 Los principales directorios, más utilizados, son los siguientes:
 
-+ __tasks__, contendrá las tareas a ejecutar por el role. Deberán ir en un fichero llamado __main.yaml__.
-+ __files__, contendrá ficheros que se quieran copiar a los clientes con el role de ansible.
-+ __templates__, contendrá templates de ficheros que se quieran copiar a los clientes con el role de ansible.
++ **tasks**, contendrá las tareas a ejecutar por el role. Deberán ir en un fichero llamado **main.yaml**.
++ **files**, contendrá ficheros que se quieran copiar a los clientes con el role de ansible.
++ **templates**, contendrá templates de ficheros que se quieran copiar a los clientes con el role de ansible.
+
+## Creación de un playbook usando roles
+
+Vamos a crear un playbook usando roles.
+
+El playbook que vamos a crear se encargará de crear varios usuarios y asignarles un password. Para ello crearemos dos roles, uno para crear los usuarios y otro para asignarles el password a los usuarios.
+
+> ![NOTE](../imgs/note-icon.png) Sería posible incluir todas las tareas en un único role. Se han utilizado dos roles para ilustrar como invocar varios roles desde un playbook.
+
+Lo primero que vamos a hacer es crear un fichero con los datos de los usuarios. Aunque hemos visto que existe un directorio **vars** dentro de la estructura del role que tiene el propósito de almacenar las variables del role, en este caso crearemos un fichero [group_vars/users.yaml](group_vars/users.yaml):
+
+```yaml
+---
+
+# diccionario con la información de usuarios a crear
+users:
+  operator:
+    password: 'temporal123'
+    home: '/home/operator'
+    gecos: 'usuario para tareas de operacion'
+    shell: '/bin/bash'
+    generate_ssh_keys: 'yes'
+    ssh_key_size: 3072
+  security:
+    password: '12345'
+    home: '/home/security'
+    gecos: 'usuario de seguridad'
+    shell: '/bin/bash'
+    generate_ssh_keys: 'yes'
+    ssh_key_size: 4096
+  backup:
+    password: 'password'
+    home: '/var/lib/backup'
+    gecos: 'usuario para ejecutar el agente de backup'
+    shell: '/sbin/nologin'
+    generate_ssh_keys: 'no'
+    ssh_key_size: 0
+  monitoring:
+    password: 'enunlugardelamancha'
+    home: '/var/lib/monitoring'
+    gecos: 'usuario para ejecutar el agente de monitorizacion'
+    shell: '/sbin/nologin'
+    generate_ssh_keys: 'no'
+    ssh_key_size: 0
+```
+
+> ![IMPORTANT](../imgs/important-icon.png) En este caso la contraseña va en claro. Esto no es una buena práctica.
+
+La estructura anterior crea un diccionario, **users**, cuyas claves son los nombres de los usuarios (**operator**, **security**, **backup** y **monitoring**) y a cada usuario se le definen sus propiedades (**password**, **home**, **gecos**, **shell**, **generate_ssh_keys** y **ssh_key_size**).
 
 ## Mejoras
 
