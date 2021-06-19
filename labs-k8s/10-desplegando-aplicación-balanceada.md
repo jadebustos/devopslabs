@@ -200,8 +200,8 @@ Listamos los pods:
 ```console
 [kubeadmin@kubemaster webapp-balanced]$ kubectl get pods --namespace webapp-balanced -o wide
 NAME                               READY   STATUS    RESTARTS   AGE   IP               NODE                  NOMINATED NODE   READINESS GATES
-webapp-balanced-6f4f8dcd99-28s7z   1/1     Running   0          15s   192.169.45.158   kubenode2.jadbp.lab   <none>           <none>
-[kubeadmin@kubemaster webapp-balanced]$ 
+webapp-balanced-6f4f8dcd99-9pdqs   1/1     Running   0          30s   192.169.45.163   kubenode2.jadbp.lab   <none>           <none>
+[kubeadmin@kubemaster webapp-balanced]$
 ```
 
 La ip expuesta para conexiones:
@@ -226,9 +226,9 @@ Escalamos el deployment para tener dos pods:
 [kubeadmin@kubemaster labs-k8s]$ kubectl scale --replicas=2 deployment/webapp-balanced --namespace=webapp-balanced
 deployment.apps/webapp-balanced scaled
 [kubeadmin@kubemaster webapp-balanced]$ kubectl get pods --namespace webapp-balanced -o wide
-NAME                               READY   STATUS    RESTARTS   AGE   IP               NODE                  NOMINATED NODE   READINESS GATES
-webapp-balanced-6f4f8dcd99-28s7z   1/1     Running   0          38s   192.169.45.158   kubenode2.jadbp.lab   <none>           <none>
-webapp-balanced-6f4f8dcd99-tl9xn   1/1     Running   0          11s   192.169.62.36    kubenode1.jadbp.lab   <none>           <none>
+NAME                               READY   STATUS    RESTARTS   AGE     IP               NODE                  NOMINATED NODE   READINESS GATES
+webapp-balanced-6f4f8dcd99-9pdqs   1/1     Running   0          2m31s   192.169.45.163   kubenode2.jadbp.lab   <none>           <none>
+webapp-balanced-6f4f8dcd99-zfspg   1/1     Running   0          25s     192.169.62.38    kubenode1.jadbp.lab   <none>           <none>
 [kubeadmin@kubemaster webapp-balanced]$
 ```
 
@@ -246,10 +246,10 @@ Escalamos la apliación para tener tres pods:
 [kubeadmin@kubemaster devopslabs]$ kubectl scale --replicas=3 deployment/webapp-balanced --namespace=webapp-balanced
 deployment.apps/webapp-balanced scaled
 [kubeadmin@kubemaster devopslabs]$ kubectl get pods --namespace webapp-balanced -o wide
-NAME                               READY   STATUS    RESTARTS   AGE   IP               NODE                  NOMINATED NODE   READINESS GATES
-webapp-balanced-6f4f8dcd99-28s7z   1/1     Running   0          18m   192.169.45.158   kubenode2.jadbp.lab   <none>           <none>
-webapp-balanced-6f4f8dcd99-ntd48   0/1     Pending   0          13s   <none>           <none>                <none>           <none>
-webapp-balanced-6f4f8dcd99-tl9xn   1/1     Running   0          18m   192.169.62.36    kubenode1.jadbp.lab   <none>           <none>
+NAME                               READY   STATUS    RESTARTS   AGE     IP               NODE                  NOMINATED NODE   READINESS GATES
+webapp-balanced-6f4f8dcd99-9pdqs   1/1     Running   0          5m17s   192.169.45.163   kubenode2.jadbp.lab   <none>           <none>
+webapp-balanced-6f4f8dcd99-drxfw   0/1     Pending   0          7s      <none>           <none>                <none>           <none>
+webapp-balanced-6f4f8dcd99-zfspg   1/1     Running   0          3m11s   192.169.62.38    kubenode1.jadbp.lab   <none>           <none>
 [kubeadmin@kubemaster devopslabs]$
 ```
 
@@ -269,29 +269,43 @@ Podemos ver los eventos del namespace en el que venos que no se cumplen las regl
 ```console
 [kubeadmin@kubemaster devopslabs]$ kubectl get events --namespace webapp-balanced
 LAST SEEN   TYPE      REASON              OBJECT                                  MESSAGE
-19m         Normal    Scheduled           pod/webapp-balanced-6f4f8dcd99-28s7z    Successfully assigned webapp-balanced/webapp-balanced-6f4f8dcd99-28s7z to kubenode2.jadbp.lab
-19m         Normal    Pulled              pod/webapp-balanced-6f4f8dcd99-28s7z    Container image "quay.io/rhte_2019/webapp:v1" already present on machine
-19m         Normal    Created             pod/webapp-balanced-6f4f8dcd99-28s7z    Created container webapp-balanced
-19m         Normal    Started             pod/webapp-balanced-6f4f8dcd99-28s7z    Started container webapp-balanced
-43s         Warning   FailedScheduling    pod/webapp-balanced-6f4f8dcd99-ntd48    0/3 nodes are available: 1 node(s) had taint {node-role.kubernetes.io/master: }, that the pod didn't tolerate, 2 node(s) didn't match pod affinity/anti-affinity rules, 2 node(s) didn't match pod anti-affinity rules.
-41s         Warning   FailedScheduling    pod/webapp-balanced-6f4f8dcd99-ntd48    0/3 nodes are available: 1 node(s) had taint {node-role.kubernetes.io/master: }, that the pod didn't tolerate, 2 node(s) didn't match pod affinity/anti-affinity rules, 2 node(s) didn't match pod anti-affinity rules.
-18m         Normal    Scheduled           pod/webapp-balanced-6f4f8dcd99-tl9xn    Successfully assigned webapp-balanced/webapp-balanced-6f4f8dcd99-tl9xn to kubenode1.jadbp.lab
-18m         Normal    Pulled              pod/webapp-balanced-6f4f8dcd99-tl9xn    Container image "quay.io/rhte_2019/webapp:v1" already present on machine
-18m         Normal    Created             pod/webapp-balanced-6f4f8dcd99-tl9xn    Created container webapp-balanced
-18m         Normal    Started             pod/webapp-balanced-6f4f8dcd99-tl9xn    Started container webapp-balanced
-19m         Normal    SuccessfulCreate    replicaset/webapp-balanced-6f4f8dcd99   Created pod: webapp-balanced-6f4f8dcd99-28s7z
-19m         Normal    SuccessfulCreate    replicaset/webapp-balanced-6f4f8dcd99   Created pod: webapp-balanced-6f4f8dcd99-tl9xn
-44s         Normal    SuccessfulCreate    replicaset/webapp-balanced-6f4f8dcd99   Created pod: webapp-balanced-6f4f8dcd99-ntd48
-19m         Normal    ScalingReplicaSet   deployment/webapp-balanced              Scaled up replica set webapp-balanced-6f4f8dcd99 to 1
-19m         Normal    ScalingReplicaSet   deployment/webapp-balanced              Scaled up replica set webapp-balanced-6f4f8dcd99 to 2
-45s         Normal    ScalingReplicaSet   deployment/webapp-balanced              Scaled up replica set webapp-balanced-6f4f8dcd99 to 3
+5m49s       Normal    Scheduled           pod/webapp-balanced-6f4f8dcd99-9pdqs    Successfully assigned webapp-balanced/webapp-balanced-6f4f8dcd99-9pdqs to kubenode2.jadbp.lab
+5m46s       Normal    Pulled              pod/webapp-balanced-6f4f8dcd99-9pdqs    Container image "quay.io/rhte_2019/webapp:v1" already present on machine
+5m45s       Normal    Created             pod/webapp-balanced-6f4f8dcd99-9pdqs    Created container webapp-balanced
+5m45s       Normal    Started             pod/webapp-balanced-6f4f8dcd99-9pdqs    Started container webapp-balanced
+38s         Warning   FailedScheduling    pod/webapp-balanced-6f4f8dcd99-drxfw    0/3 nodes are available: 1 node(s) had taint {node-role.kubernetes.io/master: }, that the pod didn't tolerate, 2 node(s) didn't match pod affinity/anti-affinity rules, 2 node(s) didn't match pod anti-affinity rules.
+36s         Warning   FailedScheduling    pod/webapp-balanced-6f4f8dcd99-drxfw    0/3 nodes are available: 1 node(s) had taint {node-role.kubernetes.io/master: }, that the pod didn't tolerate, 2 node(s) didn't match pod affinity/anti-affinity rules, 2 node(s) didn't match pod anti-affinity rules.
+3m43s       Normal    Scheduled           pod/webapp-balanced-6f4f8dcd99-zfspg    Successfully assigned webapp-balanced/webapp-balanced-6f4f8dcd99-zfspg to kubenode1.jadbp.lab
+3m41s       Normal    Pulled              pod/webapp-balanced-6f4f8dcd99-zfspg    Container image "quay.io/rhte_2019/webapp:v1" already present on machine
+3m41s       Normal    Created             pod/webapp-balanced-6f4f8dcd99-zfspg    Created container webapp-balanced
+3m40s       Normal    Started             pod/webapp-balanced-6f4f8dcd99-zfspg    Started container webapp-balanced
+5m49s       Normal    SuccessfulCreate    replicaset/webapp-balanced-6f4f8dcd99   Created pod: webapp-balanced-6f4f8dcd99-9pdqs
+3m43s       Normal    SuccessfulCreate    replicaset/webapp-balanced-6f4f8dcd99   Created pod: webapp-balanced-6f4f8dcd99-zfspg
+39s         Normal    SuccessfulCreate    replicaset/webapp-balanced-6f4f8dcd99   Created pod: webapp-balanced-6f4f8dcd99-drxfw
+5m49s       Normal    ScalingReplicaSet   deployment/webapp-balanced              Scaled up replica set webapp-balanced-6f4f8dcd99 to 1
+3m43s       Normal    ScalingReplicaSet   deployment/webapp-balanced              Scaled up replica set webapp-balanced-6f4f8dcd99 to 2
+39s         Normal    ScalingReplicaSet   deployment/webapp-balanced              Scaled up replica set webapp-balanced-6f4f8dcd99 to 3
 [kubeadmin@kubemaster devopslabs]$ 
+```
+
+```console
+[kubeadmin@kubemaster webapp-balanced]$  kubectl scale --replicas=2 deployment/webapp-balanced --namespace=webapp-balanced
+deployment.apps/webapp-balanced scaled
+[kubeadmin@kubemaster webapp-balanced]$ kubectl get pods --namespace webapp-balanced -o wide
+NAME                               READY   STATUS    RESTARTS   AGE     IP               NODE                  NOMINATED NODE   READINESS GATES
+webapp-balanced-6f4f8dcd99-9pdqs   1/1     Running   0          6m54s   192.169.45.163   kubenode2.jadbp.lab   <none>           <none>
+webapp-balanced-6f4f8dcd99-zfspg   1/1     Running   0          4m48s   192.169.62.38    kubenode1.jadbp.lab   <none>           <none>
+[kubeadmin@kubemaster webapp-balanced]$ 
 ```
 
 ```console
 [kubeadmin@kubemaster devopslabs]$ kubectl edit deployment webapp-balanced --namespace webapp-balanced
 deployment.apps/webapp-balanced edited
 [kubeadmin@kubemaster devopslabs]$ 
+```
+
+```console
+
 ```
 
 ## Ejercicio
