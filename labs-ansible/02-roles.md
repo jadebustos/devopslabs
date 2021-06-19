@@ -221,6 +221,11 @@ El playbook en cuestion será [create-users.yaml](create-users.yaml):
     - passwd
 ```
 
++ **hosts** indica sobre que elementos del inventario se ejecutará el playbook.
++ **vars_files** es una lista que incluye los ficheros de variables. Vamos a utilizar el mismo fichero de variables para ambos roles y hemos optado por utilizar un fichero externo al módulo para almacenar las variables.
++ **gather_facts** se utiliza para que ansible recoga información de la máquina donde va a ejecutar la tarea. Esa información se almacenará en variables, llamadas **facts**, y podrá ser utilizada en el playbook. En este caso como no se necesita esa información no se recoge ya que dicha recolección consume tiempo.
++ **roles** es una lista que incluye los roles a ejecutar por el playbook. Estos roles se ejecutarán en el orden en que aparecen indicados.
+
 
 ## Mejoras
 
