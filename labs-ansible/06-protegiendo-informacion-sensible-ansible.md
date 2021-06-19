@@ -250,7 +250,7 @@ drwxrwxr-x. 3 jadebustos jadebustos   60 Jan 19 23:41 terraform
 [jadebustos@ansiblectrl labs-ansible]$
 ```
 
-> ![IMPORTANT](../imgs/important-note.png) Será necesario modificar las variables de este role, como el repositorio a clonar, para que funcione.
+> ![IMPORTANT](../imgs/important-icon.png) Será necesario modificar las variables de este role, como el repositorio a clonar, para que funcione.
 
 En este ejemplo tenemos la clave de encriptado en el fichero **git-password**:
 
