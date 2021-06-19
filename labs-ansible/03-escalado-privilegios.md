@@ -1,5 +1,11 @@
 # Escalado de privilegios
 
+Por defecto ansible ejecuta las tareas en el host de destino como el usuario con el que se conecta a dicho host.
+
+Para algunas tareas puede ser necesario ejecutarlos con un usuario diferente, por ejemplo **root**.
+
+Para ello se utiliza **become: true** o **become: yes** que hará que la tarea se ejecute como **root**.
+
 ## Escalando privilegios para varias tareas a la vez
 
 En lugar de ir especificando **become: true** tarea a tarea es posible hacerlo de tal forma que solo se indique una vez.
@@ -16,7 +22,7 @@ Podemos indicar en el playbook que todas las tareas se ejecuten con escalado de 
     - role2
 ```
 
-En el ejemplo anterior todas las tareas incluidas en el playbook, las incluidas en los roles **role1** y **role2**, se ejecutarán como root. Si en lugar de roles hubieramos incluido tareas directamente el resultado será el mismo.
+En el ejemplo anterior todas las tareas incluidas en el playbook, las incluidas en los roles **role1** y **role2**, se ejecutarán como **root**. Si en lugar de roles hubieramos incluido tareas directamente el resultado será el mismo.
 
 En el caso de que no todas las tareas se necesiten ejecutar como root:
 
@@ -29,9 +35,9 @@ En el caso de que no todas las tareas se necesiten ejecutar como root:
     - role2
 ```
 
-En el ejemplo anterior todas las tareas del **role1** se ejecutaran como root mientras que las del **role2** no.
+En el ejemplo anterior todas las tareas del **role1** se ejecutarán como root mientras que las del **role2** no.
 
-También podemos utilizar **block** para agrupar las tareas a ejecutar como root:
+También podemos utilizar **block** para agrupar las tareas a ejecutar como **root**:
 
 ```yaml
 - block:
@@ -49,4 +55,4 @@ También podemos utilizar **block** para agrupar las tareas a ejecutar como root
 
 ## Ejecución de tareas como otro usuario
 
-Es posible impersonar a otros usuarios, no solo al usuario root. Para ellos bastará añadir **become_user: usuario** junto a **become: true** para ejecutar la tarea o grupo de tareas como dicho usuario.
+Es posible impersonar a otros usuarios, no solo al usuario **root**. Para ellos bastará añadir **become_user: usuario** junto a **become: true** para ejecutar la tarea o grupo de tareas como dicho usuario.

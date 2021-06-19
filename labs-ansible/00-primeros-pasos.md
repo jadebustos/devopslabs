@@ -18,7 +18,7 @@ Para instalar ansible será necesario configurar el repositorio EPEL en la máqu
 Una vez configurado el repositorio podremos instalar ansible y otras utilidades:
 
 ```console
-[root@ansiblectrl ~]# dnf install ansible git tree -y
+[root@ansiblectrl ~]# dnf install ansible git tree jq -y
 ...
 [root@ansiblectrl ~]#
 ```
