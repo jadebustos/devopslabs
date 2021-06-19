@@ -23,6 +23,14 @@ Una vez configurado el repositorio podremos instalar ansible:
 [root@ansiblectrl ~]#
 ```
 
+Será necesario que en el nodo cliente se encuentre instalado el paquete **python36**:
+
+```console
+[root@ansibleclient ~]# dnf install python36 -y
+...
+[root@ansibleclient ~]#
+```
+
 ## Creación de usuarios
 
 Necesitaremos crear un usuario en cada una de las máquinas.
@@ -226,57 +234,46 @@ ansibleclient.jadbp.lab ansible_user=ansible
 
 ## Ejecución de tareas de ansible en los nodos
 
-Para que en un nodo se pueda ejecutar una tarea con ansible será necesario que esté instalado python:
+Para verificar que ansible se ha configurado correctamente desde el controller y usando el usuario que hemos configurado para lanzar las tareas ejecutaremos lo siguiente:
 
 ```console
+[jadebustos@ansiblectrl ansible]$ cat hosts 
+[all:vars]
+ansible_python_interpreter=/usr/bin/python3
+
+[controller]
+ansiblectrl.jadpb.lab ansible_connection=local
+
+[client]
+ansibleclient.jadbp.lab ansible_user=ansible
 [jadebustos@ansiblectrl ansible]$ ansible -i hosts -m ping all
-master.frontend.lab | FAILED! => {
+ansiblectrl.jadpb.lab | SUCCESS => {
     "changed": false,
-    "module_stderr": "Shared connection to master.frontend.lab closed.\r\n",
-    "module_stdout": "/bin/sh: /usr/bin/python3: No such file or directory\r\n",
-    "msg": "The module failed to execute correctly, you probably need to set the interpreter.\nSee stdout/stderr for the exact error",
-    "rc": 127
+    "ping": "pong"
 }
-worker01.frontend.lab | FAILED! => {
+ansibleclient.jadbp.lab | SUCCESS => {
     "changed": false,
-    "module_stderr": "Shared connection to worker01.frontend.lab closed.\r\n",
-    "module_stdout": "/bin/sh: /usr/bin/python3: No such file or directory\r\n",
-    "msg": "The module failed to execute correctly, you probably need to set the interpreter.\nSee stdout/stderr for the exact error",
-    "rc": 127
-}
-worker02.frontend.lab | FAILED! => {
-    "changed": false,
-    "module_stderr": "Shared connection to worker02.frontend.lab closed.\r\n",
-    "module_stdout": "/bin/sh: /usr/bin/python3: No such file or directory\r\n",
-    "msg": "The module failed to execute correctly, you probably need to set the interpreter.\nSee stdout/stderr for the exact error",
-    "rc": 127
+    "ping": "pong"
 }
 [jadebustos@ansiblectrl ansible]$ 
 ```
 
-En los nodos **master.frontend.lab**, **worker01.frontend.lab** y **worker02.frontend.lab** no es posible ejecutar tareas con ansible ya que no tienen instalado python, con lo cual será necesario instalar el paquete **python3**:
+Para que en un nodo se pueda ejecutar una tarea con ansible será necesario que esté instalado python, de no estar instalado en los clientes donde pretendamos ejecutar tareas con ansible aparecerá un error como este:
 
 ```console
-[root@nodo ~]# dnf install python3 -y
-```
-
-Una vez instalado ya será posible ejecutar tareas con ansible en el nodo:
-
-```console
-[jadebustos@archimedes ansible]$ ansible -i hosts -m ping all
-worker02.frontend.lab | SUCCESS => {
+[jadebustos@ansiblectrl ansible]$ ansible -i hosts -m ping all
+ansibleclient.jadbp.lab | FAILED! => {
+    "changed": false,
+    "module_stderr": "Shared connection to ansibleclient.jadbp.lab closed.\r\n",
+    "module_stdout": "/bin/sh: /usr/bin/python3: No such file or directory\r\n",
+    "msg": "The module failed to execute correctly, you probably need to set the interpreter.\nSee stdout/stderr for the exact error",
+    "rc": 127
+}
+ansiblectrl.jadpb.lab | SUCCESS => {
     "changed": false,
     "ping": "pong"
 }
-master.frontend.lab | SUCCESS => {
-    "changed": false,
-    "ping": "pong"
-}
-worker01.frontend.lab | SUCCESS => {
-    "changed": false,
-    "ping": "pong"
-}
-[jadebustos@archimedes ansible]$
+[jadebustos@ansiblectrl ansible]$
 ```
 
 > ![TIP](../imgs/tip-icon.png) Con el comando anterior se ha ejecutado el módulo ping de ansible sobre todos los equipos definidos en el inventario incluido en el fichero **hosts**. Esto nos indica que ansible puede conectarse a los nodos para ejecutar tareas con el usuario indicado por la variable **ansible_user** del fichero de inventario.
