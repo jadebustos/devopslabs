@@ -37,3 +37,40 @@ spec:
   resources:
     requests:
       storage: 2Gi
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: webapp-balanced
+  namespace: webapp-balanced
+  labels:
+    app: webapp-balanced
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: webapp-balanced
+  template:
+    metadata:
+      labels:
+        app: webapp-balanced
+    spec:
+      containers:
+      - name: webapp-balanced
+        image: quay.io/rhte_2019/webapp:v1
+        ports:
+        - containerPort: 80
+        readinessProbe:
+          httpGet:
+            path: /
+            port: 80
+          initialDelaySeconds: 5
+          periodSeconds: 5
+          successThreshold: 1
+        volumeMounts:
+        - name: site-pvc
+          mountPath: /var/www/public
+      volumes:
+      - name: site-pvc
+        persistentVolumeClaim:
+          claimName: nfs-pvc
