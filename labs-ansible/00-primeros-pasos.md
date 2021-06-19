@@ -81,7 +81,7 @@ Enter same passphrase again:
 Your identification has been saved in id_rsa
 Your public key has been saved in id_rsa.pub
 The key fingerprint is:
-SHA256:d6ePc0yE/+ZhkgTgxPqpNn4iEV5vmbUnCUFt0YXPPUc jadebustos@beast.jadbp.lab
+SHA256:d6ePc0yE/+ZhkgTgxPqpNn4iEV5vmbUnCUFt0YXPPUc jadebustos@ansiblectrl.jadbp.lab
 The key's randomart image is:
 +---[RSA 4096]----+
 |        o+..o o. |
@@ -105,6 +105,17 @@ Una vez generada tendremos que copiar la clave pública a los hosts que queramos
 
 ```console
 [jadebustos@ansiblectrl ~]$ ssh-copy-id -i .ssh/id_rsa.pub ansible@ansibleclient
+/usr/bin/ssh-copy-id: INFO: Source of key(s) to be installed: ".ssh/id_rsa.pub"
+/usr/bin/ssh-copy-id: INFO: attempting to log in with the new key(s), to filter out any that are already installed
+/usr/bin/ssh-copy-id: INFO: 1 key(s) remain to be installed -- if you are prompted now it is to install the new keys
+ansible@ansibleclient's password: 
+
+Number of key(s) added: 1
+
+Now try logging into the machine, with:   "ssh 'ansible@ansibleclient'"
+and check to make sure that only the key(s) you wanted were added.
+
+[jadebustos@ansiblectrl ~]$
 ```
 
 Si despliegas las máquinas con terraform puedes utilizar **cloud-init** tanto para crear el usuario como para configurar la clave pública. En el código para desplegar las imágenes del laboratorio se pueden ver [ejemplos](../terraform/kvm/docker/user_config.cfg):
