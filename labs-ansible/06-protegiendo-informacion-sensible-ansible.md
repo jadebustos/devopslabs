@@ -39,11 +39,11 @@ Creamos un fichero llamado **secret.yaml**:
 ```yaml
 password: !vault |
           $ANSIBLE_VAULT;1.1;AES256
-          65653662626432653136333565336437656135633238363139373131336465616537333336363632
-          3462333662356334653736326136323334643730643933300a376466303366393363323334666237
-          35303864623230633330333239306439316632303665373834373734353062636664396237643862
-          6134353938633038380a326562626638393763363861656564633563353266636262613162663765
-          3439
+          31323464343637643536303835323831313832373836353439313163653464393763353133383933
+          3036646466306533383033626533306332333737653835360a313965316336653564633963326330
+          33353036393038623635653836353033373534623266326261663430656633366434323136393337
+          3833623433383731310a366139346337333463666363636633326564356564393839303866646135
+          6335
 ```
 
 Para recuperar la contraseña:
@@ -57,7 +57,7 @@ localhost | SUCCESS => {
 [jadebustos@ansiblectrl ansible]$
 ```
 
-Otra forma de crear el vault sería:
+Otra forma de crear el **vault** sería:
 
 ```console
 [jadebustos@ansiblectrl ansible]$ ansible-vault create secret.yaml
@@ -102,8 +102,8 @@ localhost | SUCCESS => {
 También podemos guardar la contraseña en un fichero:
 
 ```console
-[jadebustos@archimedes ansible]$ echo "hola" > passwd-file
-[jadebustos@archimedes ansible]$ ansible-vault encrypt_string --vault-password-file passwd-file '12345' --name 'password'
+[jadebustos@ansiblectrl ansible]$ echo "hola" > passwd-file
+[jadebustos@ansiblectrl ansible]$ ansible-vault encrypt_string --vault-password-file passwd-file '12345' --name 'password'
 password: !vault |
           $ANSIBLE_VAULT;1.1;AES256
           65383334353136646432653136303565656237636230653537663833646462386163393237623638
@@ -112,7 +112,7 @@ password: !vault |
           3863383436316437330a383231633061646564366164646666313961376635636638306432353533
           6437
 Encryption successful
-[jadebustos@archimedes ansible]$ 
+[jadebustos@ansiblectrl ansible]$ 
 ```
 
 Hemos encriptado el valor **12345** con la clave **hola** como valor de la variable **password**. Creamos el fichero **secret.yaml**:
@@ -130,26 +130,26 @@ Hemos encriptado el valor **12345** con la clave **hola** como valor de la varia
  Para acceder al valor de la variable leyendo la clave de encriptación de un fichero:
 
  ```console
- [jadebustos@archimedes ansible]$ ansible localhost -m debug -a var="password" -e "@secret.yaml" --vault-password-file passwd-file
+[jadebustos@ansiblectrl ansible]$ ansible localhost -m debug -a var="password" -e "@secret.yaml" --vault-password-file passwd-file
 localhost | SUCCESS => {
     "password": "12345"
 }
-[jadebustos@archimedes ansible]$
+[jadebustos@ansiblectrl ansible]$
  ```
 
 Podemos encriptar varias variables con diferentes contraseñas y añadir ids para distinguirlas. Creamos un fichero de claves:
 
  ```console
-[jadebustos@archimedes ansible]$ echo "hola" > jose-key
-[jadebustos@archimedes ansible]$ echo "mundo" > manuel-key
-[jadebustos@archimedes ansible]$ echo "nuevo" > jesus-key
+[jadebustos@ansiblectrl ansible]$ echo "hola" > jose-key
+[jadebustos@ansiblectrl ansible]$ echo "mundo" > manuel-key
+[jadebustos@ansiblectrl ansible]$ echo "nuevo" > jesus-key
  ```
 
 Utilizando estas claves encriptamos la contraseña de cada uno de estos usuarios:
 
 ```console
-[jadebustos@archimedes ansible]$ ansible-vault encrypt_string --vault-id jose@jose-key '12345' --name 'password' > secret-jose.yaml
-[jadebustos@archimedes ansible]$ cat secret-jose.yaml 
+[jadebustos@ansiblectrl ansible]$ ansible-vault encrypt_string --vault-id jose@jose-key '12345' --name 'password' > secret-jose.yaml
+[jadebustos@ansiblectrl ansible]$ cat secret-jose.yaml 
 password: !vault |
           $ANSIBLE_VAULT;1.2;AES256;jose
           63306438393932313433353264303561656362353031306464363630313832346439343035386633
@@ -157,27 +157,27 @@ password: !vault |
           39393230396638653432333866313733626130373331393237623861353464393165353231643263
           3038303436336664330a636135333630333432306333343463333436316534363063653735356162
           3538
-[jadebustos@archimedes ansible]$ ansible-vault encrypt_string --vault-id manuel@manuel-key '67890' --name 'password' > secret-manuel.yaml
-[jadebustos@archimedes ansible]$ ansible-vault encrypt_string --vault-id jesus@jesus-key 'abcde' --name 'password' > secret-jesus.yaml
-[jadebustos@archimedes ansible]$
+[jadebustos@ansiblectrl ansible]$ ansible-vault encrypt_string --vault-id manuel@manuel-key '67890' --name 'password' > secret-manuel.yaml
+[jadebustos@ansiblectrl ansible]$ ansible-vault encrypt_string --vault-id jesus@jesus-key 'abcde' --name 'password' > secret-jesus.yaml
+[jadebustos@ansiblectrl ansible]$
 ```
 
 Para recuperar las contraseñas:
 
 ```console
-[jadebustos@archimedes ansible]$ ansible localhost -m debug -a var="password" -e "@secret-jose.yaml" --vault-id jose@jose-key
+[jadebustos@ansiblectrl ansible]$ ansible localhost -m debug -a var="password" -e "@secret-jose.yaml" --vault-id jose@jose-key
 localhost | SUCCESS => {
     "password": "12345"
 }
-$ ansible localhost -m debug -a var="password" -e "@secret-manuel.yaml" --vault-id manuel@manuel-key
+[jadebustos@ansiblectrl ansible]$ ansible localhost -m debug -a var="password" -e "@secret-manuel.yaml" --vault-id manuel@manuel-key
 localhost | SUCCESS => {
     "password": "67890"
 }
-$ ansible localhost -m debug -a var="password" -e "@secret-jesus.yaml" --vault-id jesus@jesus-key
+[jadebustos@ansiblectrl ansible]$ansible localhost -m debug -a var="password" -e "@secret-jesus.yaml" --vault-id jesus@jesus-key
 localhost | SUCCESS => {
     "password": "abcde"
 }
-[jadebustos@archimedes ansible]$ 
+[jadebustos@ansiblectrl ansible]$
 ```
 
 ## Encriptando variables (Ejemplo)
