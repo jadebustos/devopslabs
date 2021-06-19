@@ -209,6 +209,21 @@ La ejecución de un playbook sobre el grupo **contenedores** definido en el fich
 [jadebustos@ansiblectrl ansible]$ ansible-playbook -i hosts -l contenedors playbook.yaml
 ```
 
+Crearemos un inventario para nuestro entorno con dos máquinas:
+
+```ini
+[all:vars]
+ansible_python_interpreter=/usr/bin/python3
+
+[controller]
+ansiblectrl.jadpb.lab ansible_connection=local
+
+[client]
+ansibleclient.jadbp.lab ansible_user=ansible
+```
+
+> ![IMPORTANT](../imgs/important-icon.png) Será necesario incluir en tu fichero **/etc/hosts** los FQDN e IPs de ambos nodos para tener resolución o utilizar la dirección IP en lugar del FQDN en el inventario.
+
 ## Ejecución de tareas de ansible en los nodos
 
 Para que en un nodo se pueda ejecutar una tarea con ansible será necesario que esté instalado python:
