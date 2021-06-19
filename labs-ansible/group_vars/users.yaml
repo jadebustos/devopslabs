@@ -4,7 +4,7 @@
 users:
   operator:
     password: 'temporal123'
-    home: '/home/operador'
+    home: '/home/operator'
     gecos: 'usuario para tareas de operacion'
     shell: '/bin/bash'
     generate_ssh_keys: 'yes'
