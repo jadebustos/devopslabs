@@ -1,11 +1,11 @@
 # Laboratorios de K8s
 
-Los siguientes son una serie de laboratorios para aprender los fundamentos básicos de kubernetes:
+Los siguientes son una serie de laboratorios para aprender los fundamentos básicos de Kubernetes:
 
 + Pods.
 + Servicios.
 + Ingress.
-+ Volumenes.
++ Volúmenes.
 + Service accounts.
 + Secrets.
 + Afinidad y antiafinidad.
