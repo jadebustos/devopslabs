@@ -196,13 +196,30 @@ En este caso las tareas las hemos incluido en un fichero [roles/users/tasks/01-p
     - "{{ passwdhashes }}"
 ```
 
-+ La primera tarea itera sobre el diccionario **users** y ejecuta un comando que imprime en la salida estándar el hash (sha512) de la contraseña y almacena estas salidas en la variable **sha512**. Si se descomentan las dos tareas siguientes se imprimirá en pantalla la almacenado en la variable **sha512** que nos permitirá ver su estructura para ser utilizada en la siguiente tarea.
++ La primera tarea itera sobre el diccionario **users**, ejecuta un comando que imprime en la salida estándar el hash (sha512) de la contraseña y almacena estas salidas en la variable **sha512**. Si se descomentan las dos tareas siguientes se imprimirá en pantalla lo almacenado en la variable **sha512**. Nos permitirá ver su estructura para ser utilizada en la siguiente tarea.
 
 + La siguiente tarea itera sobre los resultados obtenidos en la ejecución de la primera tarea y que se encuentran almacenados en **sha512.results**. Se creará un diccionario cuya clave serán los nombres de los usuarios y el valor el hash (sha512) de la contraseña de ese usuario.
 
 + La siguiente tarea imprime el diccionario creado.
 
 + La última tarea itera sobre el diccionario que hemos creado, **passwdhashes** y cambia la contraseña de los usuarios.
+
+Ya tenemos los roles, ahora será necesario crear un playbook que los use para crear los usuarios y asignarles las contraseñas.
+
+El playbook en cuestion será [create-users.yaml](create-users.yaml):
+
+```yaml
+---
+
+- name: create users
+  hosts: all
+  vars_files:
+    - "group_vars/users.yaml"
+  gather_facts: false
+  roles:
+    - users
+    - passwd
+```
 
 
 ## Mejoras
