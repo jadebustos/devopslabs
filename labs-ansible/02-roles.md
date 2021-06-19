@@ -103,7 +103,7 @@ El fichero [roles/users/tasks/main.yaml](roles/users/tasks/main.yaml) incluye to
 
 En este caso las tareas las hemos incluido en un fichero [roles/users/tasks/01-create.yaml](roles/users/tasks/01-create.yaml):
 
-```console
+```yaml
 ---
 
 - name: create users
