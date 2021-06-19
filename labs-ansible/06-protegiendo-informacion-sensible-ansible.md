@@ -20,18 +20,18 @@ Ansible permite el uso de herramientas de terceras partes para almacenar las con
 Cuando necesitemos incluir un dato confidencial en una variable necesitaremos encryptar su valor y para ello necesitaremos suministrar una contraseña. Eso lo podemos hacer de dos formas. La primera es facilitar la contraseña por teclado:
 
 ```console
-[jadebustos@archimedes ansible]$ ansible-vault encrypt_string --ask-vault-pass '12345' --name 'password'
+[jadebustos@ansiblectrl ansible]$ ansible-vault encrypt_string --ask-vault-pass '12345' --name 'password'
 New Vault password: 
 Confirm New Vault password: 
 password: !vault |
           $ANSIBLE_VAULT;1.1;AES256
-          65653662626432653136333565336437656135633238363139373131336465616537333336363632
-          3462333662356334653736326136323334643730643933300a376466303366393363323334666237
-          35303864623230633330333239306439316632303665373834373734353062636664396237643862
-          6134353938633038380a326562626638393763363861656564633563353266636262613162663765
-          3439
+          31323464343637643536303835323831313832373836353439313163653464393763353133383933
+          3036646466306533383033626533306332333737653835360a313965316336653564633963326330
+          33353036393038623635653836353033373534623266326261663430656633366434323136393337
+          3833623433383731310a366139346337333463666363636633326564356564393839303866646135
+          6335
 Encryption successful
-[jadebustos@archimedes ansible]$ 
+[jadebustos@ansiblectrl ansible]$ 
 ```
 
 Creamos un fichero llamado **secret.yaml**:
@@ -46,15 +46,57 @@ password: !vault |
           3439
 ```
 
-Para recuperarlo:
+Para recuperar la contraseña:
 
 ```console
-[jadebustos@archimedes ansible]$ ansible localhost -m debug -a var="password" -e "@secret.yaml" --ask-vault-pass
+[jadebustos@ansiblectrl ansible]$ ansible localhost -m debug -a var="password" -e "@secret.yaml" --ask-vault-pass
 Vault password: 
 localhost | SUCCESS => {
     "password": "12345"
 }
-[jadebustos@archimedes ansible]$
+[jadebustos@ansiblectrl ansible]$
+```
+
+Otra forma de crear el vault sería:
+
+```console
+[jadebustos@ansiblectrl ansible]$ ansible-vault create secret.yaml
+New Vault password: 
+Confirm New Vault password
+```
+
+Nos pedirá la contraseña que se utilizará para encryptar el **vault** y a continuación nos abrirá el editor que esté configurado por defecto. Deberemos escribir la variable que queramos encriptar. Por ejemplo:
+
+```yaml
+password: '12345'
+```
+
+salimos grabando del editor y ya tendremos creado el fichero:
+
+```console
+[jadebustos@ansiblectrl ansible]$ ansible-vault create secret.yaml
+New Vault password: 
+Confirm New Vault password: 
+[jadebustos@ansiblectrl ansible]$ cat secret.yaml 
+$ANSIBLE_VAULT;1.1;AES256
+$ANSIBLE_VAULT;1.1;AES256
+65363134376665663664363730636663313633613436363239376138303932396637623766303163
+3365643634613433373061636635383531616663343465360a336166353035646265313237653765
+65653536643636373763656232653031386330663031376162643839386364313334626364343137
+3938323061616638330a636237623132386262366335393030613464396662653264336234386232
+34306561393232393336376136376131363961633232303838323236343138383464
+[jadebustos@ansiblectrl ansible]$
+```
+
+Para recuperar el contenido:
+
+```console
+[jadebustos@ansiblectrl ansible]$ ansible localhost -m debug -a var="password" -e "@secret.yaml" --ask-vault-pass
+Vault password: 
+localhost | SUCCESS => {
+    "password": "12345"
+}
+[jadebustos@ansiblectrl ansible]$
 ```
 
 También podemos guardar la contraseña en un fichero:
