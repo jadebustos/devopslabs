@@ -8,7 +8,7 @@
 
  echo "¡Hola mundo! <br><br>";
 
- $ipaddress=$_SERVER;
+ $ipaddress=$_SERVER['SERVER_ADDR'];
  echo "Esta petición está siendo atendida por el contenedor con ip: ".$ipaddress.".<br><br>";
 
 ?>
