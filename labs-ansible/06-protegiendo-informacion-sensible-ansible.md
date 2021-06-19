@@ -221,7 +221,7 @@ La contraseña de acceso la encriptamos en la variable **password** y almacenada
 En el fichero **git-password** almacenamos la clave con la que encriptamos la contraseña del usuario.
 
 ```console
-[jadebustos@ansiblectrl ansible]$ ansible-playbook -i hosts -l laptop clonar-git.yaml --vault-password-file git-password
+[jadebustos@ansiblectrl labs-ansible]$ ansible-playbook -i hosts -l laptop clonar-git.yaml --vault-password-file git-password
 
 PLAY [clonar repositorio privado] ************************************************************************************************************************************************************************************************************
 
@@ -234,7 +234,7 @@ changed: [localhost]
 PLAY RECAP ***********************************************************************************************************************************************************************************************************************************
 localhost                  : ok=2    changed=1    unreachable=0    failed=0    skipped=0    rescued=0    ignored=0   
 
-[jadebustos@ansiblectrl ansible]$ ls -lh /tmp/git/
+[jadebustos@ansiblectrl labs-ansible]$ ls -lh /tmp/git/
 total 108K
 -rw-rw-r--. 1 jadebustos jadebustos 8.1K Jan 19 23:41 01-terraform-kvm-provider.md
 -rw-rw-r--. 1 jadebustos jadebustos 6.9K Jan 19 23:41 02-instalacion-docker.md
@@ -247,7 +247,7 @@ drwxrwxr-x. 2 jadebustos jadebustos   60 Jan 19 23:41 imgs
 -rw-rw-r--. 1 jadebustos jadebustos  35K Jan 19 23:41 LICENSE
 -rw-rw-r--. 1 jadebustos jadebustos    8 Jan 19 23:41 README.md
 drwxrwxr-x. 3 jadebustos jadebustos   60 Jan 19 23:41 terraform
-[jadebustos@ansiblectrl ansible]$
+[jadebustos@ansiblectrl labs-ansible]$
 ```
 
 En este ejemplo tenemos la clave de encriptado en el fichero **git-password**:
