@@ -14,9 +14,6 @@ deblb.acme.es ansible_user=executor ansible_python_interpreter=/usr/bin/python3
 debapache1.acme.es ansible_user=executor ansible_python_interpreter=/usr/bin/python3
 debapache2.acme.es ansible_user=executor ansible_python_interpreter=/usr/bin/python3
 
-[lab]
-192.168.1.200 ansible_user=jadebustos
-
 [controller]
 ansiblectrl.jadpb.lab ansible_connection=local
 
