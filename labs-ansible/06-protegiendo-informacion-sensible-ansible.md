@@ -255,7 +255,7 @@ drwxrwxr-x. 3 jadebustos jadebustos   60 Jan 19 23:41 terraform
 En este ejemplo tenemos la clave de encriptado en el fichero **git-password**:
 
 ```console
-[jadebustos@ansiblectrl ansible]$ git status
+[jadebustos@ansiblectrl labs-ansible]$ git status
 On branch main
 Your branch is up to date with 'origin/main'.
 
@@ -273,7 +273,7 @@ Untracked files:
 	roles/clonerepo/
 
 no changes added to commit (use "git add" and/or "git commit -a")
-[jadebustos@ansiblectrl ansible]$
+[jadebustos@ansiblectrl labs-ansible]$
 ```
 
 Como podemos ver hay varios ficheros pendientes de subir al repositorio. Con lo cual tendremos que tener cuidado de no hacer commit del fichero.
@@ -281,7 +281,7 @@ Como podemos ver hay varios ficheros pendientes de subir al repositorio. Con lo 
 Para evitar errores podemos crear un fichero **.gitignore** para ignorar el fichero de claves:
 
 ```console
-[jadebustos@ansiblectrl ansible]$ git status
+[jadebustos@ansiblectrl labs-ansible]$ git status
 On branch main
 Your branch is up to date with 'origin/main'.
 
@@ -299,7 +299,7 @@ Untracked files:
 	roles/clonerepo/
 
 no changes added to commit (use "git add" and/or "git commit -a")
-[jadebustos@ansiblectrl ansible]$
+[jadebustos@ansiblectrl labs-ansible]$
 ```
 
 De esta forma nos aseguramos de no subir el fichero con la clave al repositorio.
@@ -313,7 +313,7 @@ La forma recomendada es utilizar vaults como [Cyberark](https://www.cyberark.com
 Puede ser necesario encriptar ficheros enteros, por ejemplo ficheros con claves o tokens:
 
 ```console
-[jadebustos@archimedes vault]$ cat secret.yaml
+[jadebustos@archimedes ansible]$ cat secret.yaml
 secret:
   api_token: "32fcdcf7-e364-47e4-81ed-10265a1a3ef3"
   licence_key: "c8695835-dd11-4886-a2a4-ab88146e17c3"
@@ -321,7 +321,7 @@ secret:
 New Vault password: 
 Confirm New Vault password: 
 Encryption successful
-[jadebustos@archimedes vault]$ cat secret.yaml
+[jadebustos@archimedes ansible]$ cat secret.yaml
 $ANSIBLE_VAULT;1.1;AES256
 34613939653131656434663336613138386639383864623832303163376235376637633065616134
 3066633830326536363564353464663139346330363535350a646236306363366336366565306265
@@ -333,13 +333,13 @@ $ANSIBLE_VAULT;1.1;AES256
 38323237313164623830343530323464663131623235383933636534313033313131363430336662
 61393332343966653866336436303363636264373539653632383662306338633161656632383936
 3331666664373865313465623064636137626637393965343932
-[jadebustos@archimedes vault]$
+[jadebustos@archimedes ansible]$
 ```
 
 Podemos modificar los secrets utilizando:
 
 ```console
-[jadebustos@archimedes vault]$ ansible-vault edit secret.yaml 
+[jadebustos@archimedes ansible]$ ansible-vault edit secret.yaml 
 Vault password: 
 ```
 
@@ -348,12 +348,12 @@ Lo cual abrirá el secreto desencriptado en el editor por defecto para que lo mo
 Y también podemos consultarlo:
 
 ```console
-[jadebustos@archimedes vault]$ ansible-vault view secret.yaml --ask-vault-pass
+[jadebustos@archimedes ansible]$ ansible-vault view secret.yaml --ask-vault-pass
 Vault password: 
 secret:
   api_token: "32fcdcf7-e364-47e4-81ed-10265a1a3ef3"
   licence_key: "c8695835-dd11-4886-a2a4-ab88146e17c3"
-[jadebustos@archimedes vault]$
+[jadebustos@archimedes ansible]$
 ```
 
 ## Encriptando ficheros (Ejemplo)
