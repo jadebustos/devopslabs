@@ -19,3 +19,6 @@ ansiblectrl.jadpb.lab ansible_connection=local
 
 [client]
 ansibleclient.jadbp.lab ansible_user=ansible
+
+[local]
+localhost ansible_connection=local
