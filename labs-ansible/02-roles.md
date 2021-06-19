@@ -121,6 +121,7 @@ En este caso las tareas las hemos incluido en un fichero [roles/users/tasks/01-c
 
 Se iterará sobre el diccionario **users**, sobre sus claves (**operator**, **security**, **backup** y **monitoring**) donde:
 
++ **user** es el módulo de ansible que se utilizará. El módulo [user](https://docs.ansible.com/ansible/2.9/modules/user_module.html) creará usuarios en el sistema operativo.
 + **item.key** será la clave sobre la que estamos iterando, el nombre del usuario.
 + **item.value.gecos** será el valor del campo **gecos** de la clave sobre la que estemos iterando.
 + **item.value.home** será el valor del campo **home** de la clave sobre la que estemos iterando.
@@ -128,6 +129,72 @@ Se iterará sobre el diccionario **users**, sobre sus claves (**operator**, **se
 + **item.value.generate_ssh_keys** será el valor del campo **generate_ssh_keys** de la clave sobre la que estemos iterando.
 + **item.value.ssh_key_bits** será el valor del campo **ssh_key_bits** de la clave sobre la que estemos iterando.
 + **become: yes** indica que la tarea se tiene que ejecutar como usuario **root**.
++ **with_dict** indica que se iterará sobre un diccionario.
+
+Este role creará los usuarios, pero no les asigna contraseñas. Aunque es posible asignar la contraseña en el código anterior vamos a crear un role a parte para realizar esta tarea para poder reutilizarlo para cambiar las contraseñas de los usuarios cuando sea necesario.
+
+El role para cambiar las contraseñas a los usuarios:
+
+```console
+[jadebustos@ansiblectrl labs-ansible]$ tree roles/passwd/
+roles/passwd/
+└── tasks
+    ├── 01-password.yaml
+    └── main.yaml
+
+1 directory, 2 files
+[jadebustos@ansiblectrl labs-ansible]$
+```
+El fichero [roles/passwd/tasks/main.yaml](roles/passwd/tasks/main.yaml) incluye todas las tareas a realizar por el role:
+
+```yaml
+---
+
+- include_tasks: 01-password.yaml
+```
+
+En este caso las tareas las hemos incluido en un fichero [roles/users/tasks/01-password.yaml](roles/users/tasks/01-password.yaml):
+
+```yaml
+---
+
+# creamos el hash de las passwords de los usuarios y lo almacenamos en una variable
+- name: generate sha512 password hashes
+  shell: "openssl passwd -6 -salt $(openssl rand -base64 48) {{ item.value.password }}"
+  register: sha512
+  with_dict:
+    - "{{ users }}"
+
+#- name: display sha512
+#  debug: var=sha512
+
+#- name: muestra los contenidos de sha512.results
+#  debug: var=item.stdout
+#  with_items:
+#    - "{{ sha512.results }}"
+
+# crea un diccionario donde la clave es el nombre del usuario y el password el hash de su contraseña
+# para ver la estructura de sha512 y los campos que tiene puedes descomentar las tarea anteriores que
+# imprimiran el contenido de la variable sha512 que nos valdrá para conocer su estructura y poder
+# crear el diccionario con los hashes de las contraseñas
+- name: create a dictionary with password hashes
+  set_fact:
+    passwdhashes: "{{ passwdhashes|default({}) | combine( {item.item.key: item.stdout} ) }}"
+  with_items: "{{ sha512.results }}"
+
+# descomentando esta tarea podemos ver la estructura creada
+#- name: display passwordhashes
+#  debug: var=passwdhashes
+
+# cambiamos el password de los usuarios
+- name: change shadow password hash
+  user:
+    user: "{{ item.key }}"
+    password: "{{ item.value }}"
+  become: yes
+  with_dict:
+    - "{{ passwdhashes }}"
+```
 
 ## Mejoras
 
