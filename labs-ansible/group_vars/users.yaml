@@ -11,7 +11,7 @@ users:
     ssh_key_size: 3072
   security:
     password: '12345'
-    home: '/home/user2'
+    home: '/home/security'
     gecos: 'usuario de seguridad'
     shell: '/bin/bash'
     generate_ssh_keys: 'yes'
