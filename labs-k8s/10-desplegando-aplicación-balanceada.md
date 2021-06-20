@@ -423,6 +423,8 @@ spec:
 
 Con un servicio de tipo [NodePort](https://kubernetes.io/docs/concepts/services-networking/service/#nodeport) no es necesario un ingress. 
 
+![IMG](../imgs/SVC-NodePort.png)
+
 > ![HOMEWORK](../imgs/homework-icon.png) Redespliega la aplicación eliminando el ingress y configurando el servicio como **NodePort**.
 
 Este tipo de acceso expone un puerto en el master a través del cual será accesible la aplicación:
@@ -575,6 +577,4 @@ Por lo tanto para balancear utilizando un ingress a varios pods no es necesario 
 
 > ![NOTE](../imgs/note-icon.png) Este funcionamiento depende del ingress, con lo cual si utilizamos otro ingress diferente de haproxy el comportamiento podría no ser el mismo.
 
-## Ejercicio
-
-Modificar el fichero [webapp-balanced/webapp-balanced.yaml](webapp-balanced/webapp-balanced.yaml) para que la aplicación sólo se pueda acceder utilizando [TLS](10-desplegando-aplicación-balanceada.md).
+> ![HOMEWORK](../imgs/homework-icon.png) Modificar el fichero [webapp-balanced/webapp-balanced.yaml](webapp-balanced/webapp-balanced.yaml) para que la aplicación sólo se pueda acceder utilizando [TLS](10-desplegando-aplicación-balanceada.md).
