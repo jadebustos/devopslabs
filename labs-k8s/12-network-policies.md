@@ -76,4 +76,49 @@ round-trip min/avg/max/stddev = 0.144/0.176/0.223/0.030 ms
 
 ## Definiendo ingress Network-Policies
 
-Por defecto todo el tráfico de entrada a un namespace se encuentra permitido. En el momento que definamos una **Network-Policy** para ese namespace del tipo ingress todo el tráfico de entrada se bloquerá excepto el explicitamente indicado en la política.
+Por defecto todo el tráfico de entrada a un namespace se encuentra permitido. En el momento que definamos una [Network-Policy](https://kubernetes.io/docs/concepts/services-networking/network-policies/) para ese namespace del tipo ingress todo el tráfico de entrada se bloquerá excepto el explicitamente indicado en la política.
+
+Aplicamos la network policy:
+
+```console
+[kubeadmin@kubemaster network-policies]$ kubectl apply -f network-policy-ingress-deny-all.yaml 
+networkpolicy.networking.k8s.io/default-deny-ingress created
+[kubeadmin@kubemaster network-policies]$ kubectl get networkpolicy --namespace webapp-balanced -o yaml
+apiVersion: v1
+items:
+- apiVersion: networking.k8s.io/v1
+  kind: NetworkPolicy
+  metadata:
+    annotations:
+      kubectl.kubernetes.io/last-applied-configuration: |
+        {"apiVersion":"networking.k8s.io/v1","kind":"NetworkPolicy","metadata":{"annotations":{},"name":"default-deny-ingress","namespace":"webapp-balanced"},"spec":{"podSelector":{},"policyTypes":["Ingress"]}}
+    creationTimestamp: "2021-06-20T20:13:09Z"
+    generation: 1
+    name: default-deny-ingress
+    namespace: webapp-balanced
+    resourceVersion: "96244"
+    uid: abe61532-7d87-4cb8-b1bc-bd5617d7c4fb
+  spec:
+    podSelector: {}
+    policyTypes:
+    - Ingress
+kind: List
+metadata:
+  resourceVersion: ""
+  selfLink: ""
+[kubeadmin@kubemaster network-policies]$ 
+```
+
+Y ahora hacemos un ping a cualquiera de los contenedores del namespace donde hemos aplicado la network policy:
+
+```console
+[kubeadmin@kubemaster network-policies]$ kubectl get pod --namespace webapp-balanced -o wide
+NAME                               READY   STATUS    RESTARTS   AGE   IP              NODE                  NOMINATED NODE   READINESS GATES
+webapp-balanced-6f4f8dcd99-szwdr   1/1     Running   0          26m   192.169.62.30   kubenode1.jadbp.lab   <none>           <none>
+[kubeadmin@kubemaster network-policies]$ kubectl exec -i -t utils-646c66795d-qdtg9 --namespace utils -- ping -c 4 192.169.62.30
+PING 192.169.62.30 (192.169.62.30): 56 data bytes
+--- 192.169.62.30 ping statistics ---
+4 packets transmitted, 0 packets received, 100% packet loss
+command terminated with exit code 1
+[kubeadmin@kubemaster network-policies]$ 
+```
