@@ -17,7 +17,13 @@ deployment.apps/utils created
 [kubeadmin@kubemaster network-policies]$ kubectl apply -f troubleshoot.yaml 
 namespace/troubleshoot created
 deployment.apps/troubleshoot created
-[kubeadmin@kubemaster network-policies]$ 
+[kubeadmin@kubemaster network-policies]$ kubectl get pod --namespace utils -o wide
+NAME                     READY   STATUS    RESTARTS   AGE   IP              NODE                  NOMINATED NODE   READINESS GATES
+utils-646c66795d-qdtg9   1/1     Running   1          82m   192.169.62.31   kubenode1.jadbp.lab   <none>           <none>
+[kubeadmin@kubemaster network-policies]$ kubectl get pod --namespace troubleshoot -o wide
+NAME                            READY   STATUS    RESTARTS   AGE   IP              NODE                  NOMINATED NODE   READINESS GATES
+troubleshoot-7bf854b879-v6ggl   1/1     Running   0          14m   192.169.62.32   kubenode1.jadbp.lab   <none>           <none>
+[kubeadmin@kubemaster network-policies]$  
 ```
 
 ## Comprobación del tráfico egress
