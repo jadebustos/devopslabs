@@ -307,6 +307,40 @@ troubleshoot   1/1     1            1           6m4s   troubleshoot   amouat/net
 [kubeadmin@kubemaster network-policies]$ 
 ```
 
+Como todos los pods del namespace **webapp-balanced** tendrán la misma etiqueta por la forma en la que hemos escrito el deployment podríamos lograr el mismo resultado con la siguiente network policy:
+
+```console
+# Please edit the object below. Lines beginning with a '#' will be ignored,
+# and an empty file will abort the edit. If an error occurs while saving this file will be
+# reopened with the relevant failures.
+#
+apiVersion: networking.k8s.io/v1
+kind: NetworkPolicy
+metadata:
+  annotations:
+    kubectl.kubernetes.io/last-applied-configuration: |
+      {"apiVersion":"networking.k8s.io/v1","kind":"NetworkPolicy","metadata":{"annotations":{},"name":"default-deny-ingress","namespace":"webapp-balanced"},"spec":{"podSelector":{},"policyTypes":["Ingress"]}}
+  creationTimestamp: "2021-06-20T22:21:37Z"
+  generation: 6
+  name: default-deny-ingress
+  namespace: webapp-balanced
+  resourceVersion: "116290"
+  uid: 59b94858-428e-4e16-b1d7-d41e37d45d22
+spec:
+  ingress:
+  - from:
+    - namespaceSelector:
+        matchLabels:
+          name: utils
+  podSelector:
+    matchLabels:
+      app: webapp-balanced
+  policyTypes:
+  - Ingress
+```
+
+> ![TIP](../imgs/tip-icon.png) Utilizando labels podemos aplicar una network policy a aquellos pods que tengan dicha etiqueta, por lo tanto podríamos aplicar la network policy a un subconjunto de pods de un namespace.
+
 Eliminamos la configuración del podSelector de tal forma que se bloquee todo el tráfico entrante:
 
 ```yaml
