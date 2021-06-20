@@ -1,0 +1,41 @@
+kind: Namespace
+apiVersion: v1
+metadata:
+  name: troubleshoot
+  labels:
+    name: troubleshoot
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: troubleshoot
+  namespace: troubleshoot
+  labels:
+    app: uitls
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: troubleshoot
+  template:
+    metadata:
+      labels:
+        app: troubleshoot
+    spec:
+      affinity:
+        podAntiAffinity:
+          requiredDuringSchedulingIgnoredDuringExecution:
+          - labelSelector:
+              matchExpressions:
+              - key: app
+                operator: In
+                values:
+                - troubleshoot
+            topologyKey: "kubernetes.io/hostname"
+      containers:
+      # https://github.com/amouat/network-utils-container
+      - name: troubleshoot
+        image: amouat/network-utils
+        command:
+          - sleep
+          - "3600"

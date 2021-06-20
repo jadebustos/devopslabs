@@ -120,10 +120,13 @@ PING 192.169.62.30 (192.169.62.30): 56 data bytes
 --- 192.169.62.30 ping statistics ---
 4 packets transmitted, 0 packets received, 100% packet loss
 command terminated with exit code 1
-[kubeadmin@kubemaster network-policies]$ 
+[kubeadmin@kubemaster network-policies]$ kubectl exec -i -t utils-646c66795d-qdtg9 --namespace utils -- nc -zv 192.169.62.30 80
+nc: connect to 192.169.62.30 port 80 (tcp) failed: Connection timed out
+command terminated with exit code 1
+[kubeadmin@kubemaster network-policies]$
 ```
 
-Podemos permitir todo el tráfico entrante ejecutando:
+Como podemos observar no podemos hacer ping ni conectarnos al puerto 80 donde se encuentra escuchando apache en el contenedor. Podemos permitir todo el tráfico entrante ejecutando:
 
 ```console
 [kubeadmin@kubemaster network-policies]$ kubectl edit networkpolicy default-deny-ingress --namespace webapp-balanced
@@ -161,4 +164,90 @@ Es decir habremos añadido:
 ```yaml
   ingress:
   - {}
+```
+
+Verificamos la conexión al contenedor:
+
+```console
+[kubeadmin@kubemaster network-policies]$ kubectl exec -i -t utils-646c66795d-qdtg9 --namespace utils -- ping -c 4 192.169.62.30
+PING 192.169.62.30 (192.169.62.30): 56 data bytes
+64 bytes from 192.169.62.30: icmp_seq=0 ttl=63 time=0.262 ms
+64 bytes from 192.169.62.30: icmp_seq=1 ttl=63 time=0.159 ms
+64 bytes from 192.169.62.30: icmp_seq=2 ttl=63 time=0.156 ms
+64 bytes from 192.169.62.30: icmp_seq=3 ttl=63 time=0.154 ms
+--- 192.169.62.30 ping statistics ---
+4 packets transmitted, 4 packets received, 0% packet loss
+round-trip min/avg/max/stddev = 0.154/0.183/0.262/0.046 ms
+[kubeadmin@kubemaster network-policies]$ kubectl exec -i -t utils-646c66795d-qdtg9 --namespace utils -- nc -zv 192.169.62.30 80
+Connection to 192.169.62.30 80 port [tcp/http] succeeded!
+[kubeadmin@kubemaster network-policies]$ 
+```
+
+Editamos la network policy y bloqueamos todo el tráfico tal que:
+
+```yaml
+# Please edit the object below. Lines beginning with a '#' will be ignored,
+# and an empty file will abort the edit. If an error occurs while saving this file will be
+# reopened with the relevant failures.
+#
+apiVersion: networking.k8s.io/v1
+kind: NetworkPolicy
+metadata:
+  annotations:
+    kubectl.kubernetes.io/last-applied-configuration: |
+      {"apiVersion":"networking.k8s.io/v1","kind":"NetworkPolicy","metadata":{"annotations":{},"name":"default-deny-ingress","namespace":"webapp-balanced"},"spec":{"podSelector":{},"policyTypes":["Ingress"]}}
+  creationTimestamp: "2021-06-20T20:13:09Z"
+  generation: 7
+  name: default-deny-ingress
+  namespace: webapp-balanced
+  resourceVersion: "103093"
+  uid: abe61532-7d87-4cb8-b1bc-bd5617d7c4fb
+spec:
+  podSelector: {}
+  policyTypes:
+  - Ingress
+```
+
+Ahora vamos a permitir el tráfico de un namespace específico utilizando las labels con las que hemos etiquetado los pods de dicho namespace **app: utils**:
+
+```yaml
+# Please edit the object below. Lines beginning with a '#' will be ignored,
+# and an empty file will abort the edit. If an error occurs while saving this file will be
+# reopened with the relevant failures.
+#
+apiVersion: networking.k8s.io/v1
+kind: NetworkPolicy
+metadata:
+  annotations:
+    kubectl.kubernetes.io/last-applied-configuration: |
+      {"apiVersion":"networking.k8s.io/v1","kind":"NetworkPolicy","metadata":{"annotations":{},"name":"default-deny-ingress","namespace":"webapp-balanced"},"spec":{"podSelector":{},"policyTypes":["Ingress"]}}
+  creationTimestamp: "2021-06-20T20:13:09Z"
+  generation: 6
+  name: default-deny-ingress
+  namespace: webapp-balanced
+  resourceVersion: "102809"
+  uid: abe61532-7d87-4cb8-b1bc-bd5617d7c4fb
+spec:
+  podSelector:
+    matchLabels:
+      app: utils
+  policyTypes:
+  - Ingress
+```
+
+Verificamos que podemos acceder al puerto 80 y realizar ping al contenedor del namespace **webapp-balanced**:
+
+```console
+[kubeadmin@kubemaster network-policies]$ kubectl exec -i -t utils-646c66795d-qdtg9 --namespace utils -- ping -c 4 192.169.62.30
+PING 192.169.62.30 (192.169.62.30): 56 data bytes
+64 bytes from 192.169.62.30: icmp_seq=0 ttl=63 time=0.289 ms
+64 bytes from 192.169.62.30: icmp_seq=1 ttl=63 time=0.150 ms
+64 bytes from 192.169.62.30: icmp_seq=2 ttl=63 time=0.141 ms
+64 bytes from 192.169.62.30: icmp_seq=3 ttl=63 time=0.188 ms
+--- 192.169.62.30 ping statistics ---
+4 packets transmitted, 4 packets received, 0% packet loss
+round-trip min/avg/max/stddev = 0.141/0.192/0.289/0.059 ms
+[kubeadmin@kubemaster network-policies]$ kubectl exec -i -t utils-646c66795d-qdtg9 --namespace utils -- nc -zv 192.169.62.30 80
+Connection to 192.169.62.30 80 port [tcp/http] succeeded!
+[kubeadmin@kubemaster network-policies]$ 
 ```
