@@ -1,0 +1,15 @@
+kind: Namespace
+apiVersion: v1
+metadata:
+  name: webapp-external
+  labels:
+    name: webapp-external
+---
+apiVersion: v1
+kind: Service
+metadata:
+    name: external-service
+    namespace: webapp-external
+spec:
+  type: ExternalName
+  externalName: www.google.es

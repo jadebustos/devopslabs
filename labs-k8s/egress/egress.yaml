@@ -1,0 +1,40 @@
+kind: Namespace
+apiVersion: v1
+metadata:
+  name: egress-example
+  labels:
+    name: egress-example
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: egress-example
+  namespace: egress-example
+  labels:
+    app: egress-example
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: egress-example
+  template:
+    metadata:
+      labels:
+        app: egress-example
+    spec:
+      affinity:
+        podAntiAffinity:
+          requiredDuringSchedulingIgnoredDuringExecution:
+          - labelSelector:
+              matchExpressions:
+              - key: app
+                operator: In
+                values:
+                - egress-example
+            topologyKey: "kubernetes.io/hostname"
+      containers:
+      - name: egress-example
+        image: busybox
+        command:
+          - sleep
+          - "3600"
