@@ -391,55 +391,47 @@ Esto es debido a que el tráfico ingress para el namespace está bloqueado, con 
 
 > ![NOTE](../imgs/note-icon.png) Si hemos expuesto la aplicación mediante un servicio **NodePort** o un **LoadBalancer** observaremos que tampoco podremos conectarnos.
 
-Ahora editamos la network policy para permitir el tráfico a los pods etiquetados como **app: utils** tal y como hicimos anteriormente.
-
-Veremos que volvemos a obtener un error **503 Service Unavailable** al intentar acceder con el navegador. Ello es debido a que los pods del ingress no se encuentran etiquetados con **app: utils**.
+Ahora editamos la network policy para permitir el tráfico al puerto 80 TCP:
 
 ```console
-[kubeadmin@kubemaster network-policies]$ kubectl get ingress --namespace webapp-balanced 
-NAME               CLASS    HOSTS              ADDRESS   PORTS   AGE
-balanced-ingress   <none>   foo-balanced.bar             80      128m
-[kubeadmin@kubemaster network-policies]$ kubectl describe ingress balanced-ingress --namespace webapp-balanced  
-Name:             balanced-ingress
-Namespace:        webapp-balanced
-Address:          
-Default backend:  default-http-backend:80 (<error: endpoints "default-http-backend" not found>)
-Rules:
-  Host              Path  Backends
-  ----              ----  --------
-  foo-balanced.bar  
-                    /balanced   balanced-service:80 (192.169.62.30:80)
-Annotations:        haproxy.org/path-rewrite: /
-Events:             <none>
-[kubeadmin@kubemaster network-policies]$ kubectl get ingress balanced-ingress --namespace webapp-balanced  -o yaml
+# Please edit the object below. Lines beginning with a '#' will be ignored,
+# and an empty file will abort the edit. If an error occurs while saving this file will be
+# reopened with the relevant failures.
+#
 apiVersion: networking.k8s.io/v1
-kind: Ingress
+kind: NetworkPolicy
 metadata:
   annotations:
-    haproxy.org/path-rewrite: /
     kubectl.kubernetes.io/last-applied-configuration: |
-      {"apiVersion":"networking.k8s.io/v1","kind":"Ingress","metadata":{"annotations":{"haproxy.org/path-rewrite":"/"},"labels":{"app":"webapp-balanced"},"name":"balanced-ingress","namespace":"webapp-balanced"},"spec":{"rules":[{"host":"foo-balanced.bar","http":{"paths":[{"backend":{"service":{"name":"balanced-service","port":{"number":80}}},"path":"/balanced","pathType":"Prefix"}]}}]}}
-  creationTimestamp: "2021-06-20T19:49:23Z"
-  generation: 1
-  labels:
-    app: webapp-balanced
-  name: balanced-ingress
+      {"apiVersion":"networking.k8s.io/v1","kind":"NetworkPolicy","metadata":{"annotations":{},"name":"default-deny-ingress","namespace":"webapp-balanced"},"spec":{"podSelector":{},"policyTypes":["Ingress"]}}
+  creationTimestamp: "2021-06-20T22:21:37Z"
+  generation: 11
+  name: default-deny-ingress
   namespace: webapp-balanced
-  resourceVersion: "92806"
-  uid: cac997a5-6170-44de-84cb-1c9c019ce3f5
+  resourceVersion: "119547"
+  uid: 59b94858-428e-4e16-b1d7-d41e37d45d22
 spec:
-  rules:
-  - host: foo-balanced.bar
-    http:
-      paths:
-      - backend:
-          service:
-            name: balanced-service
-            port:
-              number: 80
-        path: /balanced
-        pathType: Prefix
-status:
-  loadBalancer: {}
-[kubeadmin@kubemaster network-policies]$
+  ingress:
+  - ports:
+    - port: 80
+      protocol: TCP
+  podSelector:
+    matchLabels:
+      app: webapp-balanced
+  policyTypes:
+  - Ingress
 ```
+
+Ahora tendremos acceso al puerto 80 tanto desde otros namespaces:
+
+```console
+[kubeadmin@kubemaster network-policies]$ kubectl exec -i -t  utils-646c66795d-qdtg9 --namespace utils  -- nc -zv 192.169.62.30 80
+Connection to 192.169.62.30 80 port [tcp/http] succeeded!
+[kubeadmin@kubemaster network-policies]$ kubectl exec -i -t troubleshoot-7bf854b879-v6ggl --namespace troubleshoot -- nc -zv 192.169.62.30 80
+Connection to 192.169.62.30 80 port [tcp/http] succeeded!
+[kubeadmin@kubemaster network-policies]$ 
+```
+
+Como si nos conectamos con un navegador desde fuera de kuberentes.
+
+> ![INFORMATION](../imgs/information-icon.png) [Network Policies](https://kubernetes.io/docs/concepts/services-networking/network-policies/)
