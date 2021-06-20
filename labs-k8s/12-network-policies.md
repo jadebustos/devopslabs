@@ -122,3 +122,43 @@ PING 192.169.62.30 (192.169.62.30): 56 data bytes
 command terminated with exit code 1
 [kubeadmin@kubemaster network-policies]$ 
 ```
+
+Podemos permitir todo el tráfico entrante ejecutando:
+
+```console
+[kubeadmin@kubemaster network-policies]$ kubectl edit networkpolicy default-deny-ingress --namespace webapp-balanced
+```
+
+Editaremos la network policy y será necesario editarla de tal forma que quede:
+
+```yaml
+# Please edit the object below. Lines beginning with a '#' will be ignored,
+# and an empty file will abort the edit. If an error occurs while saving this file will be
+# reopened with the relevant failures.
+#
+apiVersion: networking.k8s.io/v1
+kind: NetworkPolicy
+metadata:
+  annotations:
+    kubectl.kubernetes.io/last-applied-configuration: |
+      {"apiVersion":"networking.k8s.io/v1","kind":"NetworkPolicy","metadata":{"annotations":{},"name":"default-deny-ingress","namespace":"webapp-balanced"},"spec":{"podSelector":{},"policyTypes":["Ingress"]}}
+  creationTimestamp: "2021-06-20T20:13:09Z"
+  generation: 2
+  name: default-deny-ingress
+  namespace: webapp-balanced
+  resourceVersion: "97496"
+  uid: abe61532-7d87-4cb8-b1bc-bd5617d7c4fb
+spec:
+  ingress:
+  - {}
+  podSelector: {}
+  policyTypes:
+  - Ingress
+```
+
+Es decir habremos añadido:
+
+```yaml
+  ingress:
+  - {}
+```
