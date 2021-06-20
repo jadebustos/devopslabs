@@ -33,8 +33,9 @@ spec:
                 - egress-example
             topologyKey: "kubernetes.io/hostname"
       containers:
+      # https://github.com/amouat/network-utils-container
       - name: egress-example
-        image: busybox
+        image: amouat/network-utils
         command:
           - sleep
           - "3600"

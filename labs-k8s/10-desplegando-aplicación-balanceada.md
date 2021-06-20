@@ -584,7 +584,3 @@ Por lo tanto para balancear utilizando un ingress a varios pods no es necesario 
 > ![NOTE](../imgs/note-icon.png) Este funcionamiento depende del ingress, con lo cual si utilizamos otro ingress diferente de haproxy el comportamiento podría no ser el mismo.
 
 > ![HOMEWORK](../imgs/homework-icon.png) Modificar el fichero [webapp-balanced/webapp-balanced.yaml](webapp-balanced/webapp-balanced.yaml) para que la aplicación sólo se pueda acceder utilizando [TLS](10-desplegando-aplicación-balanceada.md).
-
-## Accediendo por un servicio de tipo ExternalName
-
-[ExternalName](https://kubernetes.io/docs/concepts/services-networking/service/#externalname)
