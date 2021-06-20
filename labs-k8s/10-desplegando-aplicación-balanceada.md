@@ -290,7 +290,9 @@ LAST SEEN   TYPE      REASON              OBJECT                                
 [kubeadmin@kubemaster devopslabs]$ 
 ```
 
-##
+## Explorando el servicio con tipo LoadBalancer
+
+Veamos los datos del servicio que hemos creado:
 
 ```console
 [kubeadmin@kubemaster webapp-balanced]$ kubectl describe svc balanced-service --namespace webapp-balanced
@@ -313,6 +315,111 @@ External Traffic Policy:  Cluster
 Events:                   <none>
 [kubeadmin@kubemaster webapp-balanced]$
 ```
+
+Obtengamos la configuración del servicio:
+
+```yaml
+[kubeadmin@kubemaster webapp-balanced]$ kubectl get svc balanced-service --namespace webapp-balanced -o yaml
+apiVersion: v1
+kind: Service
+metadata:
+  annotations:
+    kubectl.kubernetes.io/last-applied-configuration: |
+      {"apiVersion":"v1","kind":"Service","metadata":{"annotations":{},"name":"balanced-service","namespace":"webapp-balanced"},"spec":{"ports":[{"name":"http","port":80,"protocol":"TCP","targetPort":80}],"selector":{"app":"webapp-balanced"},"type":"LoadBalancer"}}
+  creationTimestamp: "2021-06-20T09:49:09Z"
+  name: balanced-service
+  namespace: webapp-balanced
+  resourceVersion: "138095"
+  uid: 938861ad-3f63-40ea-a7e2-52150aa4bd70
+spec:
+  clusterIP: 10.107.139.65
+  clusterIPs:
+  - 10.107.139.65
+  externalTrafficPolicy: Cluster
+  ipFamilies:
+  - IPv4
+  ipFamilyPolicy: SingleStack
+  ports:
+  - name: http
+    nodePort: 31707
+    port: 80
+    protocol: TCP
+    targetPort: 80
+  selector:
+    app: webapp-balanced
+  sessionAffinity: None
+  type: LoadBalancer
+status:
+  loadBalancer: {}
+[kubeadmin@kubemaster webapp-balanced]$
+```
+
+Prestemos atención a:
+
+```yaml
+  ports:
+  - name: http
+    nodePort: 31707
+    port: 80
+    protocol: TCP
+    targetPort: 80
+  selector:
+    app: webapp-balanced
+```
+
++ **nodePort** indica el puerto externo por el que la aplicación se encontrará disponible.
++ **port** indica el puerto expuesto internamente.
++ **targetPort** indica el puerto en el que los contenedores están escuchando.
+
+Se ha expuesto la aplicación por un puerto, 31707:
+
+```console
+[kubeadmin@kubemaster webapp-balanced]$ netstat -ln | grep 31707
+tcp        0      0 0.0.0.0:31707           0.0.0.0:*               LISTEN     
+[kubeadmin@kubemaster webapp-balanced]$
+```
+Si accedemos a la aplicación por ese puerto:
+
+![IMG](../imgs/webapp-balanced-nodeport.png)
+
+Si recargamos la página con el navegador veremos que la dirección IP no cambia. Si lo hacemos varias veces terminará cambiando la dirección IP (balanceará al otro contenedor).
+
+Cuando accedemos al servicio por **http://foo-balanced.bar:31716/balanced** estamos accediendo por el ingress, que reenvia la petición al servicio y desde el servicio se balancea a los pods que se encuentren levantados. Sin embargro, cuando accedemos utilizando el nodePort creado al indicar que el servicio es de tipo **LoadBalancer** es decir por la url **http://foo-balanced.bar:31707** estamos accediendo por el balanceador creado.
+
+Luego con esta configuración tenemos dos accesos posibles a la aplicación.
+
+En los siguientes apartados vamos a clarificar esto.
+
+[NodePort](https://kubernetes.io/docs/concepts/services-networking/service/#nodeport)
+
+[ExternalName](https://kubernetes.io/docs/concepts/services-networking/service/#externalname)
+
+## Acceso por un servicio de tipo LoadBalancer
+
+Hemos especificado que el servicio es de tipo [LoadBalancer](https://kubernetes.io/docs/concepts/services-networking/service/#loadbalancer), este tipo requiere de un balanceador externo proporcionado por un proveedor cloud (**AWS**, **Azure**, **GCP**, ...). Pero no estamos utilizando ningún balanceador externo. ¿Que está pasando?
+
+Un balanceador externo recibirá las peticiones y serán balanceadas a **http://foo-balanced.bar:31707**. Como no tenemos ninguno estamos accediendo directamente al puerto. Cuando despleguemos en un proveedor cloud al crear un servicio de tipo **LoadBalancer** se creará un balanceador que balanceará el tráfico a los pods.
+
+Si utilizamos un servicio de tipo **LoadBalancer** no necesitaremos crear el ingress. En este caso como no hemos desplegado en un cloud provider:
+
+![IMG](../imgs/SVC-LoadBalancer.png)
+
+Desplegar en un service provider implica integrar kubernetes con el service provider. Para está integración se desplegará el [Cloud Controller Manager de Kubernetes](https://kubernetes.io/docs/concepts/architecture/cloud-controller/) que permitirá la integración de Kubernetes con el proveedor cloud.
+
+En este caso el desplegar con un servicio de tipo **LoadBalancer** desplegaría un balanceador de carga en el cloud provider y tendríamos algo similar a:
+
+![IMG](../imgs/SVC-LoadBalancer-Cloud-Provider.png)
+
+En este caso para evitar que se cree un NodePort será necesario especificar en el servicio:
+
+```yaml
+spec:
+  type: LoadBalancer
+  allocateLoadBalancerNodePorts: False
+  ...
+```
+
+> ![HOMEWORK](../imgs/homework-icon.png) Redespliega la aplicación eliminando el ingress. Verifica que se realiza el balanceo.
 
 ## Ejercicio
 
