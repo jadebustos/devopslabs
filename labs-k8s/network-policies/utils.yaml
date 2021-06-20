@@ -1,26 +1,26 @@
 kind: Namespace
 apiVersion: v1
 metadata:
-  name: egress-example
+  name: utils
   labels:
-    name: egress-example
+    name: utils
 ---
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: egress-example
-  namespace: egress-example
+  name: utils
+  namespace: utils
   labels:
-    app: egress-example
+    app: uitls
 spec:
   replicas: 1
   selector:
     matchLabels:
-      app: egress-example
+      app: utils
   template:
     metadata:
       labels:
-        app: egress-example
+        app: utils
     spec:
       affinity:
         podAntiAffinity:
@@ -30,11 +30,11 @@ spec:
               - key: app
                 operator: In
                 values:
-                - egress-example
+                - utils
             topologyKey: "kubernetes.io/hostname"
       containers:
       # https://github.com/amouat/network-utils-container
-      - name: egress-example
+      - name: utils
         image: amouat/network-utils
         command:
           - sleep
