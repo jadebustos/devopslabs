@@ -270,6 +270,14 @@ spec:
   - Ingress
 ```
 
+> ![TIP](../imgs/tip-icon.png) La network policy se aplicará a aquellos pods que coincidan con:
+>
+>  ```yaml
+>    podSelector:
+>      matchLabels:
+>        app: webapp-balanced
+>  ```
+
 Verificamos que podemos acceder al puerto 80 y realizar ping al contenedor del namespace **webapp-balanced** desde el namespace **utils**:
 
 ```console
@@ -307,7 +315,7 @@ troubleshoot   1/1     1            1           6m4s   troubleshoot   amouat/net
 [kubeadmin@kubemaster network-policies]$ 
 ```
 
-Como todos los pods del namespace **webapp-balanced** tendrán la misma etiqueta por la forma en la que hemos escrito el deployment podríamos lograr el mismo resultado con la siguiente network policy:
+Como todos los pods del namespace **webapp-balanced** tendrán la misma etiqueta por la forma en la que hemos escrito el deployment podríamos lograr el mismo resultado con la siguiente network policy que utiliza el nombre del namespace como selector:
 
 ```console
 # Please edit the object below. Lines beginning with a '#' will be ignored,
