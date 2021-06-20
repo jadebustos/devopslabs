@@ -371,7 +371,7 @@ Prestemos atención a:
 + **port** indica el puerto expuesto internamente.
 + **targetPort** indica el puerto en el que los contenedores están escuchando.
 
-Se ha expuesto la aplicación por un puerto, 31707:
+Se ha expuesto la aplicación por un puerto en el nodo master, 31707:
 
 ```console
 [kubeadmin@kubemaster webapp-balanced]$ netstat -ln | grep 31707
@@ -389,8 +389,6 @@ Cuando accedemos al servicio por **http://foo-balanced.bar:31716/balanced** esta
 Luego con esta configuración tenemos dos accesos posibles a la aplicación.
 
 En los siguientes apartados vamos a clarificar esto.
-
-[NodePort](https://kubernetes.io/docs/concepts/services-networking/service/#nodeport)
 
 [ExternalName](https://kubernetes.io/docs/concepts/services-networking/service/#externalname)
 
@@ -420,6 +418,162 @@ spec:
 ```
 
 > ![HOMEWORK](../imgs/homework-icon.png) Redespliega la aplicación eliminando el ingress. Verifica que se realiza el balanceo.
+
+## Acceso por un servicio de tipo NodePort
+
+Con un servicio de tipo [NodePort](https://kubernetes.io/docs/concepts/services-networking/service/#nodeport) no es necesario un ingress. 
+
+> ![HOMEWORK](../imgs/homework-icon.png) Redespliega la aplicación eliminando el ingress y configurando el servicio como **NodePort**.
+
+Este tipo de acceso expone un puerto en el master a través del cual será accesible la aplicación:
+
+```console
+[kubeadmin@kubemaster webapp-balanced]$ kubectl describe svc balanced-service --namespace webapp-balanced
+Name:                     balanced-service
+Namespace:                webapp-balanced
+Labels:                   <none>
+Annotations:              <none>
+Selector:                 app=webapp-balanced
+Type:                     NodePort
+IP Family Policy:         SingleStack
+IP Families:              IPv4
+IP:                       10.103.138.209
+IPs:                      10.103.138.209
+Port:                     http  80/TCP
+TargetPort:               80/TCP
+NodePort:                 http  31183/TCP
+Endpoints:                192.169.45.168:80
+Session Affinity:         None
+External Traffic Policy:  Cluster
+Events:                   <none>
+[kubeadmin@kubemaster webapp-balanced]$ kubectl get svc balanced-service --namespace webapp-balanced -o yaml
+apiVersion: v1
+kind: Service
+metadata:
+  annotations:
+    kubectl.kubernetes.io/last-applied-configuration: |
+      {"apiVersion":"v1","kind":"Service","metadata":{"annotations":{},"name":"balanced-service","namespace":"webapp-balanced"},"spec":{"ports":[{"name":"http","port":80,"protocol":"TCP","targetPort":80}],"selector":{"app":"webapp-balanced"},"type":"NodePort"}}
+  creationTimestamp: "2021-06-20T13:23:50Z"
+  name: balanced-service
+  namespace: webapp-balanced
+  resourceVersion: "173008"
+  uid: b593443d-3256-44f7-b8d9-3fcc80f8f06b
+spec:
+  clusterIP: 10.103.138.209
+  clusterIPs:
+  - 10.103.138.209
+  externalTrafficPolicy: Cluster
+  ipFamilies:
+  - IPv4
+  ipFamilyPolicy: SingleStack
+  ports:
+  - name: http
+    nodePort: 31183
+    port: 80
+    protocol: TCP
+    targetPort: 80
+  selector:
+    app: webapp-balanced
+  sessionAffinity: None
+  type: NodePort
+status:
+  loadBalancer: {}
+[kubeadmin@kubemaster webapp-balanced]$
+```
+
+Si observamos las salidas anteriores y las comparamos con las del servicio de tipo **LoadBalancer** veremos que son iguales. Es debido a que en ambos casos se está utilizando un **NodePort**. Cuando no utilizamos un balanceador externo, desactivando **NodePort** ambos servicios son equivalentes. Al desactivar **NodePort** y utilizar un balanceador externo se balanceará directamente a los pods.
+
+## Acceso por un servicio de tipo ClusterIP
+
+Cuando hemos creado aplicaciones accesibles desde el exterior hemos utilizado un ingress. Esto es debido a que el tipo por defecto de servicio es de tipo **ClusterIP**, este tipo de servicio es solo accesible desde dentro del cluster y por ese motivo utilizabamos un ingress para enrutar las peticiones hacía el servicio interno.
+
+![IMG](../imgs/SVC-ClusterIP.png)
+
+> ![HOMEWORK](../imgs/homework-icon.png) Redespliega la aplicación configurando el servicio como **ClusterIP**. Dado que es el tipo por defecto para el objeto **Service** bastaría con eliminar:
+
+```yaml
+  type: NodePort
+```
+
+Con este tipo de servicio es necesario un ingress:
+
+```console
+[kubeadmin@kubemaster webapp-balanced]$ kubectl describe svc balanced-service --namespace webapp-balanced
+Name:              balanced-service
+Namespace:         webapp-balanced
+Labels:            <none>
+Annotations:       <none>
+Selector:          app=webapp-balanced
+Type:              ClusterIP
+IP Family Policy:  SingleStack
+IP Families:       IPv4
+IP:                10.101.93.25
+IPs:               10.101.93.25
+Port:              http  80/TCP
+TargetPort:        80/TCP
+Endpoints:         192.169.45.171:80,192.169.62.47:80
+Session Affinity:  None
+Events:            <none>
+[kubeadmin@kubemaster webapp-balanced]$ kubectl get svc balanced-service --namespace webapp-balanced -o yaml
+apiVersion: v1
+kind: Service
+metadata:
+  annotations:
+    kubectl.kubernetes.io/last-applied-configuration: |
+      {"apiVersion":"v1","kind":"Service","metadata":{"annotations":{},"name":"balanced-service","namespace":"webapp-balanced"},"spec":{"ports":[{"name":"http","port":80,"protocol":"TCP","targetPort":80}],"selector":{"app":"webapp-balanced"}}}
+  creationTimestamp: "2021-06-20T13:38:28Z"
+  name: balanced-service
+  namespace: webapp-balanced
+  resourceVersion: "175274"
+  uid: 2888ee98-d3ec-42bc-8354-7b0ca0c8ddda
+spec:
+  clusterIP: 10.101.93.25
+  clusterIPs:
+  - 10.101.93.25
+  ipFamilies:
+  - IPv4
+  ipFamilyPolicy: SingleStack
+  ports:
+  - name: http
+    port: 80
+    protocol: TCP
+    targetPort: 80
+  selector:
+    app: webapp-balanced
+  sessionAffinity: None
+  type: ClusterIP
+status:
+  loadBalancer: {}
+[kubeadmin@kubemaster webapp-balanced]$
+```
+
+Para acceder a la aplicación:
+
+```console
+[kubeadmin@kubemaster webapp-balanced]$ kubectl describe ingress balanced-ingress --namespace webapp-balanced
+Name:             balanced-ingress
+Namespace:        webapp-balanced
+Address:          
+Default backend:  default-http-backend:80 (<error: endpoints "default-http-backend" not found>)
+Rules:
+  Host              Path  Backends
+  ----              ----  --------
+  foo-balanced.bar  
+                    /balanced   balanced-service:80 (192.169.45.171:80,192.169.62.47:80)
+Annotations:        haproxy.org/path-rewrite: /
+Events:             <none>
+[kubeadmin@kubemaster webapp-balanced]$ kubectl get svc --namespace haproxy-controller
+NAME                      TYPE        CLUSTER-IP       EXTERNAL-IP   PORT(S)                                     AGE
+haproxy-ingress           NodePort    10.102.13.90     <none>        80:31716/TCP,443:32613/TCP,1024:32192/TCP   11d
+ingress-default-backend   ClusterIP   10.110.195.119   <none>        8080/TCP                                    11d
+[kubeadmin@kubemaster webapp-balanced]$
+```
+
+lo haremos a través **http://foo-balanced.bar:31716/balanced** y si recargamos la página cada carga será servida por un pod.
+
+Por lo tanto para balancear utilizando un ingress a varios pods no es necesario nada más.
+
+> ![NOTE](../imgs/note-icon.png) Este funcionamiento depende del ingress, con lo cual si utilizamos otro ingress diferente de haproxy el comportamiento podría no ser el mismo.
 
 ## Ejercicio
 
