@@ -14,6 +14,9 @@ Vamos a desplegar un pod con utilidades de red para realizar una serie de prueba
 [kubeadmin@kubemaster network-policies]$ kubectl apply -f utils.yaml 
 namespace/utils created
 deployment.apps/utils created
+[kubeadmin@kubemaster network-policies]$ kubectl apply -f troubleshoot.yaml 
+namespace/troubleshoot created
+deployment.apps/troubleshoot created
 [kubeadmin@kubemaster network-policies]$ 
 ```
 
@@ -235,7 +238,7 @@ spec:
   - Ingress
 ```
 
-Verificamos que podemos acceder al puerto 80 y realizar ping al contenedor del namespace **webapp-balanced**:
+Verificamos que podemos acceder al puerto 80 y realizar ping al contenedor del namespace **webapp-balanced** desde el namespace **utils**:
 
 ```console
 [kubeadmin@kubemaster network-policies]$ kubectl exec -i -t utils-646c66795d-qdtg9 --namespace utils -- ping -c 4 192.169.62.30
@@ -249,5 +252,25 @@ PING 192.169.62.30 (192.169.62.30): 56 data bytes
 round-trip min/avg/max/stddev = 0.141/0.192/0.289/0.059 ms
 [kubeadmin@kubemaster network-policies]$ kubectl exec -i -t utils-646c66795d-qdtg9 --namespace utils -- nc -zv 192.169.62.30 80
 Connection to 192.169.62.30 80 port [tcp/http] succeeded!
+[kubeadmin@kubemaster network-policies]$ kubectl get deployment --namespace utils -o wide
+NAME    READY   UP-TO-DATE   AVAILABLE   AGE   CONTAINERS   IMAGES                 SELECTOR
+utils   1/1     1            1           74m   utils        amouat/network-utils   app=utils
+[kubeadmin@kubemaster network-policies]$ 
+```
+
+Sin embargo desde el namespace **troubleshoot**:
+
+```console
+[kubeadmin@kubemaster network-policies]$ kubectl exec -i -t troubleshoot-7bf854b879-v6ggl --namespace troubleshoot -- ping -c 4 192.169.62.30
+PING 192.169.62.30 (192.169.62.30): 56 data bytes
+--- 192.169.62.30 ping statistics ---
+4 packets transmitted, 0 packets received, 100% packet loss
+command terminated with exit code 1
+[kubeadmin@kubemaster network-policies]$ kubectl exec -i -t troubleshoot-7bf854b879-v6ggl --namespace troubleshoot -- nc -zv 192.169.62.30 80
+nc: connect to 192.169.62.30 port 80 (tcp) failed: Connection timed out
+command terminated with exit code 1
+[kubeadmin@kubemaster network-policies]$ kubectl get deployment --namespace troubleshoot -o wide
+NAME           READY   UP-TO-DATE   AVAILABLE   AGE    CONTAINERS     IMAGES                 SELECTOR
+troubleshoot   1/1     1            1           6m4s   troubleshoot   amouat/network-utils   app=troubleshoot
 [kubeadmin@kubemaster network-policies]$ 
 ```
