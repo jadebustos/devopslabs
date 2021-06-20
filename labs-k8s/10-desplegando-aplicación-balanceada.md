@@ -492,10 +492,16 @@ Cuando hemos creado aplicaciones accesibles desde el exterior hemos utilizado un
 ![IMG](../imgs/SVC-ClusterIP.png)
 
 > ![HOMEWORK](../imgs/homework-icon.png) Redespliega la aplicación configurando el servicio como **ClusterIP**. Dado que es el tipo por defecto para el objeto **Service** bastaría con eliminar:
+>
+>  ```yaml
+>    type: NodePort
+>  ```
 
-```yaml
-  type: NodePort
-```
+> ![HOMEWORK](../imgs/homework-icon.png) Después de desplegar la aplicación y antes de escalarla para tener dos pods conectarese al pod del ingress y revisar la configuración del haproxy para ver como está definido el balanceo al único pod.
+
+> ![HOMEWORK](../imgs/homework-icon.png) Escalar la aplicación a dos pods y revisar la configuración del haproxy para ver como está definido el balanceo a los dos pods.
+
+> ![TIP](../imgs/tip-icon.png) En [actividades anteriores](03-desplegando-routed-application.md) ya hemos visto como conectarse al pod del ingress y revisar la configuración del haproxy.
 
 Con este tipo de servicio es necesario un ingress:
 
