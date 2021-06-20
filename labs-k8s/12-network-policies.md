@@ -150,6 +150,8 @@ command terminated with exit code 1
 [kubeadmin@kubemaster network-policies]$
 ```
 
+> ![NOTE](../imgs/note-icon.png) Si realizamos las mismas operaciones desde el namespace **troubleshoot** obtendremos el mismo resultado.
+
 Como podemos observar no podemos hacer ping ni conectarnos al puerto 80 donde se encuentra escuchando apache en el contenedor. Podemos permitir todo el tráfico entrante ejecutando:
 
 ```console
