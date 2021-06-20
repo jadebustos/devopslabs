@@ -2,6 +2,8 @@
 
 Desplegaremos una aplicación balanceada.
 
+También entraremos en más detalle sobre como exponer aplicaciones al exterior.
+
 ## Namespace
 
 Crearemos el namespace en el que se desplegará la aplicación:
@@ -390,8 +392,6 @@ Luego con esta configuración tenemos dos accesos posibles a la aplicación.
 
 En los siguientes apartados vamos a clarificar esto.
 
-[ExternalName](https://kubernetes.io/docs/concepts/services-networking/service/#externalname)
-
 ## Acceso por un servicio de tipo LoadBalancer
 
 Hemos especificado que el servicio es de tipo [LoadBalancer](https://kubernetes.io/docs/concepts/services-networking/service/#loadbalancer), este tipo requiere de un balanceador externo proporcionado por un proveedor cloud (**AWS**, **Azure**, **GCP**, ...). Pero no estamos utilizando ningún balanceador externo. ¿Que está pasando?
@@ -578,3 +578,7 @@ Por lo tanto para balancear utilizando un ingress a varios pods no es necesario 
 > ![NOTE](../imgs/note-icon.png) Este funcionamiento depende del ingress, con lo cual si utilizamos otro ingress diferente de haproxy el comportamiento podría no ser el mismo.
 
 > ![HOMEWORK](../imgs/homework-icon.png) Modificar el fichero [webapp-balanced/webapp-balanced.yaml](webapp-balanced/webapp-balanced.yaml) para que la aplicación sólo se pueda acceder utilizando [TLS](10-desplegando-aplicación-balanceada.md).
+
+## Accediendo por un servicio de tipo ExternalName
+
+[ExternalName](https://kubernetes.io/docs/concepts/services-networking/service/#externalname)
