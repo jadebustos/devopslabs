@@ -8,7 +8,7 @@ El tráfico egress es el tráfico saliente. Por defecto está todo el tráfico s
 
 ## Despliegue de pods
 
-Vamos a desplegar un pod con utilidades de red para realizar una serie de pruebas:
+Vamos a desplegar un par de pods, cada uno en un namespace diferente, con utilidades de red para realizar una serie de pruebas:
 
 ```console
 [kubeadmin@kubemaster network-policies]$ kubectl apply -f utils.yaml 
@@ -59,7 +59,7 @@ round-trip min/avg/max/stddev = 10.300/11.903/13.961/1.522 ms
 [kubeadmin@kubemaster network-policies]$
 ```
 
-Desplegamos la aplicación balaceada, obtenemos la ip interna de uno de los contenedores y hacemos ping:
+Desplegamos la aplicación balaceada, obtenemos la ip interna de uno de los contenedores, hacemos ping y nos conectamos al puerto 80 del pod en el namespace **webapp-balanced**:
 
 ```console
 [kubeadmin@kubemaster network-policies]$ kubectl get pod --namespace webapp-balanced -o wide
@@ -74,8 +74,23 @@ PING 192.169.62.30 (192.169.62.30): 56 data bytes
 --- 192.169.62.30 ping statistics ---
 4 packets transmitted, 4 packets received, 0% packet loss
 round-trip min/avg/max/stddev = 0.144/0.176/0.223/0.030 ms
+[kubeadmin@kubemaster network-policies]$ kubectl exec -i -t troubleshoot-7bf854b879-v6ggl --namespace troubleshoot -- ping -c 4 192.169.62.30
+PING 192.169.62.30 (192.169.62.30): 56 data bytes
+64 bytes from 192.169.62.30: icmp_seq=0 ttl=63 time=0.238 ms
+64 bytes from 192.169.62.30: icmp_seq=1 ttl=63 time=0.169 ms
+64 bytes from 192.169.62.30: icmp_seq=2 ttl=63 time=0.164 ms
+64 bytes from 192.169.62.30: icmp_seq=3 ttl=63 time=0.196 ms
+--- 192.169.62.30 ping statistics ---
+4 packets transmitted, 4 packets received, 0% packet loss
+round-trip min/avg/max/stddev = 0.164/0.192/0.238/0.029 ms
+[kubeadmin@kubemaster network-policies]$ kubectl exec -i -t  utils-646c66795d-qdtg9 --namespace utils  -- nc -zv 192.169.62.30 80
+Connection to 192.169.62.30 80 port [tcp/http] succeeded!
+[kubeadmin@kubemaster network-policies]$ kubectl exec -i -t troubleshoot-7bf854b879-v6ggl --namespace troubleshoot -- nc -zv 192.169.62.30 80
+Connection to 192.169.62.30 80 port [tcp/http] succeeded!
 [kubeadmin@kubemaster network-policies]$ 
 ```
+
+Vemos como desde los dos namespaces, **utils** y **troubleshoot** tenemos ping y conectividad al puerto 80 del pod desplegado en **webapp-balanced**.
 
 ## Definiendo ingress Network-Policies
 
