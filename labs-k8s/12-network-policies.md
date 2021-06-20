@@ -285,7 +285,7 @@ utils   1/1     1            1           74m   utils        amouat/network-utils
 [kubeadmin@kubemaster network-policies]$ 
 ```
 
-Sin embargo desde el namespace **troubleshoot**:
+Sin embargo desde el namespace **troubleshoot** no tendremos conexión:
 
 ```console
 [kubeadmin@kubemaster network-policies]$ kubectl exec -i -t troubleshoot-7bf854b879-v6ggl --namespace troubleshoot -- ping -c 4 192.169.62.30
@@ -301,3 +301,20 @@ NAME           READY   UP-TO-DATE   AVAILABLE   AGE    CONTAINERS     IMAGES    
 troubleshoot   1/1     1            1           6m4s   troubleshoot   amouat/network-utils   app=troubleshoot
 [kubeadmin@kubemaster network-policies]$ 
 ```
+
+Si tenemos definido un ingress observemos que no podemos conectarnos a la aplicación:
+
+```console
+[kubeadmin@kubemaster network-policies]$ kubectl get ingress -A
+NAMESPACE         NAME               CLASS    HOSTS              ADDRESS   PORTS   AGE
+webapp-balanced   balanced-ingress   <none>   foo-balanced.bar             80      100m
+[kubeadmin@kubemaster network-policies]$ 
+```
+
+Si nos conectamos con un navegador obtendremos un error **503 Service Unavailable**:
+
+![IMG](../imgs/webapp-balanced-503.png)
+
+Esto es debido a que el tráfico que le llega procedende del ingress no viene de un pod etiquetado como **app: utils**.
+
+> ![NOTE](../imgs/note-icon.png) Si hemos expuesto la aplicación mediante un servicio **NodePort** o un **LoadBalancer** observaremos que tampoco podremos conectarnos.
