@@ -435,3 +435,5 @@ Connection to 192.169.62.30 80 port [tcp/http] succeeded!
 Como si nos conectamos con un navegador desde fuera de kuberentes.
 
 > ![INFORMATION](../imgs/information-icon.png) [Network Policies](https://kubernetes.io/docs/concepts/services-networking/network-policies/)
+
+> ![HOMEWORK](../imgs/homework-icon.png) Para el tráfico **egress** la configuración es similar.
