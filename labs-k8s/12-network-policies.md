@@ -437,3 +437,15 @@ Como si nos conectamos con un navegador desde fuera de kuberentes.
 > ![INFORMATION](../imgs/information-icon.png) [Network Policies](https://kubernetes.io/docs/concepts/services-networking/network-policies/)
 
 > ![HOMEWORK](../imgs/homework-icon.png) Para el tráfico **egress** la configuración es similar.
+
+## Conclusiones
+
+Las network policies son un mecanismo a nivel de namespace, nos permite definir políticas de red a nivel de namespace, pero no a nivel global.
+
+Si queremos definirlas a nivel global será necesario definirlas en la SDN que tengamos configurada.
+
+> ![INFORMATION](../imgs/information-icon.png) [Calico Policy Rules](https://docs.projectcalico.org/security/policy-rules)
+
+> ![INFORMATION](../imgs/information-icon.png) [Secure Calico component communications](https://docs.projectcalico.org/security/comms/)
+
+> ![INFORMATION](../imgs/information-icon.png) [Calico Security](https://docs.projectcalico.org/security/)
