@@ -193,14 +193,16 @@ data:
   ssl-redirect: "OFF"
 ```
 
+> ![INFORMATION](information-icon.png) [Kubernetes Service](https://kubernetes.io/docs/concepts/services-networking/service/)
+
 ## Probando la aplicación balanceada
 
 Listamos los pods:
 
 ```console
 [kubeadmin@kubemaster webapp-balanced]$ kubectl get pods --namespace webapp-balanced -o wide
-NAME                               READY   STATUS    RESTARTS   AGE   IP               NODE                  NOMINATED NODE   READINESS GATES
-webapp-balanced-6f4f8dcd99-9pdqs   1/1     Running   0          30s   192.169.45.163   kubenode2.jadbp.lab   <none>           <none>
+NAME                               READY   STATUS    RESTARTS   AGE    IP               NODE                  NOMINATED NODE   READINESS GATES
+webapp-balanced-6f4f8dcd99-p2vd7   1/1     Running   0          117s   192.169.45.166   kubenode2.jadbp.lab   <none>           <none>
 [kubeadmin@kubemaster webapp-balanced]$
 ```
 
@@ -223,12 +225,12 @@ Si recargamos la página podremos ver que la ip no cambia. Tenemos un único pod
 Escalamos el deployment para tener dos pods:
 
 ```console
-[kubeadmin@kubemaster labs-k8s]$ kubectl scale --replicas=2 deployment/webapp-balanced --namespace=webapp-balanced
+[kubeadmin@kubemaster webapp-balanced]$ kubectl scale --replicas=2 deployment/webapp-balanced --namespace=webapp-balanced
 deployment.apps/webapp-balanced scaled
 [kubeadmin@kubemaster webapp-balanced]$ kubectl get pods --namespace webapp-balanced -o wide
 NAME                               READY   STATUS    RESTARTS   AGE     IP               NODE                  NOMINATED NODE   READINESS GATES
-webapp-balanced-6f4f8dcd99-9pdqs   1/1     Running   0          2m31s   192.169.45.163   kubenode2.jadbp.lab   <none>           <none>
-webapp-balanced-6f4f8dcd99-zfspg   1/1     Running   0          25s     192.169.62.38    kubenode1.jadbp.lab   <none>           <none>
+webapp-balanced-6f4f8dcd99-b4qpj   1/1     Running   0          20s     192.169.62.43    kubenode1.jadbp.lab   <none>           <none>
+webapp-balanced-6f4f8dcd99-p2vd7   1/1     Running   0          8m16s   192.169.45.166   kubenode2.jadbp.lab   <none>           <none>
 [kubeadmin@kubemaster webapp-balanced]$
 ```
 
@@ -240,7 +242,7 @@ Podemos ir recargando y veremos que cada vez que recargamos se muestra una ip di
 
 ## Escalando la aplicación
 
-Escalamos la apliación para tener tres pods:
+Escalamos la aplicación para tener tres pods:
 
 ```console
 [kubeadmin@kubemaster devopslabs]$ kubectl scale --replicas=3 deployment/webapp-balanced --namespace=webapp-balanced
@@ -264,7 +266,7 @@ kubenode2.jadbp.lab    Ready    <none>                 9d    v1.21.1
 [kubeadmin@kubemaster devopslabs]$ 
 ```
 
-Podemos ver los eventos del namespace en el que venos que no se cumplen las reglas de antiafinidad del deployment:
+Podemos ver los eventos del namespace en el que vemos que no se cumplen las reglas de antiafinidad del deployment:
 
 ```console
 [kubeadmin@kubemaster devopslabs]$ kubectl get events --namespace webapp-balanced
@@ -288,24 +290,28 @@ LAST SEEN   TYPE      REASON              OBJECT                                
 [kubeadmin@kubemaster devopslabs]$ 
 ```
 
-```console
-[kubeadmin@kubemaster webapp-balanced]$  kubectl scale --replicas=2 deployment/webapp-balanced --namespace=webapp-balanced
-deployment.apps/webapp-balanced scaled
-[kubeadmin@kubemaster webapp-balanced]$ kubectl get pods --namespace webapp-balanced -o wide
-NAME                               READY   STATUS    RESTARTS   AGE     IP               NODE                  NOMINATED NODE   READINESS GATES
-webapp-balanced-6f4f8dcd99-9pdqs   1/1     Running   0          6m54s   192.169.45.163   kubenode2.jadbp.lab   <none>           <none>
-webapp-balanced-6f4f8dcd99-zfspg   1/1     Running   0          4m48s   192.169.62.38    kubenode1.jadbp.lab   <none>           <none>
-[kubeadmin@kubemaster webapp-balanced]$ 
-```
+##
 
 ```console
-[kubeadmin@kubemaster devopslabs]$ kubectl edit deployment webapp-balanced --namespace webapp-balanced
-deployment.apps/webapp-balanced edited
-[kubeadmin@kubemaster devopslabs]$ 
-```
-
-```console
-
+[kubeadmin@kubemaster webapp-balanced]$ kubectl describe svc balanced-service --namespace webapp-balanced
+Name:                     balanced-service
+Namespace:                webapp-balanced
+Labels:                   <none>
+Annotations:              <none>
+Selector:                 app=webapp-balanced
+Type:                     LoadBalancer
+IP Family Policy:         SingleStack
+IP Families:              IPv4
+IP:                       10.107.139.65
+IPs:                      10.107.139.65
+Port:                     http  80/TCP
+TargetPort:               80/TCP
+NodePort:                 http  31707/TCP
+Endpoints:                192.169.45.166:80,192.169.62.43:80
+Session Affinity:         None
+External Traffic Policy:  Cluster
+Events:                   <none>
+[kubeadmin@kubemaster webapp-balanced]$
 ```
 
 ## Ejercicio
