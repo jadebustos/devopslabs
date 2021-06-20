@@ -251,16 +251,21 @@ metadata:
   annotations:
     kubectl.kubernetes.io/last-applied-configuration: |
       {"apiVersion":"networking.k8s.io/v1","kind":"NetworkPolicy","metadata":{"annotations":{},"name":"default-deny-ingress","namespace":"webapp-balanced"},"spec":{"podSelector":{},"policyTypes":["Ingress"]}}
-  creationTimestamp: "2021-06-20T20:13:09Z"
-  generation: 6
+  creationTimestamp: "2021-06-20T21:45:15Z"
+  generation: 3
   name: default-deny-ingress
   namespace: webapp-balanced
-  resourceVersion: "102809"
-  uid: abe61532-7d87-4cb8-b1bc-bd5617d7c4fb
+  resourceVersion: "109841"
+  uid: 2f16d87a-07b8-498b-9472-4ef436598dca
 spec:
+  ingress:
+  - from:
+    - podSelector:
+        matchLabels:
+          app: utils
   podSelector:
     matchLabels:
-      app: utils
+      app: webapp-balanced
   policyTypes:
   - Ingress
 ```
@@ -302,6 +307,31 @@ troubleshoot   1/1     1            1           6m4s   troubleshoot   amouat/net
 [kubeadmin@kubemaster network-policies]$ 
 ```
 
+Eliminamos la configuración del podSelector de tal forma que se bloquee todo el tráfico entrante:
+
+```yaml
+# Please edit the object below. Lines beginning with a '#' will be ignored,
+# and an empty file will abort the edit. If an error occurs while saving this file will be
+# reopened with the relevant failures.
+#
+apiVersion: networking.k8s.io/v1
+kind: NetworkPolicy
+metadata:
+  annotations:
+    kubectl.kubernetes.io/last-applied-configuration: |
+      {"apiVersion":"networking.k8s.io/v1","kind":"NetworkPolicy","metadata":{"annotations":{},"name":"default-deny-ingress","namespace":"webapp-balanced"},"spec":{"podSelector":{},"policyTypes":["Ingress"]}}
+  creationTimestamp: "2021-06-20T21:25:36Z"
+  generation: 1
+  name: default-deny-ingress
+  namespace: webapp-balanced
+  resourceVersion: "106546"
+  uid: b4175cf5-aab4-4438-96c9-0367d2f1d946
+spec:
+  podSelector: {}
+  policyTypes:
+  - Ingress
+```
+
 Si tenemos definido un ingress observemos que no podemos conectarnos a la aplicación:
 
 ```console
@@ -315,6 +345,59 @@ Si nos conectamos con un navegador obtendremos un error **503 Service Unavailabl
 
 ![IMG](../imgs/webapp-balanced-503.png)
 
-Esto es debido a que el tráfico que le llega procedende del ingress no viene de un pod etiquetado como **app: utils**.
+Esto es debido a que el tráfico ingress para el namespace está bloqueado, con lo cual no se le permite la entrada al tráfico que entra a través del ingress.
 
 > ![NOTE](../imgs/note-icon.png) Si hemos expuesto la aplicación mediante un servicio **NodePort** o un **LoadBalancer** observaremos que tampoco podremos conectarnos.
+
+Ahora editamos la network policy para permitir el tráfico a los pods etiquetados como **app: utils** tal y como hicimos anteriormente.
+
+Veremos que volvemos a obtener un error **503 Service Unavailable** al intentar acceder con el navegador. Ello es debido a que los pods del ingress no se encuentran etiquetados con **app: utils**.
+
+```console
+[kubeadmin@kubemaster network-policies]$ kubectl get ingress --namespace webapp-balanced 
+NAME               CLASS    HOSTS              ADDRESS   PORTS   AGE
+balanced-ingress   <none>   foo-balanced.bar             80      128m
+[kubeadmin@kubemaster network-policies]$ kubectl describe ingress balanced-ingress --namespace webapp-balanced  
+Name:             balanced-ingress
+Namespace:        webapp-balanced
+Address:          
+Default backend:  default-http-backend:80 (<error: endpoints "default-http-backend" not found>)
+Rules:
+  Host              Path  Backends
+  ----              ----  --------
+  foo-balanced.bar  
+                    /balanced   balanced-service:80 (192.169.62.30:80)
+Annotations:        haproxy.org/path-rewrite: /
+Events:             <none>
+[kubeadmin@kubemaster network-policies]$ kubectl get ingress balanced-ingress --namespace webapp-balanced  -o yaml
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  annotations:
+    haproxy.org/path-rewrite: /
+    kubectl.kubernetes.io/last-applied-configuration: |
+      {"apiVersion":"networking.k8s.io/v1","kind":"Ingress","metadata":{"annotations":{"haproxy.org/path-rewrite":"/"},"labels":{"app":"webapp-balanced"},"name":"balanced-ingress","namespace":"webapp-balanced"},"spec":{"rules":[{"host":"foo-balanced.bar","http":{"paths":[{"backend":{"service":{"name":"balanced-service","port":{"number":80}}},"path":"/balanced","pathType":"Prefix"}]}}]}}
+  creationTimestamp: "2021-06-20T19:49:23Z"
+  generation: 1
+  labels:
+    app: webapp-balanced
+  name: balanced-ingress
+  namespace: webapp-balanced
+  resourceVersion: "92806"
+  uid: cac997a5-6170-44de-84cb-1c9c019ce3f5
+spec:
+  rules:
+  - host: foo-balanced.bar
+    http:
+      paths:
+      - backend:
+          service:
+            name: balanced-service
+            port:
+              number: 80
+        path: /balanced
+        pathType: Prefix
+status:
+  loadBalancer: {}
+[kubeadmin@kubemaster network-policies]$
+```

@@ -315,7 +315,10 @@ Endpoints:                192.169.45.166:80,192.169.62.43:80
 Session Affinity:         None
 External Traffic Policy:  Cluster
 Events:                   <none>
-[kubeadmin@kubemaster webapp-balanced]$
+[kubeadmin@kubemaster webapp-balanced]$ kubectl get svc balanced-service --namespace webapp-balanced -o wide
+NAME               TYPE           CLUSTER-IP      EXTERNAL-IP   PORT(S)        AGE    SELECTOR
+balanced-service   LoadBalancer   10.107.139.65   <pending>     80:30551/TCP   133m   app=webapp-balanced
+[kubeadmin@kubemaster network-policies]$
 ```
 
 Obtengamos la configuración del servicio:
@@ -407,6 +410,15 @@ Desplegar en un service provider implica integrar kubernetes con el service prov
 En este caso el desplegar con un servicio de tipo **LoadBalancer** desplegaría un balanceador de carga en el cloud provider y tendríamos algo similar a:
 
 ![IMG](../imgs/SVC-LoadBalancer-Cloud-Provider.png)
+
+```console
+kubectl get svc balanced-service --namespace webapp-balanced -o wide
+NAME               TYPE           CLUSTER-IP      EXTERNAL-IP   PORT(S)        AGE    SELECTOR
+balanced-service   LoadBalancer   10.107.139.65   <pending>     80:30551/TCP   133m   app=webapp-balanced
+[kubeadmin@kubemaster network-policies]$
+```
+
+Podemos observar que la **EXTERNAL-IP** se queda en **<pending>**. Ello es debido a que como no se despliega un balanceador al no estar desplegado kubernetes en un proveedor cloud y con integración en el mismo no se desplegará un balanceador.
 
 En este caso para evitar que se cree un NodePort será necesario especificar en el servicio:
 
