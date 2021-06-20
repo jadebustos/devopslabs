@@ -209,6 +209,10 @@ Connection to 192.169.62.30 80 port [tcp/http] succeeded!
 [kubeadmin@kubemaster network-policies]$ 
 ```
 
+Tenemos comunicación otra vez al contenedor:
+
+> ![NOTE](../imgs/note-icon.png) Si realizamos las mismas operaciones desde el namespace **troubleshoot** obtendremos el mismo resultado.
+
 Editamos la network policy y bloqueamos todo el tráfico tal que:
 
 ```yaml
