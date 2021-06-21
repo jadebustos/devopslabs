@@ -9,7 +9,7 @@
 - name: copy examples
   command: "cp -prf {{ item }} {{ examples_dir }}"
   with_items:
-    - "{{ repo_dir }}/labs/ansible/group_vars"
-    - "{{ repo_dir }}/labs/ansible/roles"
-    - "{{ repo_dir }}/hosts"
-    - "{{ repo_dir }}/*.yaml"
+    - "{{ repo_dir }}/labs-ansible/ansible/group_vars"
+    - "{{ repo_dir }}/labs-ansible/ansible/roles"
+    - "{{ repo_dir }}/labs-ansible/hosts"
+    - "{{ repo_dir }}/labs-ansible/*.yaml"
