@@ -12,4 +12,4 @@
     - "{{ repo_dir }}/labs-ansible/group_vars"
     - "{{ repo_dir }}/labs-ansible/roles"
     - "{{ repo_dir }}/labs-ansible/hosts"
-    - "{{ repo_dir }}/labs-ansible/*.yaml"
+    - "{{ repo_dir }}"/labs-ansible/*.yaml
