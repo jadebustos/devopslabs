@@ -7,3 +7,5 @@ Este repositorio contiene una serie de laboratorios sobre tecnologías DevOps.
 + [Laboratorios de Kubernetes](labs-k8s)
 
 > ![NOTA](imgs/note-icon.png) Se ha tratado de detallar lo máximo posible para facilitar a aquellos usuarios con poca experiencia en entornos Linux su entendimiento, pero aún así es necesario de algún conocimiento de Linux.
+
+> ![INFORMACION](imgs/information-icon.png) Estos laboratorios se encuentran basados en CentOS Stream 8.
