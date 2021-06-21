@@ -56,3 +56,5 @@ También podemos utilizar **block** para agrupar las tareas a ejecutar como **ro
 ## Ejecución de tareas como otro usuario
 
 Es posible impersonar a otros usuarios, no solo al usuario **root**. Para ellos bastará añadir **become_user: usuario** junto a **become: true** para ejecutar la tarea o grupo de tareas como dicho usuario.
+
+> ![HOMEWORK](../imgs/homework-icon.png) Probar a ejecutar tareas utilizando [become_user](https://docs.ansible.com/ansible/2.9/user_guide/become.html).
