@@ -233,3 +233,5 @@ Cuando queramos que los contenedores del POD se ejecuten siempre en el mismo wor
                 - webapp-antiaffinity
             topologyKey: "kubernetes.io/hostname"
 ```
+
+> ![HOMEWORK](../imgs/homework-icon.png) Desplegar dos pods con afinidad.

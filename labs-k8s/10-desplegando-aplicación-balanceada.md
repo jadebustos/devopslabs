@@ -195,7 +195,7 @@ data:
   ssl-redirect: "OFF"
 ```
 
-> ![INFORMATION](information-icon.png) [Kubernetes Service](https://kubernetes.io/docs/concepts/services-networking/service/)
+> ![INFORMATION](../imgs/information-icon.png) [Kubernetes Service](https://kubernetes.io/docs/concepts/services-networking/service/)
 
 ## Probando la aplicación balanceada
 

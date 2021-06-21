@@ -5,6 +5,7 @@ Los siguientes son una serie de laboratorios para aprender los fundamentos bási
 + Pods.
 + Servicios.
 + Ingress.
++ Network policies.
 + Volúmenes.
 + Service accounts.
 + Secrets.
