@@ -1,6 +1,20 @@
 # Instalando docker
 
+## Instalando docker con ansible
+
+Si ya tenemos desplegada una máquina para instalar docker y los ejemplos vamos al directorio [ansible](../ansible):
+
+```console
+[root@docker ~]# git clone https://github.com/jadebustos/devopslabs.git
+[root@docker ~]# cd devopslabs/ansible
+[root@docker ansible]# ansible-playbook -i hosts install-docker.yaml 
+...
+[root@docker ansible]#
+```
+
 ## Desplegando la máquina virtual con terraform
+
+Se incluye un plan de Terraform para desplegar la máquina de docker sobre KVM.
 
 Iremos al directorio [terraform/kvm/docker](../terraform/kvm/docker) donde tenemos el plan de terraform para desplegar una máquina virtual en KVM.
 
@@ -178,16 +192,4 @@ libvirt_domain.terraform-rhel: Creation complete after 2s [id=292b86bd-1b18-4486
 
 Apply complete! Resources: 4 added, 0 changed, 0 destroyed.
 [jadebustos@beast docker]$
-```
-
-## Instalando docker con ansible
-
-Para instalar docker y los ejemplos vamos al directorio [ansible](../ansible):
-
-```console
-[root@docker ~]# git clone https://github.com/jadebustos/devopslabs.git
-[root@docker ~]# cd devopslabs/ansible
-[root@docker ansible]# ansible-playbook -i hosts -l docker install-docker.yaml 
-...
-[root@docker ansible]#
 ```

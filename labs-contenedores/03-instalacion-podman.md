@@ -1,6 +1,19 @@
 # Instalando podman, buildah y skopeo
 
+## Instalando podman con ansible
+
+Si ya tenemos desplegada una máquina para instalar podman vamos al directorio [ansible](../ansible):
+
+```console
+[root@podman ~]# git clone https://github.com/jadebustos/devopslabs.git
+[root@podman ~]# cd devopslabs/ansible
+[root@podman ansible]# ansible-playbook -i hosts install-podman.yaml 
+...
+[root@podman ansible]#
+```
 ## Desplegando la máquina virtual con terraform
+
+Se incluye un plan de Terraform para desplegar la máquina de podman sobre KVM.
 
 Iremos al directorio [terraform/kvm/podman](../terraform/kvm/podman) donde tenemos el plan de terraform para desplegar una máquina virtual en KVM.
 
@@ -23,17 +36,5 @@ Una vez en el directorio para desplegar el plan de terraform:
   Enter a value: yes
 ...
 [jadebustos@beast podman]$
-```
-
-## Instalando podman con ansible
-
-Para instalar podman vamos al directorio [ansible](../ansible):
-
-```console
-[root@docker ~]# git clone https://github.com/jadebustos/devopslabs.git
-[root@docker ~]# cd devopslabs/ansible
-[root@docker ansible]# ansible-playbook -i hosts -l podman install-podman.yaml 
-...
-[root@docker ansible]#
 ```
 
