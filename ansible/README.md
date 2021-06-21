@@ -2,16 +2,46 @@
 
 En este directorio se encuentran los playbooks para desplegar y configurar los laboratorios. 
 
-Una vez desplegadas las máquinas virtuales modifica el fichero de inventario [hosts](hosts) la máquina virtual para hacer los laboratorios de docker y la máquina para los laboratorios de podman.
+Instala [ansible en las máquinas](../labs/ansible/.md) y ejecutando el playbook correspondiente se copiaran los ejemplos para su uso.
 
-Configura un usuario en dichas máquinas para hacer ssh autenticándose con clave pública y con acceso a sudo sin contraseña tal y como se indica [aquí](../labs-ansible/00-primeros-pasos.md).
+## Laboratorios de ansible
 
-Para configurar los laboratorios:
+Clona este repositorio en el HOME de tu usuario en la máquinas que usuarás como ansible controller:
 
 ```console
-[user@controller ansible]$ ansible-playbook -i hosts -l docker install-docker.yaml
+[user@ansiblecontroller ansible]$ git clone https://github.com/jadebustos/devopslabs.git
 ...
-[user@controller ansible]$ ansible-playbook -i hosts -l podman install-podman.yaml
-...
-[user@controller ansible]$
+[user@ansiblecontroller ansible]$
 ```
+
+Ejecuta el playbook para instalar los ejemplos:
+
+```console
+[user@ansiblecontroller ~]$ cd devopslabs/ansible
+[user@ansiblecontroller ansible]$ ansible-playbook -i hosts deploy-ansible-examples.yaml
+...
+[user@ansiblecontroller ansible]$
+```
+
+Los ejemplos se encontrarán en el directorio **~/ansible**. De esta forma podrás hacer pull para sincronizar el repositorio y ejecutando el playbook actualizará el contenido del directorio **~/ansible** con la última versión.
+
+## Laboratorios de contenedores
+
+Para configurar los laboratorios de **docker**, conectate a la máquina que vas a utilizar y ejecuta:
+
+```console
+[user@docker ~]$ cd devopslabs/ansible
+[user@docker ansible]$ ansible-playbook -i hosts install-docker.yaml
+...
+[user@docker ansible]$
+```
+Para configurar los laboratorios de **podman**, conectate a la máquina que vas a utilizar y ejecuta:
+
+```console
+[user@podman ~]$ cd devopslabs/ansible
+[user@podman ansible]$ ansible-playbook -i hosts install-podman.yaml
+...
+[user@podman ansible]$
+```
+
+Se configurarán las máquinas con docker y podman, así como se copiaran los ficheros de ejemplo de los laboratorios.
