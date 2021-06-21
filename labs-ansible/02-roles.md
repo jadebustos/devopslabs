@@ -288,4 +288,4 @@ Los datos confidenciales se deben incluir en **vaults**. En [06-protegiendo-info
 
 > ![TIP](../imgs/tip-icon.png) También es posible utilizar vaults comerciales con ansible.
 
-Un buen ejercicio sería transformar los roles anteriores para recuperar las contraseñas de los usuarios del vault que incluye ansible por defecto.
+> ![HOMEWORK](../imgs/homework-icon.png) Un buen ejercicio sería transformar los roles anteriores para recuperar las contraseñas de los usuarios del vault que incluye ansible por defecto.
