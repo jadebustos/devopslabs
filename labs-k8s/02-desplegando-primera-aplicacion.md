@@ -133,8 +133,7 @@ Podemos consultar el yaml del pod:
 ```console
 [kubeadmin@master first-app]$ kubectl get pod webapp-586c6d8b87-gccnl -o yaml > webapp-586c6d8b87-gccnl.yaml
 ```
-
-> ![TIP](../imgs/tip-icon.png) Probar con **-o json**.
+> ![HOMEWORK](../imgs/homework-icon.png) Probar con **-o json**.
 
 ## Borrando objetos en kubernetes
 
