@@ -1,4 +1,4 @@
-# CodeReady Containers (WIP)
+# CodeReady Containers
 
 **CodeReady Containers** o **CRC** es una forma sencilla y rápida de instalar OpenShift en un portatil.
 
