@@ -9,9 +9,9 @@ Instala [ansible en las máquinas](../labs/ansible/.md) y ejecutando el playbook
 Clona este repositorio en el HOME de tu usuario en la máquinas que usuarás como ansible controller:
 
 ```console
-[user@ansiblecontroller ansible]$ git clone https://github.com/jadebustos/devopslabs.git
+[user@ansiblecontroller ~]$ git clone https://github.com/jadebustos/devopslabs.git
 ...
-[user@ansiblecontroller ansible]$
+[user@ansiblecontroller ~]$
 ```
 
 Ejecuta el playbook para instalar los ejemplos:
@@ -30,18 +30,22 @@ Los ejemplos se encontrarán en el directorio **~/ansible**. De esta forma podr�
 Para configurar los laboratorios de **docker**, conectate a la máquina que vas a utilizar y ejecuta:
 
 ```console
-[user@docker ~]$ cd devopslabs/ansible
-[user@docker ansible]$ ansible-playbook -i hosts install-docker.yaml
+[root@docker ~]# git clone https://github.com/jadebustos/devopslabs.git
 ...
-[user@docker ansible]$
+[root@docker ~]# cd devopslabs/ansible
+[root@docker ansible]# ansible-playbook -i hosts install-docker.yaml
+...
+[root@docker ansible]#
 ```
 Para configurar los laboratorios de **podman**, conectate a la máquina que vas a utilizar y ejecuta:
 
 ```console
-[user@podman ~]$ cd devopslabs/ansible
-[user@podman ansible]$ ansible-playbook -i hosts install-podman.yaml
+[root@podman ~]# git clone https://github.com/jadebustos/devopslabs.git
 ...
-[user@podman ansible]$
+[root@podman ~]# cd devopslabs/ansible
+[root@podman ansible]# ansible-playbook -i hosts install-podman.yaml
+...
+[root@podman ansible]#
 ```
 
-Se configurarán las máquinas con docker y podman, así como se copiaran los ficheros de ejemplo de los laboratorios.
+Se configurarán las máquinas con docker y podman, y se copiarán los ejemplos en el directorio **/root/build/**.
