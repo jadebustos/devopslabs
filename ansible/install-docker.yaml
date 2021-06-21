@@ -1,7 +1,7 @@
 ---
 
 - name: installing docker
-  hosts: all
+  hosts: docker
   vars_files:
     - "group_vars/common.yaml"
     - "group_vars/docker.yaml"

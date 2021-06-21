@@ -1,7 +1,7 @@
 ---
 
 - name: installing podman
-  hosts: all
+  hosts: podman
   vars_files:
     - "group_vars/common.yaml"
     - "group_vars/podman.yaml"

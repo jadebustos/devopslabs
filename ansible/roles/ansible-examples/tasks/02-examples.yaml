@@ -1,0 +1,15 @@
+---
+
+- name: ansible examples directory creation
+  file:
+    path: "{{ examples_dir }}"
+    mode: 0755
+    state: directory
+
+- name: copy examples
+  command: "cp -prf {{ item }} {{ examples_dir }}"
+  with_items:
+    - "{{ repo_dir }}/labs/ansible/group_vars"
+    - "{{ repo_dir }}/labs/ansible/roles"
+    - "{{ repo_dir }}/hosts"
+    - "{{ repo_dir }}/*.yaml"
