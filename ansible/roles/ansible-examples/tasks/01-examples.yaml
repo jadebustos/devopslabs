@@ -6,10 +6,14 @@
     mode: 0755
     state: directory
 
-- name: copy examples
+- name: copy ansible examples
   command: "cp -prf {{ item }} {{ examples_dir }}"
-  with_fileglob:
+  with_items:
     - "{{ repo_dir }}/labs-ansible/group_vars"
     - "{{ repo_dir }}/labs-ansible/roles"
     - "{{ repo_dir }}/labs-ansible/hosts"
+
+- name: copy ansible examples
+  command: "cp -prf {{ item }} {{ examples_dir }}"
+  with_fileglob:
     - "{{ repo_dir }}/labs-ansible/*.yaml"
