@@ -45,7 +45,7 @@ tigera-operator      Active   48m
 
 Los namespaces nos dan un espacio donde crear recursos y se utilizan para aislar usuarios y que cada usuario o grupo de usuario pueda desplegar sus contenedores de forma aislada con el resto.
 
-Si no especificamos un namespace en concreto las operaciones se realizarán en el namespace **default**. Para indicar un namespace utilizaremos **-namespace=<MI NAMESPACE>.
+Si no especificamos un namespace en concreto las operaciones se realizarán en el namespace **default**. Para indicar un namespace utilizaremos **--namespace=\<MI NAMESPACE\>**.
 
 > ![INFORMATION](../imgs/information-icon.png) [Namespaces](https://kubernetes.io/docs/concepts/overview/working-with-objects/namespaces/)
 
@@ -232,4 +232,4 @@ status:
 [kubeadmin@master k8slab]$  
 ```
 
-> ![NOTA](../imgs/note-icon.png): También podemos utilizar **-o json**.
+> ![HOMEWORK](../imgs/homework-icon.png) También podemos utilizar **-o json**.
