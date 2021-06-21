@@ -1,6 +1,4 @@
 ---
 
-github_repo: 'https://github.com/jadebustos/devopslabs'
-
-repo_dir: '~/devops'
+repo_dir: '~/devopslabs'
 examples_dir: '~/ansible'

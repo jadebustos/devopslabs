@@ -1,6 +1,0 @@
----
-
-- name: clone labs repository
-  git:
-    repo: "{{ github_repo }}"
-    dest: "{{ repo_dir }}"
