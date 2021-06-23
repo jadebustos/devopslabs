@@ -33,6 +33,8 @@ localhost | SUCCESS => {
 [jadebustos@ansiblectrl labs-ansible]$
 ```
 
+> ![HOMEWORK](../imgs/homework-icon.png) Verifica que en el fichero de inventario que utilices exista un grupo llamado local. Sobre el hosts o hosts incluidos en ese grupo se ejecutará la acción.
+
 Si queremos enviar los facts a un fichero podemos redirigir la salida estandar hacía el fichero:
 
 ```console
