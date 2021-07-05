@@ -1,0 +1,23 @@
+---
+
+- hosts: all
+  gather_facts: true
+
+  tasks:
+    - name: identifica el primer disco libre
+      set_fact:
+        disks: "/dev/{{ item.key }}"
+      when:
+        # si el disco no está particionado tendrá libre 
+        # estas variables de los facts
+        - not item.value.partitions
+        - not item.value.holders
+        - not item.value.links.uuids
+        - not item.value.links.labels
+        # los discos serán /dev/vd? o /dev/sd? filtramos el
+        # resto de resultados
+        - item.key | regex_search ("vd|sd")
+      with_dict: "{{ ansible_devices }}"
+
+    - name: mostrar
+      debug: msg="Disco vacio {{ disks }}"
