@@ -731,17 +731,17 @@ rtt min/avg/max/mdev = 0.464/1.625/4.665/1.758 ms
 Para poder acceder a los PODs desde fuera de kubernetes necesitaremos instalar un ingress controller:
 
 ```console
-[root@master ~]# kubectl apply -f https://raw.githubusercontent.com/haproxytech/kubernetes-ingress/v1.5/deploy/haproxy-ingress.yaml
+[root@kubemaster ~]# kubectl apply -f https://raw.githubusercontent.com/haproxytech/kubernetes-ingress/master/deploy/haproxy-ingress.yaml
 namespace/haproxy-controller created
-serviceaccount/haproxy-ingress-service-account created
-clusterrole.rbac.authorization.k8s.io/haproxy-ingress-cluster-role created
-clusterrolebinding.rbac.authorization.k8s.io/haproxy-ingress-cluster-role-binding created
-configmap/haproxy created
-deployment.apps/ingress-default-backend created
-service/ingress-default-backend created
-deployment.apps/haproxy-ingress created
-service/haproxy-ingress created
-[root@master ~]#
+serviceaccount/haproxy-kubernetes-ingress created
+clusterrole.rbac.authorization.k8s.io/haproxy-kubernetes-ingress created
+clusterrolebinding.rbac.authorization.k8s.io/haproxy-kubernetes-ingress created
+configmap/haproxy-kubernetes-ingress created
+deployment.apps/haproxy-kubernetes-ingress-default-backend created
+service/haproxy-kubernetes-ingress-default-backend created
+deployment.apps/haproxy-kubernetes-ingress created
+service/haproxy-kubernetes-ingress created
+[root@kubemaster ~]#
 ```
 
 > ![NOTA](../imgs/note-icon.png) Existen diferentes ingress controller que se pueden desplegar e incluso podemos desplegar varios que convivan en kubernetes. En este caso será necesario utilizar [annotations](https://kubernetes.io/docs/concepts/overview/working-with-objects/annotations/) para especificar que ingress controller se deberá utilizar en cada deployment.
