@@ -484,17 +484,17 @@ Ahora que tenemos el contenedor corriendo obtenemos su ip:
 
 > ![TIP](../imgs/tip-icon.png) **docker inspect CONTAINER**
 
-En linux existe una utilidad llamada **jq** que nos permite extraer información de un json. No se suele instalar por defecto, normalmente el paquete se llama **jq**. Si está instalada:
-
-```console
-[root@docker apache]# docker inspect f90ff30a811d | jq '.[] | .NetworkSettings.Networks.bridge.IPAddress'
-172.17.0.2
-[root@docker apache]# 
-```
-
-Como la salida de inspect nos devuelve un array de jsons mediante **.[]** indicamos que va a procesar un array y con el pipe, **|**, le indicamos la propiedad que queremos ver. En este caso el array solo tiene un json, por lo tanto la salida será una única ip.
-
-Si solo quisiéramos procesar un elemento bastaría con poner el índice del elemento a procesar entre los corchetes, por ejemplo **[0]** solo procesaría el primer elemento de array.
+> ![INFORMATION](../imgs/information-icon.png) En linux existe una utilidad llamada **jq** que nos permite extraer información de un json. No se suele instalar por defecto, normalmente el paquete se llama **jq**. Si está instalada:
+>
+> ```console
+> [root@docker apache]# docker inspect f90ff30a811d | jq '.[] | .NetworkSettings.Networks.bridge.IPAddress'
+> 172.17.0.2
+> [root@docker apache]# 
+> ```
+>
+> Como la salida de inspect nos devuelve un array de jsons mediante **.[]** indicamos que va a procesar un array y con el > pipe, **|**, le indicamos la propiedad que queremos ver. En este caso el array solo tiene un json, por lo tanto la salida será una única ip.
+>
+>Si solo quisiéramos procesar un elemento bastaría con poner el índice del elemento a procesar entre los corchetes, por ejemplo **[0]** solo procesaría el primer elemento de array.
 
 Ejecutamos en la consola
 
@@ -515,10 +515,10 @@ CONTAINER ID   IMAGE     COMMAND          CREATED              STATUS           
 [root@docker apache]# 
 ```
 
-Ahora la aplicación será accesible por el puerto **8080** a través de la ip de docker.frontend.lab:
+Ahora la aplicación será accesible por el puerto **8080** a través de la ip de **docker.frontend.lab**:
 
 ```console
-[jadebustos@beast apache]$ links2 http://lab-docker.frontend.lab:8080
+[jadebustos@beast apache]$ links2 http://docker.frontend.lab:8080
 ```
 Cuando mapeamos un puerto docker incluye una regla en IPTABLES para permitir el tráfico y se encargar del reenvio del tráfico entre los puertos:
 
@@ -682,7 +682,7 @@ latest: digest: sha256:af02a8c911c69c7137bb41b1dc72daf9981eaa98bb3af0467b70f0e10
 
 La imagen se encontrará disponible en [DockerHub](https://hub.docker.com/u/jadebustos2).
 
-Si quisieramos descargarla desde docker:
+Si quisieramos descargarla desde docker utilizando otro equipo:
 
 ```console
 [root@host ~]# docker pull jadebustos2/devops:latest
@@ -691,24 +691,25 @@ Si quisieramos descargarla desde docker:
 También podríamos añadir tags:
 
 ```console
-[root@lab-docker apache]# docker tag mybusybox jadebustos2/devops:v1
-[root@lab-docker apache]# docker push jadebustos2/devops:v1
+[root@docker apache]# docker tag mybusybox jadebustos2/devops:v1
+[root@docker apache]# docker push jadebustos2/devops:v1
 ```
+> ![TIP](../imgs/tip-icon.png) Los tags tal y como los hemos utilizado en el ejemplo anterior se utilizan para indicar la versión. Suele utilizarse con tag **latest** la última versión disponible en el repositorio: **jadebustos2/devops:latest**.
 
 ## Exportando imágenes
 
 **docker save** redirige a la salida estándar por defecto pero se puede redirigir a un archivo:
 
 ```console
-[root@lab-docker apache]# docker images
+[root@docker apache]# docker images
 REPOSITORY           TAG        IMAGE ID       CREATED          SIZE
 webapp               latest     93e345f66e51   33 minutes ago   414MB
 jadebustos2/devops   latest     a0bf925745fb   36 minutes ago   1.23MB
 mybusybox            latest     a0bf925745fb   36 minutes ago   1.23MB
 busybox              latest     b97242f89c8a   5 days ago       1.23MB
 php                  7-apache   2d5d57e31bd0   6 days ago       414MB
-[root@lab-docker apache]# docker save -o webapp.tar webapp
-[root@lab-docker apache]# ls -lh
+[root@docker apache]# docker save -o webapp.tar webapp
+[root@docker apache]# ls -lh
 total 404M
 drwxr-xr-x. 2 root root   23 Jan 18 16:07 custom-php
 -rw-r--r--. 1 root root  312 Jan 18 16:07 Dockerfile
@@ -726,8 +727,8 @@ Podemos utilizar **docker load** para subir al engine un contenedor desde la sal
 Podemos exportar e importar filesystems de contenedores mediante **docker export** y **docker import**:
 
 ```console
-[root@lab-docker apache]# docker export 17f28f4e7fe6 -o webapp.tar
-[root@lab-docker apache]# ls -lh
+[root@docker apache]# docker export 17f28f4e7fe6 -o webapp.tar
+[root@docker apache]# ls -lh
 total 398M
 drwxr-xr-x. 2 root root   23 Jan 18 17:47 custom-php
 -rw-r--r--. 1 root root  325 Jan 18 17:28 Dockerfile
@@ -735,5 +736,5 @@ drwxr-xr-x. 2 root root   23 Jan 18 17:47 custom-php
 -rw-r--r--. 1 root root  165 Jan 18 17:18 start-apache.sh
 -rw-r--r--. 1 root root  219 Jan 18 17:11 virtualhost.conf
 -rw-------. 1 root root 398M Jan 18 18:05 webapp.tar
-[root@lab-docker apache]#
+[root@docker apache]#
 ```
