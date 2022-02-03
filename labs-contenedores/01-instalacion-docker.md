@@ -1,43 +1,16 @@
 # Instalando docker
 
-## Instalación manual
+## Instalando docker con ansible
 
-En una máquina RHEL/CentOS 8:
+Instalamos **ansible** y **git**:
 
 ```console
-[root@docker ~]# dnf config-manager --add-repo=https://download.docker.com/linux/centos/docker-ce.repo
-Adding repo from: https://download.docker.com/linux/centos/docker-ce.repo
-[root@docker ~]# dnf install docker-ce -y
+[root@docker ~]# dnf install epel-release -y
 ...
-[root@docker ~]# systemctl enable docker
-Created symlink /etc/systemd/system/multi-user.target.wants/docker.service → /usr/lib/systemd/system/docker.service.
-[root@docker ~]# ^enable^start
-systemctl start docker
-[root@docker ~]# systemctl status docker
-● docker.service - Docker Application Container Engine
-   Loaded: loaded (/usr/lib/systemd/system/docker.service; enabled; vendor preset: disabled)
-   Active: active (running) since Thu 2022-02-03 17:56:51 CET; 5s ago
-     Docs: https://docs.docker.com
- Main PID: 3871 (dockerd)
-    Tasks: 8
-   Memory: 31.3M
-   CGroup: /system.slice/docker.service
-           └─3871 /usr/bin/dockerd -H fd:// --containerd=/run/containerd/containerd.sock
-
-Feb 03 17:56:49 docker.jadbp.lab dockerd[3871]: time="2022-02-03T17:56:49.020528283+01:00" level=warning msg="Your kernel does not support cgroup blkio weight"
-Feb 03 17:56:49 docker.jadbp.lab dockerd[3871]: time="2022-02-03T17:56:49.020581301+01:00" level=warning msg="Your kernel does not support cgroup blkio weight_device"
-Feb 03 17:56:49 docker.jadbp.lab dockerd[3871]: time="2022-02-03T17:56:49.020889334+01:00" level=info msg="Loading containers: start."
-Feb 03 17:56:50 docker.jadbp.lab dockerd[3871]: time="2022-02-03T17:56:50.358687315+01:00" level=info msg="Default bridge (docker0) is assigned with an IP address 172.17.0.0/16. Daemon opti>
-Feb 03 17:56:50 docker.jadbp.lab dockerd[3871]: time="2022-02-03T17:56:50.568830488+01:00" level=info msg="Firewalld: interface docker0 already part of docker zone, returning"
-Feb 03 17:56:50 docker.jadbp.lab dockerd[3871]: time="2022-02-03T17:56:50.847681172+01:00" level=info msg="Loading containers: done."
-Feb 03 17:56:50 docker.jadbp.lab dockerd[3871]: time="2022-02-03T17:56:50.956136198+01:00" level=info msg="Docker daemon" commit=459d0df graphdriver(s)=overlay2 version=20.10.12
-Feb 03 17:56:50 docker.jadbp.lab dockerd[3871]: time="2022-02-03T17:56:50.956345306+01:00" level=info msg="Daemon has completed initialization"
-Feb 03 17:56:51 docker.jadbp.lab systemd[1]: Started Docker Application Container Engine.
-Feb 03 17:56:51 docker.jadbp.lab dockerd[3871]: time="2022-02-03T17:56:51.090937631+01:00" level=info msg="API listen on /var/run/docker.sock"
-[root@docker ~]# 
+[root@docker ~]# dnf install ansible git -y
+...
+[root@docker ~]#
 ```
-
-## Instalando docker con ansible
 
 Si ya tenemos desplegada una máquina para instalar docker y los ejemplos vamos al directorio [ansible](../ansible):
 
