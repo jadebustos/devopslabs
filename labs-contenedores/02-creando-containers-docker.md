@@ -49,7 +49,7 @@ Podemos ver que una vez parado, la imagen del contenedor existe y podemos arranc
 [root@docker ~]# docker ps --all
 CONTAINER ID   IMAGE     COMMAND   CREATED         STATUS                     PORTS     NAMES
 845308bb9559   busybox   "sh"      About a minute ago   Exited (0) 6 seconds ago             tender_cannon
-[root@lab-docker ~]#
+[root@docker ~]#
 ```
 
 Si la imagen del contenedor parado ya no la necesitamos podemos borrarla:
@@ -264,7 +264,7 @@ Podemos atacharnos al contenedor en ejecución y ver la salida estándar para sa
 [root@docker busybox]# docker ps
 CONTAINER ID   IMAGE       COMMAND                  CREATED         STATUS         PORTS     NAMES
 bfe8f9c45c6f   mybusybox   "/myinfinitescript.sh"   7 seconds ago   Up 5 seconds             fervent_shannon
-[root@lab-docker busybox]# docker attach bfe8f9c45c6f8319d67192f9778e53479d6d89b9432fcc4c0825da1a804b5a9d
+[root@docker busybox]# docker attach bfe8f9c45c6f8319d67192f9778e53479d6d89b9432fcc4c0825da1a804b5a9d
 Random string: 1FqVNoGKd0FiuKm5j8fwOZ4NtbW9RcdM7JhRkQLueaM73kDLkbMEQRruopOuxDVr
 Random string: JeXHBYLr4lKpgbrcyOKffmTE0zIiWnyUHBJXEC6WrbAM9hpHCMPzQfpLz6dJYW9O
 Random string: ndQnfm1lIUYMxp8h44SGkFjP8oU8uPDo3seas6yaCNaVaczghpJNinv0Mj8TfQEx
@@ -565,7 +565,7 @@ RETURN     all  --  anywhere             anywhere
 [root@docker apache]# docker ps
 CONTAINER ID   IMAGE     COMMAND          CREATED         STATUS         PORTS                  NAMES
 9480bd0725a2   webapp    "start-apache"   5 seconds ago   Up 4 seconds   0.0.0.0:8080->80/tcp   apache_server3
-[root@lab-docker apache]#
+[root@docker apache]#
 ```
 
 + **-v /root/build/apache/custom-php/:/var/www/public:Z** si la máquina que ejecuta el engine de containers, docker en este caso, tiene SELinux activado se debe utilizar **:Z** para que el contenedor internamente se etiquete con el contexto de SELinux que se ejecuta el contenedor y de esta forma evitar que SELinux bloquee el correcto funcionamiento.
@@ -717,7 +717,7 @@ drwxr-xr-x. 2 root root   23 Jan 18 16:07 custom-php
 -rw-r--r--. 1 root root  163 Jan 18 16:07 start-apache.sh
 -rw-r--r--. 1 root root  218 Jan 18 16:07 virtualhost.conf
 -rw-------. 1 root root 404M Jan 18 16:46 webapp.tar
-[root@lab-docker apache]# 
+[root@docker apache]# 
 ```
 
 **docker save** actua sobre la imagen de un container.
