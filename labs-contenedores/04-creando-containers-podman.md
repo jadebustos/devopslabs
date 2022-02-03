@@ -298,3 +298,11 @@ $ skopeo sync --src docker --dest docker registry.example.com/busybox registry.m
 > ![INFORMATION](../imgs/information-icon.png) [Más información sobre la sincronización de imágenes](https://github.com/containers/skopeo/blob/master/docs/skopeo-sync.1.md)
 
 > ![INFORMATION](../imgs/information-icon.png) [Skopeo](https://github.com/containers/skopeo)
+
+## Podman auto-update
+
+Podman auto-update es una funcionalidad que permite actualizar la imagen de un contenedor de forma automática cuando se pública una nueva versión.
+
+> ![TIP](../imgs/tip-icon.png) Se puede ver un caso de uso de esta funcionalidad en este [Workshop the RHEL for Edge](https://github.com/jadebustos/workshop-rhel8-edge/) donde se muestra como utilizar RHEL for Edge para desplegar una aplicación contenerizda, rootless y serverless que se [actualiza de forma automática utilizando **Podman auto-update**](https://github.com/jadebustos/workshop-rhel8-edge/blob/main/07-upgrading-the-application.md).
+
+> ![INFORMATION](../imgs/information-icon.png) [How to use auto-updates and rollbacks in Podman](https://www.redhat.com/sysadmin/podman-auto-updates-rollbacks).
