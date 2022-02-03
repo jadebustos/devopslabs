@@ -297,17 +297,57 @@ CONTAINER ID   IMAGE       COMMAND                  CREATED          STATUS     
 [root@docker busybox]# 
 ```
 
+Vamos a construir otro contenedor.
+
+```console
+[root@docker busybox]# cd ../apache
+[root@docker apache]# ls -lh
+total 16K
+drwxr-xr-x. 2 root root  23 Feb  3 18:45 custom-php
+-rw-r--r--. 1 root root 324 Feb  3 18:45 Dockerfile
+-rw-r--r--. 1 root root 116 Feb  3 18:45 index.php
+-rw-r--r--. 1 root root 164 Feb  3 18:45 start-apache.sh
+-rw-r--r--. 1 root root 218 Feb  3 18:45 virtualhost.conf
+[root@docker apache]# [root@docker apache]# docker build -t myapache .
+Sending build context to Docker daemon  6.656kB
+Step 1/9 : FROM php:7-apache
+7-apache: Pulling from library/php
+...
+[root@docker apache]# docker images
+REPOSITORY   TAG        IMAGE ID       CREATED          SIZE
+myapache     latest     fa70540e7eed   13 seconds ago   469MB
+<none>       <none>     facea769eb4a   15 minutes ago   1.24MB
+<none>       <none>     0aaf445e063f   16 minutes ago   1.24MB
+<none>       <none>     b94e3d5ed28c   17 minutes ago   1.24MB
+<none>       <none>     a41136a16a42   22 minutes ago   1.24MB
+mybusybox    latest     04906bfbcd80   23 minutes ago   1.24MB
+php          7-apache   4d3d9fe4d89c   8 days ago       469MB
+busybox      latest     beae173ccac6   5 weeks ago      1.24MB
+[root@docker apache]# 
+```
+
+Ejecutamos un contenedor a partir de la nueva imagen que hemos creado:
+
+```console
+[root@docker apache]# docker run --rm -dt myapache
+a5b0bda3fe2dba5909a9f43db96b4d6d527e45942bcec4512982c85e7ca56a5b
+[root@docker apache]# docker ps
+CONTAINER ID   IMAGE       COMMAND                CREATED          STATUS          PORTS     NAMES
+a5b0bda3fe2d   myapache    "start-apache"         13 seconds ago   Up 12 seconds   80/tcp    dreamy_noyce
+[root@docker apache]# 
+```
+
 Podemos ejecutar una shell:
 
 ```console
-[root@docker apache]# docker exec -it 4f94e272bac8 bash
-root@4f94e272bac8:/var/www/html# 
+[root@docker apache]# docker exec -it a5b0bda3fe2d bash
+root@a5b0bda3fe2d:/var/www/html# 
 ```
 
 Para salir de la shell bastaría con ejecutar **exit**:
 
 ```console
-root@4f94e272bac8:/var/www/html# exit
+root@a5b0bda3fe2d:/var/www/html# exit
 exit
 [root@docker apache]#
 ```
@@ -366,14 +406,14 @@ Random string: TLKr3flGaPrPkeiwE06UCJu59yJScSN1BUahw3cmO4OnPavYitGYMnXCK9s1IRiN
 + **docker kill <container>** para un container en ejecución de una forma no ordenada.
 
 ```console
-[root@lab-docker busybox]# docker ps
+[root@docker busybox]# docker ps
 CONTAINER ID   IMAGE       COMMAND                  CREATED         STATUS         PORTS     NAMES
 96a78b06124b   mybusybox   "/myinfinitescript.sh"   4 minutes ago   Up 4 minutes             bold_mendeleev
-[root@lab-docker busybox]# docker kill 96a78b06124b
+[root@docker busybox]# docker kill 96a78b06124b
 96a78b06124b
-[root@lab-docker busybox]# docker ps
+[root@docker busybox]# docker ps
 CONTAINER ID   IMAGE     COMMAND   CREATED   STATUS    PORTS     NAMES
-[root@lab-docker busybox]#
+[root@docker busybox]#
 ```
 
 ## Exponiendo un contenedor al exterior     
@@ -381,14 +421,12 @@ CONTAINER ID   IMAGE     COMMAND   CREATED   STATUS    PORTS     NAMES
 Nos conectamos a la máquina de docker:
 
 ```console
-[terraform@docker ~]$ sudo su -
-Last login: Sun Jan 17 20:42:31 CET 2021 on pts/0
-[root@lab-docker ~]# cd build/apache/
-[root@lab-docker apache]# ls -lh
+[root@docker ~]# cd build/apache/
+[root@docker apache]# ls -lh
 total 8.0K
 -rw-r--r--. 1 root root 99 Jan 17 20:33 Dockerfile
 -rw-r--r--. 1 root root 39 Jan 17 20:33 myscript.sh
-[root@lab-docker apache]#
+[root@docker apache]#
 ```
 
 Vamos a crear una aplicación web. El [Dockerfile](../ansible/roles/container-examples/files/Dockerfile):
