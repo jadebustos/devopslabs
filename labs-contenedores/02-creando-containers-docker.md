@@ -352,10 +352,10 @@ exit
 [root@docker apache]#
 ```
 
-Para ver el historial de lo que ha pasado en el contenedor:
+Para ver el historial de lo que ha pasado en el contenedor podemos ver los logs. Normalmente los logs se redirigen a la salida estándar ya que al ser los contenedores no persistentes en el disco se perdería a no ser que se asignaran volúmenes persistentes:
 
 ```console
-[root@lab-docker busybox]# docker logs 96a78b06124be8face69201260e435ed8957eeb43bf28e9462aed2b2c436360e
+[root@docker busybox]# docker logs 96a78b06124be8face69201260e435ed8957eeb43bf28e9462aed2b2c436360e
 Random string: GiJ4o2tiOs42keRyu8xjKXQQVct67wCopuamOSPcQ9DSBIy7PkrsiIfDodCVdJZF
 Random string: e9a6GxKpeJjyJAGv2Mp5DMLpvT2myVBNooBlOl6UnNYDvzmI7pYhumGqFhCAtHD8
 Random string: Lb6NNYkz0JeTZ8FccU0yDT9FLKYW2jzOv6FksmbQu1VXfzZFa6TWNlQMthjiT4ab
@@ -396,7 +396,7 @@ Random string: deGqL5WHgOcPgkidZCDOBfOtQJw8TRlDB88udTmF9ePZoO5VzuMnyjuYTGTXugx1
 Random string: CQ1qUylkPgepUu3Qn1USCeltWRxm843x6zH601jjXFKu9457GSZ3MruTbfMsfUtM
 Random string: TX0ypA0gtuzcmx5WahNhDpJ4AaR6GHWDpMHJimHM1cNUSpVfiUZ67degBfOemMDl
 Random string: TLKr3flGaPrPkeiwE06UCJu59yJScSN1BUahw3cmO4OnPavYitGYMnXCK9s1IRiN
-[root@lab-docker busybox]# 
+[root@docker busybox]# 
 ```
 
 ## Arrancando/parando contenedores contenedores
@@ -446,11 +446,11 @@ ENTRYPOINT ["start-apache"]
 Construimos la imagen:
 
 ```console
-[root@lab-docker apache]# docker build -t webapp .
+[root@docker apache]# docker build -t webapp .
 ...
 Successfully built 68d34ba47136
 Successfully tagged webapp:latest
-[root@lab-docker apache]# docker images
+[root@docker apache]# docker images
 REPOSITORY   TAG        IMAGE ID       CREATED          SIZE
 webapp       latest     64b48d2b2956   16 seconds ago      414MB
 <none>       <none>     68d34ba47136   15 minutes ago      414MB
@@ -458,7 +458,7 @@ mybusybox    latest     4020b434e17a   42 minutes ago      1.23MB
 <none>       <none>     22e286fdd755   About an hour ago   1.23MB
 busybox      latest     b97242f89c8a   4 days ago          1.23MB
 php          7-apache   2d5d57e31bd0   5 days ago          414MB
-[root@lab-docker apache]#
+[root@docker apache]#
 ```
 
 > ![INFORMATION](../imgs/information-icon.png) [Buenas prácticas para crear imágenes de containers](https://docs.openshift.com/container-platform/4.6/openshift_images/create-images.html). Aunque se centra en OpenShift es aplicable a cualquier tecnología de contenedores OCI.
@@ -466,20 +466,20 @@ php          7-apache   2d5d57e31bd0   5 days ago          414MB
 Creamos un container a partir de la imagen:
 
 ```console
-[root@lab-docker apache]# docker run -itd webapp 
+[root@docker apache]# docker run -itd webapp 
 b3e62591ee8b8e290a43b4f1340b20d5931e0fe989f3ff8eb7c51dc2d7933eaf
-[root@lab-docker apache]# docker ps
+[root@docker apache]# docker ps
 CONTAINER ID   IMAGE     COMMAND          CREATED         STATUS         PORTS     NAMES
 b3e62591ee8b   webapp    "start-apache"   6 seconds ago   Up 4 seconds   80/tcp    nervous_nightingale
-[root@lab-docker apache]# 
+[root@docker apache]# 
 ```
 
 Ahora que tenemos el contenedor corriendo obtenemos su ip:
 
 ```console
-[root@lab-docker apache]# docker inspect -f '{{range .NetworkSettings.Networks}}{{.IPAddress}}{{end}}' f90ff30a811d
+[root@docker apache]# docker inspect -f '{{range .NetworkSettings.Networks}}{{.IPAddress}}{{end}}' f90ff30a811d
 172.17.0.2
-[root@lab-docker apache]# 
+[root@docker apache]# 
 ```
 
 > ![TIP](../imgs/tip-icon.png) **docker inspect CONTAINER**
@@ -487,9 +487,9 @@ Ahora que tenemos el contenedor corriendo obtenemos su ip:
 En linux existe una utilidad llamada **jq** que nos permite extraer información de un json. No se suele instalar por defecto, normalmente el paquete se llama **jq**. Si está instalada:
 
 ```console
-[root@lab-docker apache]# docker inspect f90ff30a811d | jq '.[] | .NetworkSettings.Networks.bridge.IPAddress'
+[root@docker apache]# docker inspect f90ff30a811d | jq '.[] | .NetworkSettings.Networks.bridge.IPAddress'
 172.17.0.2
-[root@lab-docker apache]# 
+[root@docker apache]# 
 ```
 
 Como la salida de inspect nos devuelve un array de jsons mediante **.[]** indicamos que va a procesar un array y con el pipe, **|**, le indicamos la propiedad que queremos ver. En este caso el array solo tiene un json, por lo tanto la salida será una única ip.
@@ -499,7 +499,7 @@ Si solo quisiéramos procesar un elemento bastaría con poner el índice del ele
 Ejecutamos en la consola
 
 ```console
-[root@lab-docker apache]# elinks http://172.17.0.2
+[root@docker apache]# elinks http://172.17.0.2
 ```
 
 y podremos navegar por la aplicación.
@@ -507,12 +507,12 @@ y podremos navegar por la aplicación.
 Estamos acceciendo a una url interna de docker, el puerto no se encuentra expuesto. Si queremos que sea accesible desde el exterior tendremos que exponerlo:
 
 ```console
-[root@lab-docker apache]# docker run -tid -p 8080:80 --name apache_server3 --rm webapp
+[root@docker apache]# docker run -tid -p 8080:80 --name apache_server3 --rm webapp
 65dd77308916c2b3b396c6dcdd2a2d4252e36e58b334c47c84830db00fe4549b
-[root@lab-docker apache]# docker ps
+[root@docker apache]# docker ps
 CONTAINER ID   IMAGE     COMMAND          CREATED              STATUS              PORTS                  NAMES
 65dd77308916   webapp    "start-apache"   About a minute ago   Up About a minute   0.0.0.0:8080->80/tcp   apache_server3
-[root@lab-docker apache]# 
+[root@docker apache]# 
 ```
 
 Ahora la aplicación será accesible por el puerto **8080** a través de la ip de docker.frontend.lab:
@@ -523,7 +523,7 @@ Ahora la aplicación será accesible por el puerto **8080** a través de la ip d
 Cuando mapeamos un puerto docker incluye una regla en IPTABLES para permitir el tráfico y se encargar del reenvio del tráfico entre los puertos:
 
 ```console
-[root@lab-docker apache]# iptables -L
+[root@docker apache]# iptables -L
 Chain INPUT (policy ACCEPT)
 target     prot opt source               destination         
 
@@ -554,15 +554,15 @@ RETURN     all  --  anywhere             anywhere
 Chain DOCKER-USER (1 references)
 target     prot opt source               destination         
 RETURN     all  --  anywhere             anywhere            
-[root@lab-docker ~]# 
+[root@docker ~]# 
 ```
 
 ## Mapeando volúmenes
 
 ```console
-[root@lab-docker apache]# docker run -tid -p 8080:80 --rm --name apache_server3 -v /root/build/apache/custom-php/:/var/www/public:Z webapp
+[root@docker apache]# docker run -tid -p 8080:80 --rm --name apache_server3 -v /root/build/apache/custom-php/:/var/www/public:Z webapp
 9480bd0725a2753f70786e308c4697fa6e111b05e7e45e9d9f9d24f6b416fb0e
-[root@lab-docker apache]# docker ps
+[root@docker apache]# docker ps
 CONTAINER ID   IMAGE     COMMAND          CREATED         STATUS         PORTS                  NAMES
 9480bd0725a2   webapp    "start-apache"   5 seconds ago   Up 4 seconds   0.0.0.0:8080->80/tcp   apache_server3
 [root@lab-docker apache]#
@@ -577,13 +577,13 @@ CONTAINER ID   IMAGE     COMMAND          CREATED         STATUS         PORTS  
 Como hemos definido una variable de entorno en el Dockerfile podemos utilizarla para parametrizaciones dentro del container:
 
 ```console
-[root@lab-docker apache]# export PORT=789
-[root@lab-docker apache]# docker run -itd --env PORT -p 8080:$PORT -v /root/build/apache/custom-php/:/var/www/public:Z webapp
+[root@docker apache]# export PORT=789
+[root@docker apache]# docker run -itd --env PORT -p 8080:$PORT -v /root/build/apache/custom-php/:/var/www/public:Z webapp
 17f28f4e7fe6b4418535b28a2534f4b2f675c6593cba9c5684a21a8b2aea8f48
-[root@lab-docker apache]# docker ps
+[root@docker apache]# docker ps
 CONTAINER ID   IMAGE     COMMAND          CREATED         STATUS         PORTS                           NAMES
 17f28f4e7fe6   webapp    "start-apache"   5 seconds ago   Up 4 seconds   80/tcp, 0.0.0.0:8080->789/tcp   suspicious_babbage
-[root@lab-docker apache]# iptables -L
+[root@docker apache]# iptables -L
 Chain INPUT (policy ACCEPT)
 target     prot opt source               destination         
 
@@ -616,7 +616,7 @@ RETURN     all  --  anywhere             anywhere
 Chain DOCKER-USER (1 references)
 target     prot opt source               destination         
 RETURN     all  --  anywhere             anywhere            
-[root@lab-docker apache]#
+[root@docker apache]#
 ```
 
 La aplicación mostrará algo así:
@@ -632,13 +632,13 @@ Creamos un repositorio público.
 Para subir una imagen a nuestro repositorio:
 
 ```console
-[root@lab-docker apache]# docker images
+[root@docker apache]# docker images
 REPOSITORY   TAG        IMAGE ID       CREATED         SIZE
 webapp       latest     93e345f66e51   4 minutes ago   414MB
 mybusybox    latest     a0bf925745fb   8 minutes ago   1.23MB
 busybox      latest     b97242f89c8a   5 days ago      1.23MB
 php          7-apache   2d5d57e31bd0   6 days ago      414MB
-[root@lab-docker apache]# docker login
+[root@docker apache]# docker login
 Login with your Docker ID to push and pull images from Docker Hub. If you don't have a Docker ID, head over to https://hub.docker.com to create one.
 Username: jadebustos2
 Password: 
@@ -647,37 +647,37 @@ Configure a credential helper to remove this warning. See
 https://docs.docker.com/engine/reference/commandline/login/#credentials-store
 
 Login Succeeded
-[root@lab-docker apache]# docker push mybusybox
+[root@docker apache]# docker push mybusybox
 Using default tag: latest
 The push refers to repository [docker.io/library/mybusybox]
 dacf42e9f49b: Preparing 
 d4fd88d16ef3: Preparing 
 0064d0478d00: Preparing 
 denied: requested access to the resource is denied
-[root@lab-docker apache]# 
+[root@docker apache]# 
 ```
 
 Por defecto está intentando subirla al repositorio público y no al nuestro. Por ese motivo falla. Necesitamos tagearla apropiadamente:
 
 ```console
-[root@lab-docker apache]# docker tag mybusybox jadebustos2/devops
-[root@lab-docker apache]# docker ps
+[root@docker apache]# docker tag mybusybox jadebustos2/devops
+[root@docker apache]# docker ps
 CONTAINER ID   IMAGE     COMMAND   CREATED   STATUS    PORTS     NAMES
-[root@lab-docker apache]# docker images
+[root@docker apache]# docker images
 REPOSITORY           TAG        IMAGE ID       CREATED          SIZE
 webapp               latest     93e345f66e51   15 minutes ago   414MB
 jadebustos2/devops   latest     a0bf925745fb   18 minutes ago   1.23MB
 mybusybox            latest     a0bf925745fb   18 minutes ago   1.23MB
 busybox              latest     b97242f89c8a   5 days ago       1.23MB
 php                  7-apache   2d5d57e31bd0   6 days ago       414MB
-[root@lab-docker apache]# docker push jadebustos2/devops
+[root@docker apache]# docker push jadebustos2/devops
 Using default tag: latest
 The push refers to repository [docker.io/jadebustos2/devops]
 dacf42e9f49b: Pushed 
 d4fd88d16ef3: Pushed 
 0064d0478d00: Mounted from library/busybox 
 latest: digest: sha256:af02a8c911c69c7137bb41b1dc72daf9981eaa98bb3af0467b70f0e10732918a size: 941
-[root@lab-docker apache]# 
+[root@docker apache]# 
 ```
 
 La imagen se encontrará disponible en [DockerHub](https://hub.docker.com/u/jadebustos2).
