@@ -1,25 +1,25 @@
 # Instalando podman, buildah y skopeo
 
-## Instalación manual
-
-En una máquina RHEL/CentOS 8:
-
-```console
-[root@podman ~]# dnf install @container-tools -y
-...
-[root@podman ~]#
-```
-
 ## Instalando podman con ansible
 
-Si ya tenemos desplegada una máquina para instalar podman vamos al directorio [ansible](../ansible):
+Instalamos **ansible** y **git**:
 
 ```console
-[root@podman ~]# git clone https://github.com/jadebustos/devopslabs.git
-[root@podman ~]# cd devopslabs/ansible
-[root@podman ansible]# ansible-playbook -i hosts install-podman.yaml 
+[root@docker ~]# dnf install epel-release -y
 ...
-[root@podman ansible]#
+[root@docker ~]# dnf install ansible git -y
+...
+[root@docker ~]#
+```
+
+Si ya tenemos desplegada una máquina para instalar podman y los ejemplos vamos al directorio [ansible](../ansible):
+
+```console
+[root@docker ~]# git clone https://github.com/jadebustos/devopslabs.git
+[root@docker ~]# cd devopslabs/ansible
+[root@docker ansible]# ansible-playbook -i hosts install-podman.yaml 
+...
+[root@docker ansible]#
 ```
 ## Desplegando la máquina virtual con terraform
 
