@@ -7,36 +7,36 @@ Vamos a [DockerHub](https://hub.docker.com/) y buscamos una imagen para descarga
 En categorias seleccionamos **Base Images** y vamos a decargar **busybox**:
 
 ```console
-[root@lab-docker ~]# docker pull busybox
+[root@docker ~]# docker pull busybox
 Using default tag: latest
 latest: Pulling from library/busybox
 e5d9363303dd: Pull complete 
 Digest: sha256:c5439d7db88ab5423999530349d327b04279ad3161d7596d2126dfb5b02bfd1f
 Status: Downloaded newer image for busybox:latest
 docker.io/library/busybox:latest
-[root@lab-docker ~]# 
+[root@docker ~]# 
 ```
 
 Listamos las imágenes disponibles:
 
 ```console
-[root@lab-docker ~]# docker images
+[root@docker ~]# docker images
 REPOSITORY   TAG       IMAGE ID       CREATED      SIZE
 busybox      latest    b97242f89c8a   4 days ago   1.23MB
-[root@lab-docker ~]# 
+[root@docker ~]# 
 ```
 
 Instanciamos un container a partir de una imagen:
 
 ```console
-[root@lab-docker ~]# docker run -d busybox
+[root@docker ~]# docker run -d busybox
 845308bb95594ccbc463c251bd14bb06a65c5d0b8ee4d21ec5bc9c6c1ed8db15
-[root@lab-docker ~]# docker ps
+[root@docker ~]# docker ps
 CONTAINER ID   IMAGE     COMMAND   CREATED   STATUS    PORTS     NAMES
-[root@lab-docker ~]# docker ps --all
+[root@docker ~]# docker ps --all
 CONTAINER ID   IMAGE     COMMAND   CREATED         STATUS                     PORTS     NAMES
 845308bb9559   busybox   "sh"      8 seconds ago   Exited (0) 7 seconds ago             tender_cann
-[root@lab-docker ~]#
+[root@docker ~]#
 ```
 + **-d** lo arrancamos en background.
 
@@ -45,8 +45,8 @@ Como vemos el contenedor arranca y para.
 Podemos ver que una vez parado, la imagen del contenedor existe y podemos arrancarla de nuevo:
 
 ```console
-[root@lab-docker ~]# docker start 845308bb9559
-[root@lab-docker ~]# docker ps --all
+[root@docker ~]# docker start 845308bb9559
+[root@docker ~]# docker ps --all
 CONTAINER ID   IMAGE     COMMAND   CREATED         STATUS                     PORTS     NAMES
 845308bb9559   busybox   "sh"      About a minute ago   Exited (0) 6 seconds ago             tender_cannon
 [root@lab-docker ~]#
@@ -55,30 +55,30 @@ CONTAINER ID   IMAGE     COMMAND   CREATED         STATUS                     PO
 Si la imagen del contenedor parado ya no la necesitamos podemos borrarla:
 
 ```console
-[root@lab-docker ~]# docker ps --all
+[root@docker ~]# docker ps --all
 CONTAINER ID   IMAGE     COMMAND   CREATED         STATUS                     PORTS     NAMES
 845308bb9559   busybox   "sh"      About a minute ago   Exited (0) 6 seconds ago             tender_cannon
-[root@lab-docker ~]# docker rm 845308bb9559
+[root@docker ~]# docker rm 845308bb9559
 845308bb9559
-[root@lab-docker ~]# docker ps --all
+[root@docker ~]# docker ps --all
 CONTAINER ID   IMAGE     COMMAND   CREATED   STATUS    PORTS     NAMES
-[root@lab-docker ~]#
+[root@docker ~]#
 ```
 
 Podemos ejecutar un contenedor y borrarlo cuando termine su ejecución:
 
 ```console
-[root@lab-docker ~]# docker run --rm -d busybox 
+[root@docker ~]# docker run --rm -d busybox 
 34098cb89892effc9c64b04fa0e99c85457e75aa92392bd95700ed2c3863147c
-[root@lab-docker ~]# docker ps --all
+[root@docker ~]# docker ps --all
 CONTAINER ID   IMAGE     COMMAND   CREATED   STATUS    PORTS     NAMES
-[root@lab-docker ~]#
+[root@docker ~]#
 ```
 
 Instanciamos una nueva imagen, pero esta vez ejecutamos una shell dentro del contendor:
 
 ```console
-[root@lab-docker ~]# docker run -it --rm busybox
+[root@docker ~]# docker run -it --rm busybox
 / #  ip a
 1: lo: <LOOPBACK,UP,LOWER_UP> mtu 65536 qdisc noqueue qlen 1000
     link/loopback 00:00:00:00:00:00 brd 00:00:00:00:00:00
@@ -96,23 +96,23 @@ Instanciamos una nueva imagen, pero esta vez ejecutamos una shell dentro del con
 
 > ![NOTA](../imgs/note-icon.png) **docker run --help** para ver mas opciones del comando **run**.
 
-Si nos conectamos por ssh a la vm:
+Si abrimos otra conexión por ssh a la vm:
 
 ```console
-[root@lab-docker ~]# docker ps
+[root@docker ~]# docker ps
 CONTAINER ID   IMAGE     COMMAND   CREATED         STATUS         PORTS     NAMES
 69d24bac6bbb   busybox   "sh"      3 minutes ago   Up 3 minutes             ecstatic_tharp
-[root@lab-docker ~]# 
+[root@docker ~]# 
 ```
 
 Salimos del contenedor y vemos que el contenedor ya no existe:
 
 ```console
-[root@lab-docker ~]# docker run -d busybox
+[root@docker ~]# docker run -d busybox
 845308bb95594ccbc463c251bd14bb06a65c5d0b8ee4d21ec5bc9c6c1ed8db15
-[root@lab-docker ~]# docker ps
+[root@docker ~]# docker ps
 CONTAINER ID   IMAGE     COMMAND   CREATED   STATUS    PORTS     NAMES
-[root@lab-docker ~]# docker run -it --rm busybox
+[root@docker ~]# docker run -it --rm busybox
 / # ip a
 1: lo: <LOOPBACK,UP,LOWER_UP> mtu 65536 qdisc noqueue qlen 1000
     link/loopback 00:00:00:00:00:00 brd 00:00:00:00:00:00
@@ -127,9 +127,9 @@ PID   USER     TIME  COMMAND
     1 root      0:00 sh
     7 root      0:00 ps ax
 / # exit
-[root@lab-docker ~]# docker ps
+[root@docker ~]# docker ps
 CONTAINER ID   IMAGE     COMMAND   CREATED   STATUS    PORTS     NAMES
-[root@lab-docker ~]#
+[root@docker ~]#
 ```
 
 ## Creando una imagen simple
@@ -141,12 +141,13 @@ Nos conectamos a la máquina de docker:
 ```console
 [terraform@docker ~]$ sudo su -
 Last login: Sun Jan 17 20:42:31 CET 2021 on pts/0
-[root@lab-docker ~]# cd example1
-[root@lab-docker busibox]# ls -lh
-total 8.0K
--rw-r--r--. 1 root root 99 Jan 17 20:33 Dockerfile
--rw-r--r--. 1 root root 39 Jan 17 20:33 myscript.sh
-[root@lab-docker busibox]#
+[root@docker ~]# cd build/busybox
+[root@docker busibox]# ls -lh
+total 12K
+-rw-r--r--. 1 root root 135 Feb  3 18:45 Dockerfile
+-rw-r--r--. 1 root root 131 Feb  3 18:45 myinfinitescript.sh
+-rw-r--r--. 1 root root  36 Feb  3 18:45 myscript.sh
+[root@docker busibox]#
 ```
 
 El fichero que se encarga de definir la imagen es [Dockerfile](../ansible/roles/container-examples/files/Dockerfile-busybox):
@@ -156,11 +157,11 @@ FROM busybox
 MAINTAINER mantainer@email
 COPY ./myscript.sh /myscript.sh
 RUN chmod +x /myscript.sh
-ENTRYPOINT ["/myscript.sh"]
+ENTRYPOINT ["/myscript.sh", "Mundo"]
 ```
 
 ```console
-[root@lab-docker busybox]# docker build -t mybusybox .
+[root@docker busybox]# docker build -t mybusybox .
 Sending build context to Docker daemon  3.072kB
 Step 1/5 : FROM busybox
  ---> b97242f89c8a
@@ -180,33 +181,35 @@ Removing intermediate container a7ca602c8246
  ---> 22e286fdd755
 Successfully built 22e286fdd755
 Successfully tagged mybusybox:latest
-[root@lab-docker busybox]# docker images
+[root@docker busybox]# docker images
 REPOSITORY   TAG       IMAGE ID       CREATED          SIZE
 mybusybox    latest    22e286fdd755   12 seconds ago   1.23MB
 busybox      latest    b97242f89c8a   4 days ago       1.23MB
-[root@lab-docker busybox]# 
+[root@docker busybox]# 
 ```
 
 Ejecutamos un container basado en esa imagen:
 
 ```console
-[root@lab-docker busybox]# docker run -d mybusybox 
+[root@docker busybox]# docker run -d mybusybox 
 811ba76fb030e02b90aeb3e1e9f047b174b30cb012310d8665374a10c7fbafb6
-[root@lab-docker busybox]# docker ps ; sleep 30
+[root@docker busybox]# docker ps ; sleep 30
 CONTAINER ID   IMAGE       COMMAND                CREATED         STATUS        PORTS     NAMES
 811ba76fb030   mybusybox   "/myscript.sh Mundo"   3 seconds ago   Up 1 second             silly_hugle
-[root@lab-docker busybox]# docker ps ; sleep 20
+[root@docker busybox]# docker ps ; sleep 20
 CONTAINER ID   IMAGE       COMMAND                CREATED          STATUS          PORTS     NAMES
 811ba76fb030   mybusybox   "/myscript.sh Mundo"   36 seconds ago   Up 34 seconds             silly_hugle
-[root@lab-docker busybox]# docker ps ; sleep 10
+[root@docker busybox]# docker ps ; sleep 10
 CONTAINER ID   IMAGE       COMMAND                CREATED          STATUS          PORTS     NAMES
 811ba76fb030   mybusybox   "/myscript.sh Mundo"   59 seconds ago   Up 57 seconds             silly_hugle
-[root@lab-docker busybox]# docker ps ; sleep 10
+[root@docker busybox]# docker ps ; sleep 10
 CONTAINER ID   IMAGE     COMMAND   CREATED   STATUS    PORTS     NAMES
-[root@lab-docker busybox]# 
+[root@docker busybox]# 
 ```
 
 Podemos observar que después de unos segundos, 60, termina la ejecución del contenedor.
+
+> ![TIP](../imgs/tip-icon.png) Podemo también verlo ejecutando **watch docker ps**.
 
 Cambiemos **myscript.sh** por **myinfinitescript.sh** en el [Dockerfile](../ansible/roles/container-examples/files/Dockerfile-busybox) de tal forma que:
 
@@ -233,15 +236,23 @@ done
 Construyamos el contenedor y ejecutemoslo:
 
 ```console
-[root@lab-docker busybox]# docker build -t mybusybox .
-...
-[root@lab-docker busybox]# docker run -d mybusybox 
-bfe8f9c45c6f8319d67192f9778e53479d6d89b9432fcc4c0825da1a804b5a9d
-[root@lab-docker busybox]# docker ps
+[root@docker busybox]# docker run -d mybusybox 
+3a5251ffcfec4b5b94d00b997d26f981c57cde31cf91e46307822224b364d936
+[root@docker busybox]# docker ps
 CONTAINER ID   IMAGE       COMMAND                  CREATED         STATUS         PORTS     NAMES
-bfe8f9c45c6f   mybusybox   "/myinfinitescript.sh"   7 seconds ago   Up 5 seconds             fervent_shannon
-[root@lab-docker busybox]# 
+3a5251ffcfec   mybusybox   "/myinfinitescript.sh"   4 seconds ago   Up 3 seconds             elastic_gould
+[root@docker busybox]#
 ```
+> ![TIP](../imgs/tip-icon.png) Deja pasar unos segundos. Cada cinco segundos el contenedor imprimirá una cadena texto aleatoria en la salida estándar. La salida estándar se puede ver en los logs del contenedor:
+>
+> ```console
+> [root@docker busybox]# docker logs 3a5251ffcfec
+> Random string: yPtVGdp6ArvUzfkH4YGM43vjG8XCZm7vAUg2iIg0NMLLHi4RLHbB7fz961hHduLa
+> Random string: MLUWTHCaSCEVRMC5scKWpXAxDLwh3fG3KdVYSflr2fnuhkGa3Sw33Mjg4JO7ebo2
+> Random string: Kf7tfiu6BjZ01jWIdyBmFJiaL9S7QMPPKRK2KVpAJTYsx5mvGfa8uvvkrqsTP1YG
+> Random string: RGlySsqhw3thYMLsXYUpSNkov3LcerJPNznY4GhzgNwXCXW5NmHdptswP9PyE3nO
+> [root@docker busybox]#
+> ```
 
 ## Troubleshooting
 
@@ -250,7 +261,7 @@ Cuando tenemos problemas o el contenedor no funciona como debería para realizar
 Podemos atacharnos al contenedor en ejecución y ver la salida estándar para sacar información de que está pasando:
 
 ```console
-[root@lab-docker busybox]# docker ps
+[root@docker busybox]# docker ps
 CONTAINER ID   IMAGE       COMMAND                  CREATED         STATUS         PORTS     NAMES
 bfe8f9c45c6f   mybusybox   "/myinfinitescript.sh"   7 seconds ago   Up 5 seconds             fervent_shannon
 [root@lab-docker busybox]# docker attach bfe8f9c45c6f8319d67192f9778e53479d6d89b9432fcc4c0825da1a804b5a9d
@@ -265,13 +276,12 @@ Random string: HIkAElMp4iCdHiClAAYB7xTNJiEW3ezzL5uLfjiwauJcYMfsRspcrXcOlFb0HoyF
 
 Para salir pulsar **Ctrl + c** saldremos, pero la ejecución del contenedor habrá terminado ya que hemos terminado el proceso al que nos hemos conectado.
 
-
 Para por salir y que el contenedor se siga ejecutando:
 
 ```console
-[root@lab-docker busybox]# docker run -itd mybusybox 
+[root@docker busybox]# docker run -itd mybusybox 
 96a78b06124be8face69201260e435ed8957eeb43bf28e9462aed2b2c436360e
-[root@lab-docker busybox]# docker attach 96a78b06124be8face69201260e435ed8957eeb43bf28e9462aed2b2c436360e
+[root@docker busybox]# docker attach 96a78b06124be8face69201260e435ed8957eeb43bf28e9462aed2b2c436360e
 Random string: gfvtNJtcrXFtSOYIIUDdWGJvrCKBEGkz8Y2gvLXBuaJA5Tc4MW5Vhh8DQStV6a7n
 Random string: BPVsfEilXRJiEZbqPBK4zMTCVp9zTdCT8isESN8csAfMN0mCh6BYyaRYn44532su
 Random string: Iw7wYgSqYuwV80ZRpg7xkBOElZWN7aavXm6Z1jUHq6WvVjivL2cNAyRy0jxE5uYU
@@ -281,16 +291,16 @@ Pulsamos **Ctrl + p** y **Ctrl + q**:
 
 ```console
 read escape sequence
-[root@lab-docker busybox]# docker ps
+[root@docker busybox]# docker ps
 CONTAINER ID   IMAGE       COMMAND                  CREATED          STATUS          PORTS     NAMES
 96a78b06124b   mybusybox   "/myinfinitescript.sh"   33 seconds ago   Up 31 seconds             bold_mendeleev
-[root@lab-docker busybox]# 
+[root@docker busybox]# 
 ```
 
 Podemos ejecutar una shell:
 
 ```console
-[root@lab-docker apache]# docker exec -it 4f94e272bac8 bash
+[root@docker apache]# docker exec -it 4f94e272bac8 bash
 root@4f94e272bac8:/var/www/html# 
 ```
 
@@ -299,7 +309,7 @@ Para salir de la shell bastaría con ejecutar **exit**:
 ```console
 root@4f94e272bac8:/var/www/html# exit
 exit
-[root@lab-docker apache]#
+[root@docker apache]#
 ```
 
 Para ver el historial de lo que ha pasado en el contenedor:
