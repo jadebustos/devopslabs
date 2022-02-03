@@ -1,5 +1,15 @@
 # Instalando podman, buildah y skopeo
 
+## Instalación manual
+
+En una máquina RHEL/CentOS 8:
+
+```console
+[root@podman ~]# dnf install @container-tools -y
+...
+[root@podman ~]#
+```
+
 ## Instalando podman con ansible
 
 Si ya tenemos desplegada una máquina para instalar podman vamos al directorio [ansible](../ansible):
