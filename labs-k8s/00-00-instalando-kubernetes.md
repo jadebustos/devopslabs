@@ -85,7 +85,7 @@ Instalamos los siguientes paquetes:
 
 > ![IMPORTANT](../imgs/important-icon.png) Si se ha actualizado el kernel o ha sido necesario desactivar SELinux será necesario reiniciar.
 
-> ![TIP](../imgs/tip-icon.png) Una buena práctica es crear una VMs aplicar estas tareas que se tienen que realizar en todas las máquinas. Dejarla configurada por dhcp y sin configurar el hostname. Una vez terminada la configuración  se hace el [sellado](doc-apoyo/sellado-vm.md) y las máquinas se clonan a partir de este disco. De esta forma estas tareas se hacen solo una vez y no una vez por máquina. Más información [aquí](../doc-apoyo/sellado-vm.md).
+> ![TIP](../imgs/tip-icon.png) Una buena práctica es crear una VM, aplicar estas tareas que se tienen que realizar en todas las máquinas. Dejarla configurada por dhcp y sin configurar el hostname. Una vez terminada la configuración  se hace el [sellado](doc-apoyo/sellado-vm.md) y las máquinas se clonan a partir de este disco. De esta forma estas tareas se hacen solo una vez y no una vez por máquina. Más información [aquí](../doc-apoyo/sellado-vm.md).
 
 ## Instalación del servidor NFS
 
