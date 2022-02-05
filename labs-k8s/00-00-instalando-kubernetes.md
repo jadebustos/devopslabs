@@ -461,11 +461,7 @@ Configuramos el firewall para acceder a los servicios de kubernetes:
 success
 [root@master ~]# firewall-cmd --permanent --add-port=2379-2380/tcp
 success
-[root@master ~]# firewall-cmd --permanent --add-port=10250/tcp
-success
-[root@master ~]# firewall-cmd --permanent --add-port=10251/tcp
-success
-[root@master ~]# firewall-cmd --permanent --add-port=10252/tcp
+[root@master ~]# firewall-cmd --permanent --add-port=10250-10252/tcp
 success
 [root@master ~]# firewall-cmd --permanent --add-port=10255/tcp
 success
@@ -512,7 +508,7 @@ success
 
 > ![IMPORTANT](../imgs/important-icon.png) Esto no es una buena práctica. En un entorno en producción deberíamos permitir únicamente el tráfico necesario y no todo el tráfico entre el master y los workers.
 
-Permitimos el acceso de los contenedores a localhost:
+<!-- Permitimos el acceso de los contenedores a localhost: 
 
 ```console
 [root@master ~]# ip a
@@ -537,7 +533,7 @@ success
 [root@master ~]# firewall-cmd --reload
 success
 [root@master ~]#
-```
+``` -->
 
 Instalamos el plugin CNI (Container Network Interface) de kubernetes y definimos la red de los PODs:
 
@@ -570,7 +566,36 @@ Then you can join any number of worker nodes by running the following on each as
 
 kubeadm join 192.168.1.110:6443 --token gmk4le.8gsfpknu99k78qut \
     --discovery-token-ca-cert-hash sha256:d2cd35c9ab95f4061aa9d9b993f7e8742b2307516a3632b27ea10b64baf8cd71 
-[root@master ~]# 
+[root@master ~]# ip a
+1: lo: <LOOPBACK,UP,LOWER_UP> mtu 65536 qdisc noqueue state UNKNOWN group default qlen 1000
+    link/loopback 00:00:00:00:00:00 brd 00:00:00:00:00:00
+    inet 127.0.0.1/8 scope host lo
+       valid_lft forever preferred_lft forever
+    inet6 ::1/128 scope host
+       valid_lft forever preferred_lft forever
+2: enp1s0: <BROADCAST,MULTICAST,UP,LOWER_UP> mtu 1500 qdisc fq_codel state UP group default qlen 1000
+    link/ether 52:54:00:b5:e5:fd brd ff:ff:ff:ff:ff:ff
+    inet 192.168.1.160/24 brd 192.168.1.255 scope global noprefixroute enp1s0
+       valid_lft forever preferred_lft forever
+    inet6 fe80::575b:3545:bbe3:d7b8/64 scope link noprefixroute
+       valid_lft forever preferred_lft forever
+3: cni0: <BROADCAST,MULTICAST,UP,LOWER_UP> mtu 1500 qdisc noqueue state UP group default qlen 1000
+    link/ether 76:93:dc:f0:91:b7 brd ff:ff:ff:ff:ff:ff
+    inet 10.85.0.1/16 brd 10.85.255.255 scope global cni0
+       valid_lft forever preferred_lft forever
+    inet6 1100:200::1/24 scope global
+       valid_lft forever preferred_lft forever
+    inet6 fe80::7493:dcff:fef0:91b7/64 scope link
+       valid_lft forever preferred_lft forever
+4: veth1da9c175@if3: <BROADCAST,MULTICAST,UP,LOWER_UP> mtu 1500 qdisc noqueue master cni0 state UP group default
+    link/ether 72:6a:2c:eb:a6:84 brd ff:ff:ff:ff:ff:ff link-netns 2528f8e3-ee2d-494b-8275-2ec56d4a3eb5
+    inet6 fe80::706a:2cff:feeb:a684/64 scope link
+       valid_lft forever preferred_lft forever
+5: veth1f3c7838@if3: <BROADCAST,MULTICAST,UP,LOWER_UP> mtu 1500 qdisc noqueue master cni0 state UP group default
+    link/ether 32:a7:14:6c:6f:5d brd ff:ff:ff:ff:ff:ff link-netns 8a1d4ca7-d884-42f3-8c48-4aeea11de70f
+    inet6 fe80::30a7:14ff:fe6c:6f5d/64 scope link
+       valid_lft forever preferred_lft forever
+[root@master ~]#
 ```
 
 > ![IMPORTANT](../imgs/important-icon.png) Guarda el comando kubeadm ya que lo necesitarás para unir los workers al clúster.
@@ -610,6 +635,71 @@ Ahora es necesario instalar una SDN para que los pods puedan comunicarse. Se pro
 + Instalación de [Calico](00-01-sdn-calico.md).
 + Instalación de [SDN en Azure](00-02-sdn-azure.md).
 
+## Desplegando un ingress controller
+
+Para poder acceder a los PODs desde fuera de kubernetes necesitaremos instalar un ingress controller. Para ello en el master:
+
+```console
+[root@kubemaster ~]# kubectl apply -f https://raw.githubusercontent.com/haproxytech/kubernetes-ingress/master/deploy/haproxy-ingress.yaml
+namespace/haproxy-controller created
+serviceaccount/haproxy-kubernetes-ingress created
+clusterrole.rbac.authorization.k8s.io/haproxy-kubernetes-ingress created
+clusterrolebinding.rbac.authorization.k8s.io/haproxy-kubernetes-ingress created
+configmap/haproxy-kubernetes-ingress created
+deployment.apps/haproxy-kubernetes-ingress-default-backend created
+service/haproxy-kubernetes-ingress-default-backend created
+deployment.apps/haproxy-kubernetes-ingress created
+service/haproxy-kubernetes-ingress created
+[root@kubemaster ~]#
+```
+
+> ![NOTA](../imgs/note-icon.png) Existen diferentes ingress controller que se pueden desplegar e incluso podemos desplegar varios que convivan en kubernetes. En este caso será necesario utilizar [annotations](https://kubernetes.io/docs/concepts/overview/working-with-objects/annotations/) para especificar que ingress controller se deberá utilizar en cada deployment.
+
+Se crea un namespace para el ingress controller:
+
+```console
+[root@master ~]# kubectl get namespaces
+NAME                 STATUS   AGE
+calico-apiserver     Active   7m4s
+calico-system        Active   8m40s
+default              Active   10m
+haproxy-controller   Active   58s
+kube-node-lease      Active   10m
+kube-public          Active   10m
+kube-system          Active   10m
+tigera-operator      Active   8m56s
+[root@master ~]# kubectl get pods --namespace=haproxy-controller
+NAME                                                          READY   STATUS    RESTARTS   AGE
+haproxy-kubernetes-ingress-54f9b477b9-g5tgw                   1/1     Running   0          63s
+haproxy-kubernetes-ingress-default-backend-6b7ddb86b9-2l5p7   1/1     Running   0          64s
+[root@master ~]#  
+```
+
+Vemos los servicios:
+
+```console
+[root@master ~]# kubectl get svc -A
+NAMESPACE            NAME                                         TYPE        CLUSTER-IP       EXTERNAL-IP   PORT(S)                                     AGE
+calico-apiserver     calico-api                                   ClusterIP   10.96.81.40      <none>        443/TCP                                     7m19s
+calico-system        calico-kube-controllers-metrics              ClusterIP   10.103.77.126    <none>        9094/TCP                                    8m18s
+calico-system        calico-typha                                 ClusterIP   10.111.7.105     <none>        5473/TCP                                    8m55s
+default              kubernetes                                   ClusterIP   10.96.0.1        <none>        443/TCP                                     10m
+haproxy-controller   haproxy-kubernetes-ingress                   NodePort    10.97.114.101    <none>        80:30031/TCP,443:32302/TCP,1024:32122/TCP   70s
+haproxy-controller   haproxy-kubernetes-ingress-default-backend   ClusterIP   10.110.181.233   <none>        8080/TCP                                    72s
+kube-system          kube-dns                                     ClusterIP   10.96.0.10       <none>        53/UDP,53/TCP,9153/TCP                      10m
+[root@master ~]# 
+```
+
+Según lo anterior tenemos:
+
++ El puerto del host **30031** se encuentra mapeado al **80** de los contenedores.
++ El puerto del host **32302** se encuentra mapeado al **443** de los contenedores.
++ El puerto del host **32122** se encuentra mapeado al **1024** de los contenedores. Este puerto se utiliza para estadísticas de haproxy.
+
+> ![INFORMATION](../imgs/information-icon.png) [Ingress Controller](https://kubernetes.io/docs/concepts/services-networking/ingress-controllers/) 
+
+> ![INFORMATION](../imgs/information-icon.png) [HAproxy ingress controller](https://github.com/haproxytech/kubernetes-ingress#readme)
+
 ## Configurando los workers
 
 Lo primero que tenemos que hacer en los workers es abrir los puertos:
@@ -643,29 +733,32 @@ Puede llevar unos minutos que los workers aparezcan como **Ready**:
 
 ```console
 [root@master ~]# kubectl get nodes
-NAME               STATUS   ROLES                  AGE   VERSION
-master.acme.es     Ready    control-plane,master   36m   v1.20.2
-worker01.acme.es   Ready    <none>                 12m   v1.20.2
-worker02.acme.es   Ready    <none>                 12m   v1.20.2
+NAME                   STATUS   ROLES                  AGE   VERSION
+kubemaster.jadbp.lab   Ready    control-plane,master   36m   v1.23.3
+kubenode1.jadbp.lab    Ready    <none>                 12m   v1.23.3
+kubenode2.jadbp.lab    Ready    <none>                 12m   v1.23.3
 [root@master ~]# kubectl get pods -A -o wide
-NAMESPACE         NAME                                       READY   STATUS    RESTARTS   AGE   IP               NODE               NOMINATED NODE   READINESS GATES
-calico-system     calico-kube-controllers-546d44f5b7-szm8j   1/1     Running   0          31m   192.169.121.67   master.acme.es     <none>           <none>
-calico-system     calico-node-dltbq                          1/1     Running   0          31m   192.168.1.110    master.acme.es     <none>           <none>
-calico-system     calico-node-h86k4                          1/1     Running   0          21m   192.168.1.112    worker02.acme.es   <none>           <none>
-calico-system     calico-node-xkxgw                          1/1     Running   0          21m   192.168.1.111    worker01.acme.es   <none>           <none>
-calico-system     calico-typha-5698b66ddc-5dbxs              1/1     Running   0          31m   192.168.1.110    master.acme.es     <none>           <none>
-calico-system     calico-typha-5698b66ddc-6nzxw              1/1     Running   0          20m   192.168.1.111    worker01.acme.es   <none>           <none>
-calico-system     calico-typha-5698b66ddc-lsj8t              1/1     Running   0          20m   192.168.1.112    worker02.acme.es   <none>           <none>
-kube-system       coredns-74ff55c5b-5cp24                    1/1     Running   0          45m   192.169.121.65   master.acme.es     <none>           <none>
-kube-system       coredns-74ff55c5b-w68pg                    1/1     Running   0          45m   192.169.121.66   master.acme.es     <none>           <none>
-kube-system       etcd-master.acme.es                        1/1     Running   1          45m   192.168.1.110    master.acme.es     <none>           <none>
-kube-system       kube-apiserver-master.acme.es              1/1     Running   1          45m   192.168.1.110    master.acme.es     <none>           <none>
-kube-system       kube-controller-manager-master.acme.es     1/1     Running   1          45m   192.168.1.110    master.acme.es     <none>           <none>
-kube-system       kube-proxy-bm6fs                           1/1     Running   0          21m   192.168.1.112    worker02.acme.es   <none>           <none>
-kube-system       kube-proxy-cd2xq                           1/1     Running   0          21m   192.168.1.111    worker01.acme.es   <none>           <none>
-kube-system       kube-proxy-fftw7                           1/1     Running   1          45m   192.168.1.110    master.acme.es     <none>           <none>
-kube-system       kube-scheduler-master.acme.es              1/1     Running   1          45m   192.168.1.110    master.acme.es     <none>           <none>
-tigera-operator   tigera-operator-657cc89589-wqgd6           1/1     Running   0          35m   192.168.1.110    master.acme.es     <none>           <none>
+NAMESPACE            NAME                                                          READY   STATUS    RESTARTS        AGE   IP               NODE                   NOMINATED NODE   READINESS GATES
+calico-apiserver     calico-apiserver-7b7b5f846c-5992j                             1/1     Running   1               22h   192.169.203.70   kubemaster.jadbp.lab   <none>           <none>
+calico-apiserver     calico-apiserver-7b7b5f846c-gsf2z                             1/1     Running   1               22h   192.169.203.71   kubemaster.jadbp.lab   <none>           <none>
+calico-system        calico-kube-controllers-77c48f5f64-j5dhm                      1/1     Running   1               22h   192.169.203.69   kubemaster.jadbp.lab   <none>           <none>
+calico-system        calico-node-j8lbf                                             1/1     Running   1               22h   192.168.1.161    kubenode1.jadbp.lab    <none>           <none>
+calico-system        calico-node-rtnlm                                             1/1     Running   1               22h   192.168.1.162    kubenode2.jadbp.lab    <none>           <none>
+calico-system        calico-node-w2csz                                             1/1     Running   2 (3h55m ago)   22h   192.168.1.160    kubemaster.jadbp.lab   <none>           <none>
+calico-system        calico-typha-86749877d5-dbn4m                                 1/1     Running   2 (3h56m ago)   22h   192.168.1.162    kubenode2.jadbp.lab    <none>           <none>
+calico-system        calico-typha-86749877d5-rfg85                                 1/1     Running   2               22h   192.168.1.160    kubemaster.jadbp.lab   <none>           <none>
+haproxy-controller   haproxy-kubernetes-ingress-54f9b477b9-g5tgw                   1/1     Running   1               22h   192.169.62.3     kubenode1.jadbp.lab    <none>           <none>
+haproxy-controller   haproxy-kubernetes-ingress-default-backend-6b7ddb86b9-2l5p7   1/1     Running   1               22h   192.169.62.4     kubenode1.jadbp.lab    <none>           <none>
+kube-system          coredns-64897985d-qdqmx                                       1/1     Running   1               22h   192.169.203.67   kubemaster.jadbp.lab   <none>           <none>
+kube-system          coredns-64897985d-xc46v                                       1/1     Running   1               22h   192.169.203.68   kubemaster.jadbp.lab   <none>           <none>
+kube-system          etcd-kubemaster.jadbp.lab                                     1/1     Running   1               22h   192.168.1.160    kubemaster.jadbp.lab   <none>           <none>
+kube-system          kube-apiserver-kubemaster.jadbp.lab                           1/1     Running   1               22h   192.168.1.160    kubemaster.jadbp.lab   <none>           <none>
+kube-system          kube-controller-manager-kubemaster.jadbp.lab                  1/1     Running   2 (3h57m ago)   22h   192.168.1.160    kubemaster.jadbp.lab   <none>           <none>
+kube-system          kube-proxy-k52m6                                              1/1     Running   1               22h   192.168.1.161    kubenode1.jadbp.lab    <none>           <none>
+kube-system          kube-proxy-pk99j                                              1/1     Running   1               22h   192.168.1.160    kubemaster.jadbp.lab   <none>           <none>
+kube-system          kube-proxy-wqkrw                                              1/1     Running   1               22h   192.168.1.162    kubenode2.jadbp.lab    <none>           <none>
+kube-system          kube-scheduler-kubemaster.jadbp.lab                           1/1     Running   1               22h   192.168.1.160    kubemaster.jadbp.lab   <none>           <none>
+tigera-operator      tigera-operator-59fc55759-w9pbq                               1/1     Running   2 (3h56m ago)   22h   192.168.1.160    kubemaster.jadbp.lab   <none>           <none>
 [root@master ~]# 
 ```
 
@@ -680,20 +773,24 @@ En los workers:
     inet6 ::1/128 scope host 
        valid_lft forever preferred_lft forever
 2: enp1s0: <BROADCAST,MULTICAST,UP,LOWER_UP> mtu 1500 qdisc fq_codel state UP group default qlen 1000
-    link/ether 52:54:00:4d:c6:3d brd ff:ff:ff:ff:ff:ff
-    inet 192.168.1.111/24 brd 192.168.1.255 scope global noprefixroute enp1s0
+    link/ether 52:54:00:ac:c3:d0 brd ff:ff:ff:ff:ff:ff
+    inet 192.168.1.161/24 brd 192.168.1.255 scope global noprefixroute enp1s0
        valid_lft forever preferred_lft forever
-    inet6 fe80::5054:ff:fe4d:c63d/64 scope link 
+    inet6 fe80::bd39:5246:9744:9c2d/64 scope link noprefixroute 
        valid_lft forever preferred_lft forever
-3: docker0: <NO-CARRIER,BROADCAST,MULTICAST,UP> mtu 1500 qdisc noqueue state DOWN group default 
-    link/ether 02:42:e8:69:bb:59 brd ff:ff:ff:ff:ff:ff
-    inet 172.17.0.1/16 brd 172.17.255.255 scope global docker0
+3: cali9388848c991@if3: <BROADCAST,MULTICAST,UP,LOWER_UP> mtu 1450 qdisc noqueue state UP group default 
+    link/ether ee:ee:ee:ee:ee:ee brd ff:ff:ff:ff:ff:ff link-netns 17ecc0b3-8c26-461e-9ead-7d40bf283fa1
+    inet6 fe80::ecee:eeff:feee:eeee/64 scope link 
        valid_lft forever preferred_lft forever
-6: vxlan.calico: <BROADCAST,MULTICAST,UP,LOWER_UP> mtu 1450 qdisc noqueue state UNKNOWN group default 
-    link/ether 66:77:c0:0a:f4:39 brd ff:ff:ff:ff:ff:ff
-    inet 192.169.112.0/32 scope global vxlan.calico
+4: cali5406fbd410d@if3: <BROADCAST,MULTICAST,UP,LOWER_UP> mtu 1450 qdisc noqueue state UP group default 
+    link/ether ee:ee:ee:ee:ee:ee brd ff:ff:ff:ff:ff:ff link-netns bc94072c-f3fb-44cb-8efb-f56dc39fc254
+    inet6 fe80::ecee:eeff:feee:eeee/64 scope link 
        valid_lft forever preferred_lft forever
-    inet6 fe80::6477:c0ff:fe0a:f439/64 scope link 
+5: vxlan.calico: <BROADCAST,MULTICAST,UP,LOWER_UP> mtu 1450 qdisc noqueue state UNKNOWN group default 
+    link/ether 66:7a:75:b8:d0:64 brd ff:ff:ff:ff:ff:ff
+    inet 192.169.62.0/32 scope global vxlan.calico
+       valid_lft forever preferred_lft forever
+    inet6 fe80::647a:75ff:feb8:d064/64 scope link 
        valid_lft forever preferred_lft forever
 [root@worker01 ~]# 
 ```
@@ -707,95 +804,43 @@ En los workers:
     inet6 ::1/128 scope host 
        valid_lft forever preferred_lft forever
 2: enp1s0: <BROADCAST,MULTICAST,UP,LOWER_UP> mtu 1500 qdisc fq_codel state UP group default qlen 1000
-    link/ether 52:54:00:93:56:54 brd ff:ff:ff:ff:ff:ff
-    inet 192.168.1.112/24 brd 192.168.1.255 scope global noprefixroute enp1s0
+    link/ether 52:54:00:22:a7:d5 brd ff:ff:ff:ff:ff:ff
+    inet 192.168.1.162/24 brd 192.168.1.255 scope global noprefixroute enp1s0
        valid_lft forever preferred_lft forever
-    inet6 fe80::5054:ff:fe93:5654/64 scope link 
+    inet6 fe80::672e:9d57:21bb:7b5a/64 scope link noprefixroute 
        valid_lft forever preferred_lft forever
-3: docker0: <NO-CARRIER,BROADCAST,MULTICAST,UP> mtu 1500 qdisc noqueue state DOWN group default 
-    link/ether 02:42:bb:47:0c:32 brd ff:ff:ff:ff:ff:ff
-    inet 172.17.0.1/16 brd 172.17.255.255 scope global docker0
+5: vxlan.calico: <BROADCAST,MULTICAST,UP,LOWER_UP> mtu 1450 qdisc noqueue state UNKNOWN group default 
+    link/ether 66:06:dd:29:b8:7a brd ff:ff:ff:ff:ff:ff
+    inet 192.169.45.128/32 scope global vxlan.calico
        valid_lft forever preferred_lft forever
-6: vxlan.calico: <BROADCAST,MULTICAST,UP,LOWER_UP> mtu 1450 qdisc noqueue state UNKNOWN group default 
-    link/ether 66:79:e1:85:f5:20 brd ff:ff:ff:ff:ff:ff
-    inet 192.169.22.0/32 scope global vxlan.calico
+    inet6 fe80::6406:ddff:fe29:b87a/64 scope link 
        valid_lft forever preferred_lft forever
-    inet6 fe80::6479:e1ff:fe85:f520/64 scope link 
-       valid_lft forever preferred_lft forever
-[root@worker02 ~]# ping -c 4 192.169.112.0
-PING 192.169.112.0 (192.169.112.0) 56(84) bytes of data.
-64 bytes from 192.169.112.0: icmp_seq=1 ttl=64 time=4.67 ms
-64 bytes from 192.169.112.0: icmp_seq=2 ttl=64 time=0.464 ms
-64 bytes from 192.169.112.0: icmp_seq=3 ttl=64 time=0.598 ms
-64 bytes from 192.169.112.0: icmp_seq=4 ttl=64 time=0.774 ms
-
---- 192.169.112.0 ping statistics ---
-4 packets transmitted, 4 received, 0% packet loss, time 3042ms
-rtt min/avg/max/mdev = 0.464/1.625/4.665/1.758 ms
 [root@worker02 ~]# 
 ```
 
-## Desplegando un ingress controller
-
-Para poder acceder a los PODs desde fuera de kubernetes necesitaremos instalar un ingress controller:
+En el nodo2 hacemos ping a la ip configurada en el interface **vxlan.calico** del nodo 1:
 
 ```console
-[root@kubemaster ~]# kubectl apply -f https://raw.githubusercontent.com/haproxytech/kubernetes-ingress/master/deploy/haproxy-ingress.yaml
-namespace/haproxy-controller created
-serviceaccount/haproxy-kubernetes-ingress created
-clusterrole.rbac.authorization.k8s.io/haproxy-kubernetes-ingress created
-clusterrolebinding.rbac.authorization.k8s.io/haproxy-kubernetes-ingress created
-configmap/haproxy-kubernetes-ingress created
-deployment.apps/haproxy-kubernetes-ingress-default-backend created
-service/haproxy-kubernetes-ingress-default-backend created
-deployment.apps/haproxy-kubernetes-ingress created
-service/haproxy-kubernetes-ingress created
-[root@kubemaster ~]#
+[root@worker02 ~]# ping 192.169.62.0
+PING 192.169.62.0 (192.169.62.0) 56(84) bytes of data.
+64 bytes from 192.169.62.0: icmp_seq=1 ttl=64 time=0.559 ms
+64 bytes from 192.169.62.0: icmp_seq=2 ttl=64 time=0.510 ms
+^C
+--- 192.169.62.0 ping statistics ---
+2 packets transmitted, 2 received, 0% packet loss, time 1001ms
+rtt min/avg/max/mdev = 0.510/0.534/0.559/0.033 ms
+[root@kubenode2 ~]# ping -c 4 192.169.62.0
+PING 192.169.62.0 (192.169.62.0) 56(84) bytes of data.
+64 bytes from 192.169.62.0: icmp_seq=1 ttl=64 time=0.752 ms
+64 bytes from 192.169.62.0: icmp_seq=2 ttl=64 time=0.405 ms
+64 bytes from 192.169.62.0: icmp_seq=3 ttl=64 time=0.388 ms
+64 bytes from 192.169.62.0: icmp_seq=4 ttl=64 time=0.658 ms
+
+--- 192.169.62.0 ping statistics ---
+4 packets transmitted, 4 received, 0% packet loss, time 3057ms
+rtt min/avg/max/mdev = 0.388/0.550/0.752/0.160 ms
+[root@worker02 ~]# 
 ```
-
-> ![NOTA](../imgs/note-icon.png) Existen diferentes ingress controller que se pueden desplegar e incluso podemos desplegar varios que convivan en kubernetes. En este caso será necesario utilizar [annotations](https://kubernetes.io/docs/concepts/overview/working-with-objects/annotations/) para especificar que ingress controller se deberá utilizar en cada deployment.
-
-Se crea un namespace para el ingress controller:
-
-```console
-[root@master ~]# kubectl get namespaces
-NAME                 STATUS   AGE
-calico-system        Active   39m
-default              Active   53m
-haproxy-controller   Active   2m44s
-kube-node-lease      Active   53m
-kube-public          Active   53m
-kube-system          Active   53m
-tigera-operator      Active   43m
-[root@master ~]# kubectl get pods --namespace=haproxy-controller
-NAME                                       READY   STATUS    RESTARTS   AGE
-haproxy-ingress-67f7c8b555-j7qdp           1/1     Running   0          2m55s
-ingress-default-backend-78f5cc7d4c-jzfk8   1/1     Running   0          2m57s
-[root@master ~]#  
-```
-
-Vemos los servicios:
-
-```console
-[root@master ~]# kubectl get svc -A
-NAMESPACE            NAME                      TYPE        CLUSTER-IP      EXTERNAL-IP   PORT(S)                                     AGE
-calico-system        calico-typha              ClusterIP   10.111.29.122    <none>        5473/TCP                                    40m
-default              kubernetes                ClusterIP   10.96.0.1        <none>        443/TCP                                     53m
-haproxy-controller   haproxy-ingress           NodePort    10.103.225.131   <none>        80:30432/TCP,443:31967/TCP,1024:31588/TCP   3m13s
-haproxy-controller   ingress-default-backend   ClusterIP   10.96.170.15     <none>        8080/TCP                                    3m15s
-kube-system          kube-dns                  ClusterIP   10.96.0.10       <none>        53/UDP,53/TCP,9153/TCP                      53m
-[root@master ~]# 
-```
-
-Según lo anterior tenemos:
-
-+ El puerto del host **30432** se encuentra mapeado al **80** de los contenedores.
-+ El puerto del host **31967** se encuentra mapeado al **443** de los contenedores.
-+ El puerto del host **31588** se encuentra mapeado al **1024** de los contenedores. Este puerto se utiliza para estadísticas de haproxy.
-
-> ![INFORMATION](../imgs/information-icon.png) [Ingress Controller](https://kubernetes.io/docs/concepts/services-networking/ingress-controllers/) 
-
-> ![INFORMATION](../imgs/information-icon.png) [HAproxy ingress controller](https://github.com/haproxytech/kubernetes-ingress#readme)
 
 ## Creamos un usuario no administrador
 

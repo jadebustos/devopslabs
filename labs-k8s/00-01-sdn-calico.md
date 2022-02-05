@@ -45,7 +45,7 @@ Y cambiamos el **cidr** para que coincida con el de nuestra red de PODs, el fich
 
 ```yaml
 # This section includes base Calico installation configuration.
-# For more information, see: https://docs.projectcalico.org/v3.17/reference/installation/api#operator.tigera.io/v1.Installation
+# For more information, see: https://projectcalico.docs.tigera.io/v3.22/reference/installation/api#operator.tigera.io/v1.Installation
 apiVersion: operator.tigera.io/v1
 kind: Installation
 metadata:
@@ -60,6 +60,16 @@ spec:
       encapsulation: VXLANCrossSubnet
       natOutgoing: Enabled
       nodeSelector: all()
+
+---
+
+# This section configures the Calico API server.
+# For more information, see: https://projectcalico.docs.tigera.io/v3.22/reference/installation/api#operator.tigera.io/v1.APIServer
+apiVersion: operator.tigera.io/v1
+kind: APIServer 
+metadata: 
+  name: default 
+spec: {}
 ```
 
 Instalamos Calico:
@@ -104,32 +114,36 @@ Podemos ver la configuración del master de red:
     inet6 ::1/128 scope host 
        valid_lft forever preferred_lft forever
 2: enp1s0: <BROADCAST,MULTICAST,UP,LOWER_UP> mtu 1500 qdisc fq_codel state UP group default qlen 1000
-    link/ether 52:54:00:77:3a:3a brd ff:ff:ff:ff:ff:ff
-    inet 192.168.1.110/24 brd 192.168.1.255 scope global noprefixroute enp1s0
+    link/ether 52:54:00:b5:e5:fd brd ff:ff:ff:ff:ff:ff
+    inet 192.168.1.160/24 brd 192.168.1.255 scope global noprefixroute enp1s0
        valid_lft forever preferred_lft forever
-    inet6 fe80::5054:ff:fe77:3a3a/64 scope link 
+    inet6 fe80::575b:3545:bbe3:d7b8/64 scope link noprefixroute 
        valid_lft forever preferred_lft forever
-3: docker0: <NO-CARRIER,BROADCAST,MULTICAST,UP> mtu 1500 qdisc noqueue state DOWN group default 
-    link/ether 02:42:a5:5e:1e:9d brd ff:ff:ff:ff:ff:ff
-    inet 172.17.0.1/16 brd 172.17.255.255 scope global docker0
-       valid_lft forever preferred_lft forever
-6: vxlan.calico: <BROADCAST,MULTICAST,UP,LOWER_UP> mtu 1450 qdisc noqueue state UNKNOWN group default 
-    link/ether 66:00:50:49:a7:f6 brd ff:ff:ff:ff:ff:ff
-    inet 192.169.121.64/32 scope global vxlan.calico
-       valid_lft forever preferred_lft forever
-    inet6 fe80::6400:50ff:fe49:a7f6/64 scope link 
-       valid_lft forever preferred_lft forever
-7: calie0e54e1fe93@if3: <BROADCAST,MULTICAST,UP,LOWER_UP> mtu 1450 qdisc noqueue state UP group default 
-    link/ether ee:ee:ee:ee:ee:ee brd ff:ff:ff:ff:ff:ff link-netnsid 0
+3: califb7b94e8489@if3: <BROADCAST,MULTICAST,UP,LOWER_UP> mtu 1450 qdisc noqueue state UP group default 
+    link/ether ee:ee:ee:ee:ee:ee brd ff:ff:ff:ff:ff:ff link-netns ef0488ff-2306-40cd-b73e-e22e96930eb3
     inet6 fe80::ecee:eeff:feee:eeee/64 scope link 
        valid_lft forever preferred_lft forever
-8: cali16a4c4a3288@if3: <BROADCAST,MULTICAST,UP,LOWER_UP> mtu 1450 qdisc noqueue state UP group default 
-    link/ether ee:ee:ee:ee:ee:ee brd ff:ff:ff:ff:ff:ff link-netnsid 1
+4: calieadd1ac9441@if3: <BROADCAST,MULTICAST,UP,LOWER_UP> mtu 1450 qdisc noqueue state UP group default 
+    link/ether ee:ee:ee:ee:ee:ee brd ff:ff:ff:ff:ff:ff link-netns 2737497d-4870-4081-8524-892c1c490fd6
     inet6 fe80::ecee:eeff:feee:eeee/64 scope link 
        valid_lft forever preferred_lft forever
-9: cali793ff21fd58@if3: <BROADCAST,MULTICAST,UP,LOWER_UP> mtu 1450 qdisc noqueue state UP group default 
-    link/ether ee:ee:ee:ee:ee:ee brd ff:ff:ff:ff:ff:ff link-netnsid 2
+5: calieef5ab7c4dd@if3: <BROADCAST,MULTICAST,UP,LOWER_UP> mtu 1450 qdisc noqueue state UP group default 
+    link/ether ee:ee:ee:ee:ee:ee brd ff:ff:ff:ff:ff:ff link-netns 7204c8d2-e9a8-4665-9b5b-4ac07aadadf3
     inet6 fe80::ecee:eeff:feee:eeee/64 scope link 
+       valid_lft forever preferred_lft forever
+6: cali4472774d629@if3: <BROADCAST,MULTICAST,UP,LOWER_UP> mtu 1450 qdisc noqueue state UP group default 
+    link/ether ee:ee:ee:ee:ee:ee brd ff:ff:ff:ff:ff:ff link-netns 761f7fac-f20d-4803-a945-82769c314a9a
+    inet6 fe80::ecee:eeff:feee:eeee/64 scope link 
+       valid_lft forever preferred_lft forever
+7: cali18a3987744e@if3: <BROADCAST,MULTICAST,UP,LOWER_UP> mtu 1450 qdisc noqueue state UP group default 
+    link/ether ee:ee:ee:ee:ee:ee brd ff:ff:ff:ff:ff:ff link-netns 6d229dbc-a415-4aa0-a82a-957d73dc3bc7
+    inet6 fe80::ecee:eeff:feee:eeee/64 scope link 
+       valid_lft forever preferred_lft forever
+10: vxlan.calico: <BROADCAST,MULTICAST,UP,LOWER_UP> mtu 1450 qdisc noqueue state UNKNOWN group default 
+    link/ether 66:a3:48:c8:28:0b brd ff:ff:ff:ff:ff:ff
+    inet 192.169.203.64/32 scope global vxlan.calico
+       valid_lft forever preferred_lft forever
+    inet6 fe80::64a3:48ff:fec8:280b/64 scope link 
        valid_lft forever preferred_lft forever
 [root@master ~]# 
 ```
