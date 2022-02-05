@@ -804,7 +804,7 @@ spec:
               number: 80
 ```
 
-Vemos que tenemos un rewrite, [path-rewrite](https://www.haproxy.com/documentation/kubernetes/1.4.5/configuration/ingress/), que reescribe la URL. Como es la única reescritura que hemos encontrado vamos a probar a eliminarla y relanzar el despliegue utilizando [game.yaml](2048/-game/game.yaml):
+Vemos que tenemos un rewrite, [path-rewrite](https://www.haproxy.com/documentation/kubernetes/1.4.5/configuration/ingress/), que reescribe la URL. Como es la única reescritura que hemos encontrado vamos a probar a eliminarla y relanzar el despliegue utilizando [game.yaml](2048-game/game.yaml):
 
 ```console
 [kubeadmin@master 2048-game]$ kubectl delete namespace game
