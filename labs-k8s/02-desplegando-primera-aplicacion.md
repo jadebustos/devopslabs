@@ -68,7 +68,7 @@ webapp-6857ff4857-ngxfx   1/1     Running   0          2m55s
 Name:         webapp-6857ff4857-ngxfx
 Namespace:    first-app
 Priority:     0
-Node:         kubenode1.jadbp.lab/192.168.1.161
+Node:         kubenode1.acme.es/192.168.1.161
 Start Time:   Fri, 28 Jan 2022 16:12:59 +0100
 Labels:       app=webapp
               pod-template-hash=6857ff4857
@@ -114,7 +114,7 @@ Tolerations:                 node.kubernetes.io/not-ready:NoExecute op=Exists fo
 Events:
   Type    Reason     Age    From               Message
   ----    ------     ----   ----               -------
-  Normal  Scheduled  3m34s  default-scheduler  Successfully assigned first-app/webapp-6857ff4857-ngxfx to kubenode1.jadbp.lab
+  Normal  Scheduled  3m34s  default-scheduler  Successfully assigned first-app/webapp-6857ff4857-ngxfx to kubenode1.acme.es
   Normal  Pulled     3m33s  kubelet            Container image "quay.io/rhte_2019/webapp:v1" already present on machine
   Normal  Created    3m33s  kubelet            Created container webapp
   Normal  Started    3m33s  kubelet            Started container webapp
@@ -127,7 +127,7 @@ Podemos ver los eventos del namespace para ver que está pasando:
 [kubeadmin@kubemaster first-app]$ kubectl get events --namespace=first-app
 LAST SEEN   TYPE     REASON              OBJECT                         MESSAGE
 ...
-4m20s       Normal   Scheduled           pod/webapp-6857ff4857-ngxfx    Successfully assigned first-app/webapp-6857ff4857-ngxfx to kubenode1.jadbp.lab
+4m20s       Normal   Scheduled           pod/webapp-6857ff4857-ngxfx    Successfully assigned first-app/webapp-6857ff4857-ngxfx to kubenode1.acme.es
 4m19s       Normal   Pulled              pod/webapp-6857ff4857-ngxfx    Container image "quay.io/rhte_2019/webapp:v1" already present on machine
 4m19s       Normal   Created             pod/webapp-6857ff4857-ngxfx    Created container webapp
 4m19s       Normal   Started             pod/webapp-6857ff4857-ngxfx    Started container webapp
@@ -167,11 +167,11 @@ Vemos que existe todavía, pero si nos fijamos tiene un nombre diferente:
 [kubeadmin@kubemaster first-app]$ kubectl get events --namespace=first-app
 LAST SEEN   TYPE     REASON             OBJECT                         MESSAGE
 ...
-76s         Normal   Scheduled           pod/webapp-6857ff4857-4d8n7    Successfully assigned first-app/webapp-6857ff4857-4d8n7 to kubenode1.jadbp.lab
+76s         Normal   Scheduled           pod/webapp-6857ff4857-4d8n7    Successfully assigned first-app/webapp-6857ff4857-4d8n7 to kubenode1.acme.es
 75s         Normal   Pulled              pod/webapp-6857ff4857-4d8n7    Container image "quay.io/rhte_2019/webapp:v1" already present on machine
 75s         Normal   Created             pod/webapp-6857ff4857-4d8n7    Created container webapp
 75s         Normal   Started             pod/webapp-6857ff4857-4d8n7    Started container webapp
-7m49s       Normal   Scheduled           pod/webapp-6857ff4857-ngxfx    Successfully assigned first-app/webapp-6857ff4857-ngxfx to kubenode1.jadbp.lab
+7m49s       Normal   Scheduled           pod/webapp-6857ff4857-ngxfx    Successfully assigned first-app/webapp-6857ff4857-ngxfx to kubenode1.acme.es
 7m48s       Normal   Pulled              pod/webapp-6857ff4857-ngxfx    Container image "quay.io/rhte_2019/webapp:v1" already present on machine
 7m48s       Normal   Created             pod/webapp-6857ff4857-ngxfx    Created container webapp
 7m48s       Normal   Started             pod/webapp-6857ff4857-ngxfx    Started container webapp
@@ -245,8 +245,8 @@ webapp-6857ff4857-48rvj   1/1     Running   0          36s
 webapp-6857ff4857-8qt9d   1/1     Running   0          7m13s
 [kubeadmin@kubemaster first-app]$ kubectl get pods --namespace=first-app -o wide
 NAME                      READY   STATUS    RESTARTS   AGE     IP               NODE                  NOMINATED NODE   READINESS GATES
-webapp-6857ff4857-48rvj   1/1     Running   0          61s     192.169.45.129   kubenode2.jadbp.lab   <none>           <none>
-webapp-6857ff4857-8qt9d   1/1     Running   0          7m38s   192.169.62.5     kubenode1.jadbp.lab   <none>           <none>
+webapp-6857ff4857-48rvj   1/1     Running   0          61s     192.169.45.129   kubenode2.acme.es   <none>           <none>
+webapp-6857ff4857-8qt9d   1/1     Running   0          7m38s   192.169.62.5     kubenode1.acme.es   <none>           <none>
 [kubeadmin@kubemaster first-app]$ 
 ```
 
@@ -287,8 +287,8 @@ webapp-6857ff4857-8qt9d   1/1     Running   0          12m
 pod "webapp-6857ff4857-48rvj" deleted
 [kubeadmin@kubemaster first-app]$ kubectl get pods --namespace=first-app -o wide
 NAME                      READY   STATUS    RESTARTS   AGE   IP               NODE                  NOMINATED NODE   READINESS GATES
-webapp-6857ff4857-8qt9d   1/1     Running   0          13m   192.169.62.5     kubenode1.jadbp.lab   <none>           <none>
-webapp-6857ff4857-j6pjt   1/1     Running   0          34s   192.169.45.130   kubenode2.jadbp.lab   <none>           <none>
+webapp-6857ff4857-8qt9d   1/1     Running   0          13m   192.169.62.5     kubenode1.acme.es   <none>           <none>
+webapp-6857ff4857-j6pjt   1/1     Running   0          34s   192.169.45.130   kubenode2.acme.es   <none>           <none>
 [kubeadmin@kubemaster first-app]$
 ```
 

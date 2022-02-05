@@ -19,10 +19,10 @@ namespace/troubleshoot created
 deployment.apps/troubleshoot created
 [kubeadmin@kubemaster network-policies]$ kubectl get pod --namespace utils -o wide
 NAME                     READY   STATUS    RESTARTS   AGE   IP              NODE                  NOMINATED NODE   READINESS GATES
-utils-646c66795d-qdtg9   1/1     Running   1          82m   192.169.62.31   kubenode1.jadbp.lab   <none>           <none>
+utils-646c66795d-qdtg9   1/1     Running   1          82m   192.169.62.31   kubenode1.acme.es   <none>           <none>
 [kubeadmin@kubemaster network-policies]$ kubectl get pod --namespace troubleshoot -o wide
 NAME                            READY   STATUS    RESTARTS   AGE   IP              NODE                  NOMINATED NODE   READINESS GATES
-troubleshoot-7bf854b879-v6ggl   1/1     Running   0          14m   192.169.62.32   kubenode1.jadbp.lab   <none>           <none>
+troubleshoot-7bf854b879-v6ggl   1/1     Running   0          14m   192.169.62.32   kubenode1.acme.es   <none>           <none>
 [kubeadmin@kubemaster network-policies]$  
 ```
 
@@ -70,7 +70,7 @@ Desplegamos la aplicación balaceada, obtenemos la ip interna de uno de los cont
 ```console
 [kubeadmin@kubemaster network-policies]$ kubectl get pod --namespace webapp-balanced -o wide
 NAME                               READY   STATUS    RESTARTS   AGE   IP              NODE                  NOMINATED NODE   READINESS GATES
-webapp-balanced-6f4f8dcd99-szwdr   1/1     Running   0          14m   192.169.62.30   kubenode1.jadbp.lab   <none>           <none>
+webapp-balanced-6f4f8dcd99-szwdr   1/1     Running   0          14m   192.169.62.30   kubenode1.acme.es   <none>           <none>
 [kubeadmin@kubemaster network-policies]$ kubectl exec -i -t utils-646c66795d-qdtg9 --namespace utils -- ping -c 4 192.169.62.30
 PING 192.169.62.30 (192.169.62.30): 56 data bytes
 64 bytes from 192.169.62.30: icmp_seq=0 ttl=63 time=0.223 ms
@@ -138,7 +138,7 @@ Y ahora hacemos un ping a cualquiera de los contenedores del namespace donde hem
 ```console
 [kubeadmin@kubemaster network-policies]$ kubectl get pod --namespace webapp-balanced -o wide
 NAME                               READY   STATUS    RESTARTS   AGE   IP              NODE                  NOMINATED NODE   READINESS GATES
-webapp-balanced-6f4f8dcd99-szwdr   1/1     Running   0          26m   192.169.62.30   kubenode1.jadbp.lab   <none>           <none>
+webapp-balanced-6f4f8dcd99-szwdr   1/1     Running   0          26m   192.169.62.30   kubenode1.acme.es   <none>           <none>
 [kubeadmin@kubemaster network-policies]$ kubectl exec -i -t utils-646c66795d-qdtg9 --namespace utils -- ping -c 4 192.169.62.30
 PING 192.169.62.30 (192.169.62.30): 56 data bytes
 --- 192.169.62.30 ping statistics ---

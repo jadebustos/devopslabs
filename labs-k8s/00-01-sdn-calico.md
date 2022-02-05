@@ -7,7 +7,7 @@ Como SDN vamos a instalar [Calico](https://docs.projectcalico.org/).
 Instalamos el operador de Tigera:
 
 ```console
-[root@master ~]# kubectl create -f https://docs.projectcalico.org/manifests/tigera-operator.yaml
+[root@kubemaster ~]# kubectl create -f https://docs.projectcalico.org/manifests/tigera-operator.yaml
 customresourcedefinition.apiextensions.k8s.io/bgpconfigurations.crd.projectcalico.org created
 customresourcedefinition.apiextensions.k8s.io/bgppeers.crd.projectcalico.org created
 customresourcedefinition.apiextensions.k8s.io/blockaffinities.crd.projectcalico.org created
@@ -31,14 +31,14 @@ serviceaccount/tigera-operator created
 clusterrole.rbac.authorization.k8s.io/tigera-operator created
 clusterrolebinding.rbac.authorization.k8s.io/tigera-operator created
 deployment.apps/tigera-operator created
-[root@master ~]#
+[root@kubemaster ~]#
 ```
 
 Instalamos Calico junto con los custom resources que necesita. Para ello descargamos primero el fichero de definición:
 
 ```console
-[root@master ~]# wget https://docs.projectcalico.org/manifests/custom-resources.yaml
-[root@master ~]#
+[root@kubemaster ~]# wget https://docs.projectcalico.org/manifests/custom-resources.yaml
+[root@kubemaster ~]#
 ```
 
 Y cambiamos el **cidr** para que coincida con el de nuestra red de PODs, el fichero [custom-resources.yaml](https://docs.projectcalico.org/manifests/custom-resources.yaml):
@@ -75,30 +75,30 @@ spec: {}
 Instalamos Calico:
 
 ```console
-[root@master ~]# kubectl apply -f custom-resources.yaml
+[root@kubemaster ~]# kubectl apply -f custom-resources.yaml
 installation.operator.tigera.io/default created
-[root@master ~]# 
+[root@kubemaster ~]# 
 ```
 Después de unos minutos veremos el clúster como **Ready**:
 
 ```console
-[root@master ~]# kubectl get nodes
+[root@kubemaster ~]# kubectl get nodes
 NAME             STATUS   ROLES                  AGE   VERSION
-master.acme.es   Ready    control-plane,master   18m   v1.20.2
-[root@master ~]# kubectl get pods -A
+kubemaster.acme.es   Ready    control-plane,master   18m   v1.20.2
+[root@kubemaster ~]# kubectl get pods -A
 NAMESPACE         NAME                                       READY   STATUS    RESTARTS   AGE
 calico-system     calico-kube-controllers-546d44f5b7-szm8j   1/1     Running   0          8m3s
 calico-system     calico-node-dltbq                          1/1     Running   0          8m3s
 calico-system     calico-typha-5698b66ddc-5dbxs              1/1     Running   0          8m5s
 kube-system       coredns-74ff55c5b-5cp24                    1/1     Running   0          21m
 kube-system       coredns-74ff55c5b-w68pg                    1/1     Running   0          21m
-kube-system       etcd-master.acme.es                        1/1     Running   1          21m
-kube-system       kube-apiserver-master.acme.es              1/1     Running   1          21m
-kube-system       kube-controller-manager-master.acme.es     1/1     Running   1          21m
+kube-system       etcd-kubemaster.acme.es                        1/1     Running   1          21m
+kube-system       kube-apiserver-kubemaster.acme.es              1/1     Running   1          21m
+kube-system       kube-controller-manager-kubemaster.acme.es     1/1     Running   1          21m
 kube-system       kube-proxy-fftw7                           1/1     Running   1          21m
-kube-system       kube-scheduler-master.acme.es              1/1     Running   1          21m
+kube-system       kube-scheduler-kubemaster.acme.es              1/1     Running   1          21m
 tigera-operator   tigera-operator-657cc89589-wqgd6           1/1     Running   0          11m
-[root@master ~]# 
+[root@kubemaster ~]# 
 ```
 
 Aunque hemos utilizado [Calico](https://docs.projectcalico.org/getting-started/kubernetes/) como [SDN](https://en.wikipedia.org/wiki/Software-defined_networking) podemos utilizar otras SDNs. Mas información en [Kubernetes Networking](https://kubernetes.io/docs/concepts/cluster-administration/networking/).
@@ -106,7 +106,7 @@ Aunque hemos utilizado [Calico](https://docs.projectcalico.org/getting-started/k
 Podemos ver la configuración del master de red:
 
 ```console
-[root@master ~]# ip a 
+[root@kubemaster ~]# ip a 
 1: lo: <LOOPBACK,UP,LOWER_UP> mtu 65536 qdisc noqueue state UNKNOWN group default qlen 1000
     link/loopback 00:00:00:00:00:00 brd 00:00:00:00:00:00
     inet 127.0.0.1/8 scope host lo
@@ -145,7 +145,7 @@ Podemos ver la configuración del master de red:
        valid_lft forever preferred_lft forever
     inet6 fe80::64a3:48ff:fec8:280b/64 scope link 
        valid_lft forever preferred_lft forever
-[root@master ~]# 
+[root@kubemaster ~]# 
 ```
 
 > ![INFORMATION](../imgs/information-icon.png) [Calico Quickstart](https://docs.projectcalico.org/getting-started/kubernetes/quickstart)

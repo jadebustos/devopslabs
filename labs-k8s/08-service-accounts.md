@@ -5,7 +5,7 @@ Las service account son cuentas que se utilizan para ejecutar pods y permiten es
 Aunque no hemos utilizado, todavía, service accounts cuando hemos desplegado aplicaciones se despliegan utilizando la service account por defecto del namespace en el que desplegamos la aplicación. Si sacamos la descripción de un pod cualquiera que tengamos desplegado:
 
 ```console
-[kubeadmin@master webapp-sa]$ kubectl get pod webapp-7469c9f8d6-ncqtp --namespace webapp -o yaml
+[kubeadmin@kubemaster webapp-sa]$ kubectl get pod webapp-7469c9f8d6-ncqtp --namespace webapp -o yaml
 apiVersion: v1
 kind: Pod
 metadata:
@@ -45,7 +45,7 @@ spec:
       readOnly: true
   dnsPolicy: ClusterFirst
   enableServiceLinks: true
-  nodeName: kubenode1.jadbp.lab
+  nodeName: kubenode1.acme.es
   preemptionPolicy: PreemptLowerPriority
   priority: 0
   restartPolicy: Always
@@ -119,7 +119,7 @@ status:
   - ip: 192.169.62.12
   qosClass: BestEffort
   startTime: "2021-06-08T21:44:28Z"
-[kubeadmin@master webapp-sa]$
+[kubeadmin@kubemaster webapp-sa]$
 ```
 
 Podemos ver lo siguiente en la salida anterior:
@@ -142,11 +142,11 @@ Las cuentas de usuario o user accounts son globales al clúster y por lo tanto  
 Vamos a crear una service account en un namespace:
 
 ```console
-[kubeadmin@master webapp-sa]$ kubectl create namespace webapp-sa
+[kubeadmin@kubemaster webapp-sa]$ kubectl create namespace webapp-sa
 namespace/webapp-sa created
-[kubeadmin@master webapp-sa]$ kubectl apply -f service-account.yaml 
+[kubeadmin@kubemaster webapp-sa]$ kubectl apply -f service-account.yaml 
 serviceaccount/demo-sa created
-[kubeadmin@master webapp-sa]$
+[kubeadmin@kubemaster webapp-sa]$
 ```
 
 Donde [service-account.yaml](webapp-sa/service-account.yaml):
@@ -162,11 +162,11 @@ metadata:
 Podemos ver las service-account asociadas a un namespace y obtener información sobre ellas:
 
 ```console
-[kubeadmin@master webapp-sa]$ kubectl get sa --namespace webapp-sa 
+[kubeadmin@kubemaster webapp-sa]$ kubectl get sa --namespace webapp-sa 
 NAME        SECRETS   AGE
 default     1         6m3s
 webapp-sa   1         41s
-[kubeadmin@master webapp-sa]$ kubectl describe sa webapp-sa --namespace webapp-sa 
+[kubeadmin@kubemaster webapp-sa]$ kubectl describe sa webapp-sa --namespace webapp-sa 
 Name:                webapp-sa
 Namespace:           webapp-sa
 Labels:              <none>
@@ -175,7 +175,7 @@ Image pull secrets:  <none>
 Mountable secrets:   webapp-sa-token-mfdcj
 Tokens:              webapp-sa-token-mfdcj
 Events:              <none>
-[kubeadmin@master webapp-sa]$ 
+[kubeadmin@kubemaster webapp-sa]$ 
 ```
 
 Las service accounts son objetos de kubernetes y se definen dentro de los namespaces, por lo tanto son locales al namespace.
@@ -269,13 +269,13 @@ spec:
 Creamos el **role**, hacemos el **rolebinding** y hacemos el deployment:
 
 ```console
-[kubeadmin@master webapp-sa]$ kubectl apply -f role.yaml 
+[kubeadmin@kubemaster webapp-sa]$ kubectl apply -f role.yaml 
 role.rbac.authorization.k8s.io/list-pods created
-[kubeadmin@master webapp-sa]$ kubectl apply -f rolebinding.yaml 
+[kubeadmin@kubemaster webapp-sa]$ kubectl apply -f rolebinding.yaml 
 rolebinding.rbac.authorization.k8s.io/webapp-sa-list-pods created
-[kubeadmin@master webapp-sa]$ kubectl apply -f deployment-sa.yaml 
+[kubeadmin@kubemaster webapp-sa]$ kubectl apply -f deployment-sa.yaml 
 deployment.apps/pod-example-sa created
-[kubeadmin@master webapp-sa]$
+[kubeadmin@kubemaster webapp-sa]$
 ```
 
 El deployment ejecutará el comando **sleep 3600** con lo cual nos dará tiempo a lanzar una shell en el contenedor, instalaremos el paquete **curl**. En el ejemplo veremos como acceder al token de la **service account** y utilizarlo para listar los pods del namespace **default**, que dará error, y los del namespace donde hemos definido la **service account**:
@@ -440,7 +440,7 @@ eyJhbGciOiJSUzI1NiIsImtpZCI6InlaX1ZEVjZyeVJCeEJqeXR3d190Y2lrekE5c1liY0JTY0dsUi13
         "dnsPolicy": "ClusterFirst",
         "serviceAccountName": "webapp-sa",
         "serviceAccount": "webapp-sa",
-        "nodeName": "kubenode1.jadbp.lab",
+        "nodeName": "kubenode1.acme.es",
         "securityContext": {
           
         },

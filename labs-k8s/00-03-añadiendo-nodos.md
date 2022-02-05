@@ -7,32 +7,32 @@ Al llegar al paso en el que hay que unir el nodo al clúster ejecutando **kubead
 Antes de eso en el master vamos a permitir las comunicaciones desde el nuevo nodo al master. Por lo tanto en el master deberemos ejecutar:
 
 ```console
-[root@master ~]# firewall-cmd --permanent --add-rich-rule 'rule family=ipv4 source address=192.168.1.163/32 accept'
+[root@kubemaster ~]# firewall-cmd --permanent --add-rich-rule 'rule family=ipv4 source address=192.168.1.163/32 accept'
 success
-[root@master ~]# firewall-cmd --reload
+[root@kubemaster ~]# firewall-cmd --reload
 success
-[root@master ~]#
+[root@kubemaster ~]#
 ```
 
 Podemos ver si tenemos algún token activo:
 
 ```console
-[kubeadmin@master ~]$ kubeadm token list
-[kubeadmin@master ~]$
+[kubeadmin@kubemaster ~]$ kubeadm token list
+[kubeadmin@kubemaster ~]$
 ```
 
 Creamos un token e imprimimos el comando que es necesario ejecutar para que el nodo se una al clúster:
 
 ```console
-[kubeadmin@master ~]$ kubeadm token create --print-join-command
+[kubeadmin@kubemaster ~]$ kubeadm token create --print-join-command
 kubeadm join 192.168.1.160:6443 --token 6kbm9j.0x7096yia5urrztm --discovery-token-ca-cert-hash sha256:b975164eb25204da0e13256af91390ad02e3287df399a1a9586cabd55f84ed9a 
-[kubeadmin@master ~]$
+[kubeadmin@kubemaster ~]$
 ```
 
 Ejecutamos el comando anterior en el nodo:
 
  ```console
- [root@worker03 ~]# kubeadm join 192.168.1.160:6443 --token 6kbm9j.0x7096yia5urrztm --discovery-token-ca-cert-hash sha256:b975164eb25204da0e13256af91390ad02e3287df399a1a9586cabd55f84ed9a
+ [root@kubenode3 ~]# kubeadm join 192.168.1.160:6443 --token 6kbm9j.0x7096yia5urrztm --discovery-token-ca-cert-hash sha256:b975164eb25204da0e13256af91390ad02e3287df399a1a9586cabd55f84ed9a
 [preflight] Running pre-flight checks
 	[WARNING IsDockerSystemdCheck]: detected "cgroupfs" as the Docker cgroup driver. The recommended driver is "systemd". Please follow the guide at https://kubernetes.io/docs/setup/cri/
 	[WARNING FileExisting-tc]: tc not found in system path
@@ -49,17 +49,17 @@ This node has joined the cluster:
 
 Run 'kubectl get nodes' on the control-plane to see this node join the cluster.
 
-[root@worker03 ~]#
+[root@kubenode3 ~]#
  ```
 
  El nodo se unirá al clúster:
 
  ```console
- [kubeadmin@master ~]$ kubectl get nodes
+ [kubeadmin@kubemaster ~]$ kubectl get nodes
 NAME                   STATUS   ROLES                  AGE    VERSION
-master.jadbp.lab   Ready    control-plane,master   42h    v1.21.1
-worker01.jadbp.lab    Ready    <none>                 42h    v1.21.1
-worker02.jadbp.lab    Ready    <none>                 154m   v1.21.1
-worker03.jadbp.lab    Ready    <none>                 24m    v1.21.1
-[kubeadmin@master ~]$ 
+kubemaster.acme.es   Ready    control-plane,master   42h    v1.21.1
+kubenode1.acme.es    Ready    <none>                 42h    v1.21.1
+kubenode2.acme.es    Ready    <none>                 154m   v1.21.1
+kubenode3.acme.es    Ready    <none>                 24m    v1.21.1
+[kubeadmin@kubemaster ~]$ 
  ```

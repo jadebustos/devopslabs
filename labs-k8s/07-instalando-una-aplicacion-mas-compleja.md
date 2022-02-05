@@ -393,9 +393,9 @@ To https://github.com/jadebustos/docker-2048
 Crearemos un namespace para el despliegue de la aplicación tal y como hemos visto anteriormente:
 
 ```console
-[kubeadmin@master game]$ kubectl create namespace game
+[kubeadmin@kubemaster game]$ kubectl create namespace game
 namespace/game created
-[kubeadmin@master game]$
+[kubeadmin@kubemaster game]$
 ```
 
 El fichero para el deployment:
@@ -577,25 +577,25 @@ data:
 Y hacemos el despliegue:
 
 ```console
-[kubeadmin@master 2048-game]$ kubectl apply -f game.yaml 
+[kubeadmin@kubemaster 2048-game]$ kubectl apply -f game.yaml 
 deployment.apps/game created
 service/game-service created
 ingress.networking.k8s.io/game created
 configmap/haproxy-configmap created
-[kubeadmin@master 2048-game]$ 
+[kubeadmin@kubemaster 2048-game]$ 
 ```
 
 Comprobamos el puerto que está exponiendo el Ingress Controller:
 
 ```console
-[kubeadmin@master 2048-game]$ kubectl get svc --namespace=haproxy-controller
+[kubeadmin@kubemaster 2048-game]$ kubectl get svc --namespace=haproxy-controller
 NAME                      TYPE        CLUSTER-IP       EXTERNAL-IP   PORT(S)                                     AGE
 haproxy-ingress           NodePort    10.103.225.131   <none>        80:30432/TCP,443:31967/TCP,1024:31588/TCP   8d
 ingress-default-backend   ClusterIP   10.96.170.15     <none>        8080/TCP                                    8d
-[kubeadmin@master 2048-game]$ kubectl get ingress --namespace=game
+[kubeadmin@kubemaster 2048-game]$ kubectl get ingress --namespace=game
 NAME   CLASS    HOSTS      ADDRESS   PORTS   AGE
 game   <none>   game.bar             80      10m
-[kubeadmin@master 2048-game]$ kubectl describe ingress game --namespace=game
+[kubeadmin@kubemaster 2048-game]$ kubectl describe ingress game --namespace=game
 Name:             game
 Namespace:        game
 Address:          
@@ -607,7 +607,7 @@ Rules:
               /game   game-service:80 (192.169.112.36:80)
 Annotations:  haproxy.org/path-rewrite: /
 Events:       <none>
-[kubeadmin@master 2048-game]$ 
+[kubeadmin@kubemaster 2048-game]$ 
 ```
 
 Luego para acceder a la aplicación lo haremos a través de **http://<span></span>game.bar:30432/game**:
@@ -691,16 +691,16 @@ Para solucionar esto hay varias alternativas:
 Vamos a utilizar esta última solución. Modificamos el Ingress de la aplicación, borramos el despliegue anterior y lo lanzamos:
 
 ```console
-[kubeadmin@master 2048-game]$ kubectl delete namespace game
+[kubeadmin@kubemaster 2048-game]$ kubectl delete namespace game
 namespace "game" deleted
-[kubeadmin@master 2048-game]$ kubectl create namespace game
+[kubeadmin@kubemaster 2048-game]$ kubectl create namespace game
 namespace/game created
-[kubeadmin@master 2048-game]$ kubectl apply -f game.yaml 
+[kubeadmin@kubemaster 2048-game]$ kubectl apply -f game.yaml 
 deployment.apps/game created
 service/game-service created
 ingress.networking.k8s.io/game created
 configmap/haproxy-configmap created
-[kubeadmin@master 2048-game]$ 
+[kubeadmin@kubemaster 2048-game]$ 
 ```
 
 Accedemos con el navegador:
@@ -720,7 +720,7 @@ Ahora vemos errores diferentes:
 Parece que no tiene problemas en descargarse el fichero de javasript pero el tipo MIME no es el correcto. Vamos a comprobar el comportamiento atacando al Ingress Controller:
 
 ```console
-[kubeadmin@master 2048-game]$ curl -I -H 'Host: game.bar' 'http://192.168.1.110:30432/js/bind_polyfill.js'
+[kubeadmin@kubemaster 2048-game]$ curl -I -H 'Host: game.bar' 'http://192.168.1.110:30432/js/bind_polyfill.js'
 HTTP/1.1 200 OK
 server: nginx/1.18.0
 date: Tue, 02 Feb 2021 23:56:22 GMT
@@ -730,7 +730,7 @@ last-modified: Tue, 02 Feb 2021 20:09:38 GMT
 etag: "6019b182-fe5"
 accept-ranges: bytes
 
-[kubeadmin@master 2048-game]$ 
+[kubeadmin@kubemaster 2048-game]$ 
 ```
 
 Efectivamente, vemos que se descarga bien, pero el tipo MIME debería ser **application/javascript**.
@@ -738,7 +738,7 @@ Efectivamente, vemos que se descarga bien, pero el tipo MIME debería ser **appl
 Vamos a atacar al endpoint interno a ver cual es el resultado:
 
 ```console
-[kubeadmin@master 2048-game]$ kubectl describe ingress game --namespace=game
+[kubeadmin@kubemaster 2048-game]$ kubectl describe ingress game --namespace=game
 Name:             game
 Namespace:        game
 Address:          
@@ -750,7 +750,7 @@ Rules:
               /   game-service:80 (192.169.112.37:80)
 Annotations:  haproxy.org/path-rewrite: /
 Events:       <none>
-[kubeadmin@master 2048-game]$ curl -I -H 'Host: game.bar' 'http://192.169.112.37:80/js/bind_polyfill.js'
+[kubeadmin@kubemaster 2048-game]$ curl -I -H 'Host: game.bar' 'http://192.169.112.37:80/js/bind_polyfill.js'
 HTTP/1.1 200 OK
 Server: nginx/1.18.0
 Date: Tue, 02 Feb 2021 23:58:23 GMT
@@ -761,7 +761,7 @@ Connection: keep-alive
 ETag: "6019814e-dc"
 Accept-Ranges: bytes
 
-[kubeadmin@master 2048-game]$ 
+[kubeadmin@kubemaster 2048-game]$ 
 ```
 
 Vemos que, sin embargo, desde el enpoint interno el tipo MIME es el correcto. Luego en el Ingress Controller parece que se están resescribiendo las cabeceras.
@@ -769,7 +769,7 @@ Vemos que, sin embargo, desde el enpoint interno el tipo MIME es el correcto. Lu
 Vamos a conectarlos al Ingress Controller y ver la configuración para comprobar si hay alguna directiva que reescriba o fuerce las cabeceras:
 
 ```console
-[kubeadmin@master 2048-game]$ kubectl exec --stdin --tty haproxy-ingress-67f7c8b555-j7qdp --namespace=haproxy-controller -- /bin/sh
+[kubeadmin@kubemaster 2048-game]$ kubectl exec --stdin --tty haproxy-ingress-67f7c8b555-j7qdp --namespace=haproxy-controller -- /bin/sh
 / $ cat /etc/haproxy/haproxy.cfg | grep -i header
   http-request set-header X-Forwarded-Proto https
 / $ cat /etc/haproxy/haproxy.cfg | grep -i mime
@@ -807,16 +807,16 @@ spec:
 Vemos que tenemos un rewrite, [path-rewrite](https://www.haproxy.com/documentation/kubernetes/1.4.5/configuration/ingress/), que reescribe la URL. Como es la única reescritura que hemos encontrado vamos a probar a eliminarla y relanzar el despliegue utilizando [game.yaml](2048-game/game.yaml):
 
 ```console
-[kubeadmin@master 2048-game]$ kubectl delete namespace game
+[kubeadmin@kubemaster 2048-game]$ kubectl delete namespace game
 namespace "game" deleted
-[kubeadmin@master 2048-game]$ kubectl create namespace game
+[kubeadmin@kubemaster 2048-game]$ kubectl create namespace game
 namespace/game created
-[kubeadmin@master 2048-game]$ kubectl apply -f game.yaml 
+[kubeadmin@kubemaster 2048-game]$ kubectl apply -f game.yaml 
 deployment.apps/game created
 service/game-service created
 ingress.networking.k8s.io/game created
 configmap/haproxy-configmap created
-[kubeadmin@master 2048-game]$ 
+[kubeadmin@kubemaster 2048-game]$ 
 ```
 
 > ![INFORMATION](../imgs/information-icon.png) [Annotations](https://kubernetes.io/es/docs/concepts/overview/working-with-objects/annotations/)
@@ -826,7 +826,7 @@ configmap/haproxy-configmap created
 Ataquemos al Ingress Controller y al enpoint interno a ver si hay cambios:
 
 ```console
-[kubeadmin@master 2048-game]$ curl -I -H 'Host: game.bar' 'http://192.168.1.110:30432/js/bind_polyfill.js'
+[kubeadmin@kubemaster 2048-game]$ curl -I -H 'Host: game.bar' 'http://192.168.1.110:30432/js/bind_polyfill.js'
 HTTP/1.1 200 OK
 server: nginx/1.18.0
 date: Wed, 03 Feb 2021 00:07:07 GMT
@@ -836,7 +836,7 @@ last-modified: Tue, 02 Feb 2021 16:43:58 GMT
 etag: "6019814e-dc"
 accept-ranges: bytes
 
-[kubeadmin@master 2048-game]$ kubectl describe ep game-service --namespace=game
+[kubeadmin@kubemaster 2048-game]$ kubectl describe ep game-service --namespace=game
 Name:         game-service
 Namespace:    game
 Labels:       <none>
@@ -850,7 +850,7 @@ Subsets:
     http  80    TCP
 
 Events:  <none>
-[kubeadmin@master 2048-game]$ curl -I -H 'Host: game.bar' 'http://192.169.112.38:80/js/bind_polyfill.js'
+[kubeadmin@kubemaster 2048-game]$ curl -I -H 'Host: game.bar' 'http://192.169.112.38:80/js/bind_polyfill.js'
 HTTP/1.1 200 OK
 Server: nginx/1.18.0
 Date: Wed, 03 Feb 2021 00:08:51 GMT
@@ -861,7 +861,7 @@ Connection: keep-alive
 ETag: "6019814e-dc"
 Accept-Ranges: bytes
 
-[kubeadmin@master 2048-game]$ 
+[kubeadmin@kubemaster 2048-game]$ 
 ```
 
 Esta vez vemos que los tipos MIME si son correctos. Probemos a conectarnos con el navegador:

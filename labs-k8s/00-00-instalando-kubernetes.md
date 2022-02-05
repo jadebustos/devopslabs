@@ -18,9 +18,9 @@ Suponiendo que la red en la que vamos a desplegarlas es la **192.168.1.0/24** co
 | Nombre | IP |
 |------|------|
 | nfs.acme.es  | 192.168.1.115/24 |
-| master.acme.es | 192.168.1.110/24 | 
-| worker01.acme.es | 192.168.1.111/24 | 
-| worker02.acme.es | 192.168.1.112/24 | 
+| kubemaster.acme.es | 192.168.1.110/24 | 
+| kubenode1.acme.es | 192.168.1.111/24 | 
+| kubenode2.acme.es | 192.168.1.112/24 | 
 
 El fichero de configuración del interface de red **/etc/sysconfig/network-script/ifcfg-enp1s0**:
 
@@ -241,10 +241,10 @@ success
 Para verificar que el nodo master y los workers ven el share por nfs podemos ejecutar en cada uno de ellos:
 
 ```console
-[root@master ~]# showmount -e 192.168.1.115
+[root@kubemaster ~]# showmount -e 192.168.1.115
 Export list for 192.168.1.115:
 /srv/nfs 192.168.1.112,192.168.1.111,192.168.1.110
-[root@master ~]# 
+[root@kubemaster ~]# 
 ```
 
 ## Tareas comunes a realizar en el nodo master y los workers
@@ -252,9 +252,9 @@ Export list for 192.168.1.115:
 Configura resolución DNS si dispones de un servidor DNS. Si no dispones de uno siempre puedes incluir en el fichero **/etc/hosts** las siguientes líneas:
 
 ```
-192.168.1.110 master master.acme.es
-192.168.1.111 worker01 worker01.acme.es
-192.168.1.112 worker02 worker02.acme.es5
+192.168.1.110 kubemaster kubemaster.acme.es
+192.168.1.111 kubenode1 kubenode1.acme.es
+192.168.1.112 kubenode2 kubenode2.acme.es5
 192.168.1.115 nfs nfs.acme.es
 ```
 
@@ -457,17 +457,17 @@ Created symlink /etc/systemd/system/multi-user.target.wants/kubelet.service → 
 Configuramos el firewall para acceder a los servicios de kubernetes:
 
 ```console
-[root@master ~]# firewall-cmd --permanent --add-port=6443/tcp
+[root@kubemaster ~]# firewall-cmd --permanent --add-port=6443/tcp
 success
-[root@master ~]# firewall-cmd --permanent --add-port=2379-2380/tcp
+[root@kubemaster ~]# firewall-cmd --permanent --add-port=2379-2380/tcp
 success
-[root@master ~]# firewall-cmd --permanent --add-port=10250-10252/tcp
+[root@kubemaster ~]# firewall-cmd --permanent --add-port=10250-10252/tcp
 success
-[root@master ~]# firewall-cmd --permanent --add-port=10255/tcp
+[root@kubemaster ~]# firewall-cmd --permanent --add-port=10255/tcp
 success
-[root@master ~]# firewall-cmd --reload
+[root@kubemaster ~]# firewall-cmd --reload
 success
-[root@master ~]# 
+[root@kubemaster ~]# 
 ```
 
 | Protocol | Direction | Port Range | Purpose | Used by |
@@ -484,7 +484,7 @@ success
 Configuramos **kudeadm**:
 
 ```console
-[root@master ~]# kubeadm config images pull
+[root@kubemaster ~]# kubeadm config images pull
 [config/images] Pulled k8s.gcr.io/kube-apiserver:v1.20.2
 [config/images] Pulled k8s.gcr.io/kube-controller-manager:v1.20.2
 [config/images] Pulled k8s.gcr.io/kube-scheduler:v1.20.2
@@ -492,18 +492,18 @@ Configuramos **kudeadm**:
 [config/images] Pulled k8s.gcr.io/pause:3.2
 [config/images] Pulled k8s.gcr.io/etcd:3.4.13-0
 [config/images] Pulled k8s.gcr.io/coredns:1.7.0
-[root@master ~]# 
+[root@kubemaster ~]# 
 ```
 Permitiremos el acceso desde los workers:
 
 ```console
-[root@master ~]# firewall-cmd --permanent --add-rich-rule 'rule family=ipv4 source address=192.168.1.111/32 accept'
+[root@kubemaster ~]# firewall-cmd --permanent --add-rich-rule 'rule family=ipv4 source address=192.168.1.111/32 accept'
 success
-[root@master ~]# firewall-cmd --permanent --add-rich-rule 'rule family=ipv4 source address=192.168.1.112/32 accept'
+[root@kubemaster ~]# firewall-cmd --permanent --add-rich-rule 'rule family=ipv4 source address=192.168.1.112/32 accept'
 success
-[root@master ~]# firewall-cmd --reload
+[root@kubemaster ~]# firewall-cmd --reload
 success
-[root@master ~]
+[root@kubemaster ~]
 ```
 
 > ![IMPORTANT](../imgs/important-icon.png) Esto no es una buena práctica. En un entorno en producción deberíamos permitir únicamente el tráfico necesario y no todo el tráfico entre el master y los workers.
@@ -511,7 +511,7 @@ success
 <!-- Permitimos el acceso de los contenedores a localhost: 
 
 ```console
-[root@master ~]# ip a
+[root@kubemaster ~]# ip a
 1: lo: <LOOPBACK,UP,LOWER_UP> mtu 65536 qdisc noqueue state UNKNOWN group default qlen 1000
     link/loopback 00:00:00:00:00:00 brd 00:00:00:00:00:00
     inet 127.0.0.1/8 scope host lo
@@ -528,17 +528,17 @@ success
     link/ether 02:42:58:7f:3f:fc brd ff:ff:ff:ff:ff:ff
     inet 172.17.0.1/16 brd 172.17.255.255 scope global docker0
        valid_lft forever preferred_lft forever
-[root@master ~]# firewall-cmd --zone=public --permanent --add-rich-rule 'rule family=ipv4 source address=172.17.0.0/16 accept'
+[root@kubemaster ~]# firewall-cmd --zone=public --permanent --add-rich-rule 'rule family=ipv4 source address=172.17.0.0/16 accept'
 success
-[root@master ~]# firewall-cmd --reload
+[root@kubemaster ~]# firewall-cmd --reload
 success
-[root@master ~]#
+[root@kubemaster ~]#
 ``` -->
 
 Instalamos el plugin CNI (Container Network Interface) de kubernetes y definimos la red de los PODs:
 
 ```console
-[root@master ~]# kubeadm init --pod-network-cidr 192.169.0.0/16
+[root@kubemaster ~]# kubeadm init --pod-network-cidr 192.169.0.0/16
 [init] Using Kubernetes version: v1.20.2
 [preflight] Running pre-flight checks
 ...
@@ -566,7 +566,7 @@ Then you can join any number of worker nodes by running the following on each as
 
 kubeadm join 192.168.1.110:6443 --token gmk4le.8gsfpknu99k78qut \
     --discovery-token-ca-cert-hash sha256:d2cd35c9ab95f4061aa9d9b993f7e8742b2307516a3632b27ea10b64baf8cd71 
-[root@master ~]# ip a
+[root@kubemaster ~]# ip a
 1: lo: <LOOPBACK,UP,LOWER_UP> mtu 65536 qdisc noqueue state UNKNOWN group default qlen 1000
     link/loopback 00:00:00:00:00:00 brd 00:00:00:00:00:00
     inet 127.0.0.1/8 scope host lo
@@ -595,7 +595,7 @@ kubeadm join 192.168.1.110:6443 --token gmk4le.8gsfpknu99k78qut \
     link/ether 32:a7:14:6c:6f:5d brd ff:ff:ff:ff:ff:ff link-netns 8a1d4ca7-d884-42f3-8c48-4aeea11de70f
     inet6 fe80::30a7:14ff:fe6c:6f5d/64 scope link
        valid_lft forever preferred_lft forever
-[root@master ~]#
+[root@kubemaster ~]#
 ```
 
 > ![IMPORTANT](../imgs/important-icon.png) Guarda el comando kubeadm ya que lo necesitarás para unir los workers al clúster.
@@ -611,19 +611,19 @@ En este caso la red que hemos configurado para los pods es de Clase C con una ca
 Para que el usuario **root** pueda utilizar **kubectl** para operar el cluster bastaría con ejecutar:
 
 ```console
-[root@master ~]# export KUBECONFIG=/etc/kubernetes/admin.conf
+[root@kubemaster ~]# export KUBECONFIG=/etc/kubernetes/admin.conf
 ```
 
 Vamos a autorizar al usuario **root** acceder al cluster para terminar la configuración de la forma habitual con la que lo haremos para el resto de usuarios:
 
 ```console
-[root@master ~]# mkdir -p /root/.kube
-[root@master ~]# cp -i /etc/kubernetes/admin.conf /root/.kube/config
-[root@master ~]# chown $(id -u):$(id -g) /root/.kube/config
-[root@master ~]# kubectl get nodes
+[root@kubemaster ~]# mkdir -p /root/.kube
+[root@kubemaster ~]# cp -i /etc/kubernetes/admin.conf /root/.kube/config
+[root@kubemaster ~]# chown $(id -u):$(id -g) /root/.kube/config
+[root@kubemaster ~]# kubectl get nodes
 NAME             STATUS     ROLES                  AGE     VERSION
-master.acme.es   NotReady   control-plane,master   9m49s   v1.20.2
-[root@master ~]# 
+kubemaster.acme.es   NotReady   control-plane,master   9m49s   v1.20.2
+[root@kubemaster ~]# 
 ```
 
 Vemos que se muestra como **NotReady**. Eso es debido a que no hemos desplegado la red para los PODs todavía.
@@ -658,7 +658,7 @@ service/haproxy-kubernetes-ingress created
 Se crea un namespace para el ingress controller:
 
 ```console
-[root@master ~]# kubectl get namespaces
+[root@kubemaster ~]# kubectl get namespaces
 NAME                 STATUS   AGE
 calico-apiserver     Active   7m4s
 calico-system        Active   8m40s
@@ -668,17 +668,17 @@ kube-node-lease      Active   10m
 kube-public          Active   10m
 kube-system          Active   10m
 tigera-operator      Active   8m56s
-[root@master ~]# kubectl get pods --namespace=haproxy-controller
+[root@kubemaster ~]# kubectl get pods --namespace=haproxy-controller
 NAME                                                          READY   STATUS    RESTARTS   AGE
 haproxy-kubernetes-ingress-54f9b477b9-g5tgw                   1/1     Running   0          63s
 haproxy-kubernetes-ingress-default-backend-6b7ddb86b9-2l5p7   1/1     Running   0          64s
-[root@master ~]#  
+[root@kubemaster ~]#  
 ```
 
 Vemos los servicios:
 
 ```console
-[root@master ~]# kubectl get svc -A
+[root@kubemaster ~]# kubectl get svc -A
 NAMESPACE            NAME                                         TYPE        CLUSTER-IP       EXTERNAL-IP   PORT(S)                                     AGE
 calico-apiserver     calico-api                                   ClusterIP   10.96.81.40      <none>        443/TCP                                     7m19s
 calico-system        calico-kube-controllers-metrics              ClusterIP   10.103.77.126    <none>        9094/TCP                                    8m18s
@@ -687,7 +687,7 @@ default              kubernetes                                   ClusterIP   10
 haproxy-controller   haproxy-kubernetes-ingress                   NodePort    10.97.114.101    <none>        80:30031/TCP,443:32302/TCP,1024:32122/TCP   70s
 haproxy-controller   haproxy-kubernetes-ingress-default-backend   ClusterIP   10.110.181.233   <none>        8080/TCP                                    72s
 kube-system          kube-dns                                     ClusterIP   10.96.0.10       <none>        53/UDP,53/TCP,9153/TCP                      10m
-[root@master ~]# 
+[root@kubemaster ~]# 
 ```
 
 Según lo anterior tenemos:
@@ -705,17 +705,17 @@ Según lo anterior tenemos:
 Lo primero que tenemos que hacer en los workers es abrir los puertos:
 
 ```console
-[root@worker0X ~]# firewall-cmd --zone=public --permanent --add-port={10250,30000-32767}/tcp
+[root@kubenodeX ~]# firewall-cmd --zone=public --permanent --add-port={10250,30000-32767}/tcp
 success
-[root@worker0X ~]# firewall-cmd --reload
+[root@kubenodeX ~]# firewall-cmd --reload
 success
-[root@worker0X ~]#
+[root@kubenodeX ~]#
 ```
 
 Ahora para unirse al clúster tendremos que ejecutar en los nodos el comando de **kubeadm** que nos produjo la ejecución de **kubadmin init**:
 
 ```console
-[root@worker0X ~]# kubeadm join 192.168.1.110:6443 --token gmk4le.8gsfpknu99k78qut --discovery-token-ca-cert-hash sha256:d2cd35c9ab95f4061aa9d9b993f7e8742b2307516a3632b27ea10b64baf8cd71 
+[root@kubenodeX ~]# kubeadm join 192.168.1.110:6443 --token gmk4le.8gsfpknu99k78qut --discovery-token-ca-cert-hash sha256:d2cd35c9ab95f4061aa9d9b993f7e8742b2307516a3632b27ea10b64baf8cd71 
 ...
 
 This node has joined the cluster:
@@ -724,7 +724,7 @@ This node has joined the cluster:
 
 Run 'kubectl get nodes' on the control-plane to see this node join the cluster.
 
-[root@worker0X ~]# 
+[root@kubenodeX ~]# 
 ```
 
 > ![TIP](../imgs/tip-icon.png) Si tenemos un clúster ya desplegado y queremos añadir un nuevo nodo deberemos seguir el siguiente [procedimiento](00-03-añadiendo-nodos.md).
@@ -732,40 +732,40 @@ Run 'kubectl get nodes' on the control-plane to see this node join the cluster.
 Puede llevar unos minutos que los workers aparezcan como **Ready**:
 
 ```console
-[root@master ~]# kubectl get nodes
+[root@kubemaster ~]# kubectl get nodes
 NAME                   STATUS   ROLES                  AGE   VERSION
-kubemaster.jadbp.lab   Ready    control-plane,master   36m   v1.23.3
-kubenode1.jadbp.lab    Ready    <none>                 12m   v1.23.3
-kubenode2.jadbp.lab    Ready    <none>                 12m   v1.23.3
-[root@master ~]# kubectl get pods -A -o wide
+kubemaster.acme.es   Ready    control-plane,master   36m   v1.23.3
+kubenode1.acme.es    Ready    <none>                 12m   v1.23.3
+kubenode2.acme.es    Ready    <none>                 12m   v1.23.3
+[root@kubemaster ~]# kubectl get pods -A -o wide
 NAMESPACE            NAME                                                          READY   STATUS    RESTARTS        AGE   IP               NODE                   NOMINATED NODE   READINESS GATES
-calico-apiserver     calico-apiserver-7b7b5f846c-5992j                             1/1     Running   1               22h   192.169.203.70   kubemaster.jadbp.lab   <none>           <none>
-calico-apiserver     calico-apiserver-7b7b5f846c-gsf2z                             1/1     Running   1               22h   192.169.203.71   kubemaster.jadbp.lab   <none>           <none>
-calico-system        calico-kube-controllers-77c48f5f64-j5dhm                      1/1     Running   1               22h   192.169.203.69   kubemaster.jadbp.lab   <none>           <none>
-calico-system        calico-node-j8lbf                                             1/1     Running   1               22h   192.168.1.161    kubenode1.jadbp.lab    <none>           <none>
-calico-system        calico-node-rtnlm                                             1/1     Running   1               22h   192.168.1.162    kubenode2.jadbp.lab    <none>           <none>
-calico-system        calico-node-w2csz                                             1/1     Running   2 (3h55m ago)   22h   192.168.1.160    kubemaster.jadbp.lab   <none>           <none>
-calico-system        calico-typha-86749877d5-dbn4m                                 1/1     Running   2 (3h56m ago)   22h   192.168.1.162    kubenode2.jadbp.lab    <none>           <none>
-calico-system        calico-typha-86749877d5-rfg85                                 1/1     Running   2               22h   192.168.1.160    kubemaster.jadbp.lab   <none>           <none>
-haproxy-controller   haproxy-kubernetes-ingress-54f9b477b9-g5tgw                   1/1     Running   1               22h   192.169.62.3     kubenode1.jadbp.lab    <none>           <none>
-haproxy-controller   haproxy-kubernetes-ingress-default-backend-6b7ddb86b9-2l5p7   1/1     Running   1               22h   192.169.62.4     kubenode1.jadbp.lab    <none>           <none>
-kube-system          coredns-64897985d-qdqmx                                       1/1     Running   1               22h   192.169.203.67   kubemaster.jadbp.lab   <none>           <none>
-kube-system          coredns-64897985d-xc46v                                       1/1     Running   1               22h   192.169.203.68   kubemaster.jadbp.lab   <none>           <none>
-kube-system          etcd-kubemaster.jadbp.lab                                     1/1     Running   1               22h   192.168.1.160    kubemaster.jadbp.lab   <none>           <none>
-kube-system          kube-apiserver-kubemaster.jadbp.lab                           1/1     Running   1               22h   192.168.1.160    kubemaster.jadbp.lab   <none>           <none>
-kube-system          kube-controller-manager-kubemaster.jadbp.lab                  1/1     Running   2 (3h57m ago)   22h   192.168.1.160    kubemaster.jadbp.lab   <none>           <none>
-kube-system          kube-proxy-k52m6                                              1/1     Running   1               22h   192.168.1.161    kubenode1.jadbp.lab    <none>           <none>
-kube-system          kube-proxy-pk99j                                              1/1     Running   1               22h   192.168.1.160    kubemaster.jadbp.lab   <none>           <none>
-kube-system          kube-proxy-wqkrw                                              1/1     Running   1               22h   192.168.1.162    kubenode2.jadbp.lab    <none>           <none>
-kube-system          kube-scheduler-kubemaster.jadbp.lab                           1/1     Running   1               22h   192.168.1.160    kubemaster.jadbp.lab   <none>           <none>
-tigera-operator      tigera-operator-59fc55759-w9pbq                               1/1     Running   2 (3h56m ago)   22h   192.168.1.160    kubemaster.jadbp.lab   <none>           <none>
-[root@master ~]# 
+calico-apiserver     calico-apiserver-7b7b5f846c-5992j                             1/1     Running   1               22h   192.169.203.70   kubemaster.acme.es   <none>           <none>
+calico-apiserver     calico-apiserver-7b7b5f846c-gsf2z                             1/1     Running   1               22h   192.169.203.71   kubemaster.acme.es   <none>           <none>
+calico-system        calico-kube-controllers-77c48f5f64-j5dhm                      1/1     Running   1               22h   192.169.203.69   kubemaster.acme.es   <none>           <none>
+calico-system        calico-node-j8lbf                                             1/1     Running   1               22h   192.168.1.161    kubenode1.acme.es    <none>           <none>
+calico-system        calico-node-rtnlm                                             1/1     Running   1               22h   192.168.1.162    kubenode2.acme.es    <none>           <none>
+calico-system        calico-node-w2csz                                             1/1     Running   2 (3h55m ago)   22h   192.168.1.160    kubemaster.acme.es   <none>           <none>
+calico-system        calico-typha-86749877d5-dbn4m                                 1/1     Running   2 (3h56m ago)   22h   192.168.1.162    kubenode2.acme.es    <none>           <none>
+calico-system        calico-typha-86749877d5-rfg85                                 1/1     Running   2               22h   192.168.1.160    kubemaster.acme.es   <none>           <none>
+haproxy-controller   haproxy-kubernetes-ingress-54f9b477b9-g5tgw                   1/1     Running   1               22h   192.169.62.3     kubenode1.acme.es    <none>           <none>
+haproxy-controller   haproxy-kubernetes-ingress-default-backend-6b7ddb86b9-2l5p7   1/1     Running   1               22h   192.169.62.4     kubenode1.acme.es    <none>           <none>
+kube-system          coredns-64897985d-qdqmx                                       1/1     Running   1               22h   192.169.203.67   kubemaster.acme.es   <none>           <none>
+kube-system          coredns-64897985d-xc46v                                       1/1     Running   1               22h   192.169.203.68   kubemaster.acme.es   <none>           <none>
+kube-system          etcd-kubemaster.acme.es                                     1/1     Running   1               22h   192.168.1.160    kubemaster.acme.es   <none>           <none>
+kube-system          kube-apiserver-kubemaster.acme.es                           1/1     Running   1               22h   192.168.1.160    kubemaster.acme.es   <none>           <none>
+kube-system          kube-controller-manager-kubemaster.acme.es                  1/1     Running   2 (3h57m ago)   22h   192.168.1.160    kubemaster.acme.es   <none>           <none>
+kube-system          kube-proxy-k52m6                                              1/1     Running   1               22h   192.168.1.161    kubenode1.acme.es    <none>           <none>
+kube-system          kube-proxy-pk99j                                              1/1     Running   1               22h   192.168.1.160    kubemaster.acme.es   <none>           <none>
+kube-system          kube-proxy-wqkrw                                              1/1     Running   1               22h   192.168.1.162    kubenode2.acme.es    <none>           <none>
+kube-system          kube-scheduler-kubemaster.acme.es                           1/1     Running   1               22h   192.168.1.160    kubemaster.acme.es   <none>           <none>
+tigera-operator      tigera-operator-59fc55759-w9pbq                               1/1     Running   2 (3h56m ago)   22h   192.168.1.160    kubemaster.acme.es   <none>           <none>
+[root@kubemaster ~]# 
 ```
 
 En los workers:
 
 ```console
-[root@worker01 ~]# ip a
+[root@kubenode1 ~]# ip a
 1: lo: <LOOPBACK,UP,LOWER_UP> mtu 65536 qdisc noqueue state UNKNOWN group default qlen 1000
     link/loopback 00:00:00:00:00:00 brd 00:00:00:00:00:00
     inet 127.0.0.1/8 scope host lo
@@ -792,11 +792,11 @@ En los workers:
        valid_lft forever preferred_lft forever
     inet6 fe80::647a:75ff:feb8:d064/64 scope link 
        valid_lft forever preferred_lft forever
-[root@worker01 ~]# 
+[root@kubenode1 ~]# 
 ```
 
 ```console
-[root@worker02 ~]# ip a
+[root@kubenode2 ~]# ip a
 1: lo: <LOOPBACK,UP,LOWER_UP> mtu 65536 qdisc noqueue state UNKNOWN group default qlen 1000
     link/loopback 00:00:00:00:00:00 brd 00:00:00:00:00:00
     inet 127.0.0.1/8 scope host lo
@@ -815,13 +815,13 @@ En los workers:
        valid_lft forever preferred_lft forever
     inet6 fe80::6406:ddff:fe29:b87a/64 scope link 
        valid_lft forever preferred_lft forever
-[root@worker02 ~]# 
+[root@kubenode2 ~]# 
 ```
 
 En el nodo2 hacemos ping a la ip configurada en el interface **vxlan.calico** del nodo 1:
 
 ```console
-[root@worker02 ~]# ping 192.169.62.0
+[root@kubenode2 ~]# ping 192.169.62.0
 PING 192.169.62.0 (192.169.62.0) 56(84) bytes of data.
 64 bytes from 192.169.62.0: icmp_seq=1 ttl=64 time=0.559 ms
 64 bytes from 192.169.62.0: icmp_seq=2 ttl=64 time=0.510 ms
@@ -839,7 +839,7 @@ PING 192.169.62.0 (192.169.62.0) 56(84) bytes of data.
 --- 192.169.62.0 ping statistics ---
 4 packets transmitted, 4 received, 0% packet loss, time 3057ms
 rtt min/avg/max/mdev = 0.388/0.550/0.752/0.160 ms
-[root@worker02 ~]# 
+[root@kubenode2 ~]# 
 ```
 
 ## Creamos un usuario no administrador
@@ -847,18 +847,18 @@ rtt min/avg/max/mdev = 0.388/0.550/0.752/0.160 ms
 Creamos un usuario no administrador para la gestión del clúster:
 
 ```console
-[root@master ~]# useradd -md /home/kubeadmin kubeadmin
-[root@master ~]# passwd kubeadmin
+[root@kubemaster ~]# useradd -md /home/kubeadmin kubeadmin
+[root@kubemaster ~]# passwd kubeadmin
 Changing password for user kubeadmin.
 New password: 
 BAD PASSWORD: The password is shorter than 8 characters
 Retype new password: 
 passwd: all authentication tokens updated successfully.
-[root@master ~]# mkdir -p /home/kubeadmin/.kube
-[root@master ~]# cp -i /etc/kubernetes/admin.conf /home/kubeadmin/.kube/config
-[root@master ~]# chown kubeadmin. /home/kubeadmin/.kube/config
-[root@master ~]# cat <<EOF > /etc/sudoers.d/kubeadmin
+[root@kubemaster ~]# mkdir -p /home/kubeadmin/.kube
+[root@kubemaster ~]# cp -i /etc/kubernetes/admin.conf /home/kubeadmin/.kube/config
+[root@kubemaster ~]# chown kubeadmin. /home/kubeadmin/.kube/config
+[root@kubemaster ~]# cat <<EOF > /etc/sudoers.d/kubeadmin
 > ALL            ALL = (ALL) NOPASSWD: ALL
 > EOF
-[root@master ~]# 
+[root@kubemaster ~]# 
 ```

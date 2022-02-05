@@ -3,7 +3,7 @@
 Revisando la configuración:
 
 ```console
-[kubeadmin@master first-routed-webapp]$ kubectl config view
+[kubeadmin@kubemaster first-routed-webapp]$ kubectl config view
 apiVersion: v1
 clusters:
 - cluster:
@@ -23,7 +23,7 @@ users:
   user:
     client-certificate-data: REDACTED
     client-key-data: REDACTED
-[kubeadmin@master first-routed-webapp]$ 
+[kubeadmin@kubemaster first-routed-webapp]$ 
 ```
 
 ## Namespaces
@@ -31,7 +31,7 @@ users:
 Los namespaces se utilizarán para "aislar" los PODs:
 
 ```console
-[kubeadmin@master k8slab]$ kubectl get namespaces
+[kubeadmin@kubemaster k8slab]$ kubectl get namespaces
 NAME                 STATUS   AGE
 calico-system        Active   44m
 default              Active   58m
@@ -40,7 +40,7 @@ kube-node-lease      Active   58m
 kube-public          Active   58m
 kube-system          Active   58m
 tigera-operator      Active   48m
-[kubeadmin@master k8slab]$
+[kubeadmin@kubemaster k8slab]$
 ```
 
 Los namespaces nos dan un espacio donde crear recursos y se utilizan para aislar usuarios y que cada usuario o grupo de usuario pueda desplegar sus contenedores de forma aislada con el resto.
@@ -56,53 +56,53 @@ Un pod es la unidad mínima de elementos que podemos desplegar.
 Un POD puede estar formado por uno o varios contenedores.
 
 ```console
-[kubeadmin@master k8slab]$ kubectl get pods
+[kubeadmin@kubemaster k8slab]$ kubectl get pods
 No resources found in default namespace.
-[kubeadmin@master k8slab]$
+[kubeadmin@kubemaster k8slab]$
 ```
 
 Para ver los pods de un namespace:
 
 ```console
-[kubeadmin@master k8slab]$ kubectl get pods --namespace=kube-system
+[kubeadmin@kubemaster k8slab]$ kubectl get pods --namespace=kube-system
 NAME                                       READY   STATUS    RESTARTS   AGE
 coredns-74ff55c5b-5cp24                  1/1     Running   0          58m
 coredns-74ff55c5b-w68pg                  1/1     Running   0          58m
-etcd-master.acme.es                      1/1     Running   1          58m
-kube-apiserver-master.acme.es            1/1     Running   1          58m
-kube-controller-manager-master.acme.es   1/1     Running   1          58m
+etcd-kubemaster.acme.es                      1/1     Running   1          58m
+kube-apiserver-kubemaster.acme.es            1/1     Running   1          58m
+kube-controller-manager-kubemaster.acme.es   1/1     Running   1          58m
 kube-proxy-bm6fs                         1/1     Running   0          34m
 kube-proxy-cd2xq                         1/1     Running   0          34m
 kube-proxy-fftw7                         1/1     Running   1          58m
-kube-scheduler-master.acme.es            1/1     Running   1          58m
-[kubeadmin@master k8slab]$ 
+kube-scheduler-kubemaster.acme.es            1/1     Running   1          58m
+[kubeadmin@kubemaster k8slab]$ 
 ```
 
 Con **-A** podemos ver la lista de objetos a lo largo de todos los namespaces y con **-o wide** podemos sacar más información:
 
 ```console
-[kubeadmin@master k8slab]$ kubectl get pods -A -o wide
+[kubeadmin@kubemaster k8slab]$ kubectl get pods -A -o wide
 NAMESPACE     NAME                                       READY   STATUS    RESTARTS   AGE   IP              NODE               NOMINATED NODE   READINESS GATES
-calico-system        calico-kube-controllers-546d44f5b7-szm8j   1/1     Running   0          45m     192.169.121.67   master.acme.es     <none>           <none>
-calico-system        calico-node-dltbq                          1/1     Running   0          45m     192.168.1.110    master.acme.es     <none>           <none>
-calico-system        calico-node-h86k4                          1/1     Running   0          35m     192.168.1.112    worker02.acme.es   <none>           <none>
-calico-system        calico-node-xkxgw                          1/1     Running   0          35m     192.168.1.111    worker01.acme.es   <none>           <none>
-calico-system        calico-typha-5698b66ddc-5dbxs              1/1     Running   0          45m     192.168.1.110    master.acme.es     <none>           <none>
-calico-system        calico-typha-5698b66ddc-6nzxw              1/1     Running   0          34m     192.168.1.111    worker01.acme.es   <none>           <none>
-calico-system        calico-typha-5698b66ddc-lsj8t              1/1     Running   0          34m     192.168.1.112    worker02.acme.es   <none>           <none>
-haproxy-controller   haproxy-ingress-67f7c8b555-j7qdp           1/1     Running   0          8m44s   192.169.22.1     worker02.acme.es   <none>           <none>
-haproxy-controller   ingress-default-backend-78f5cc7d4c-jzfk8   1/1     Running   0          8m46s   192.169.112.1    worker01.acme.es   <none>           <none>
-kube-system          coredns-74ff55c5b-5cp24                    1/1     Running   0          59m     192.169.121.65   master.acme.es     <none>           <none>
-kube-system          coredns-74ff55c5b-w68pg                    1/1     Running   0          59m     192.169.121.66   master.acme.es     <none>           <none>
-kube-system          etcd-master.acme.es                        1/1     Running   1          59m     192.168.1.110    master.acme.es     <none>           <none>
-kube-system          kube-apiserver-master.acme.es              1/1     Running   1          59m     192.168.1.110    master.acme.es     <none>           <none>
-kube-system          kube-controller-manager-master.acme.es     1/1     Running   1          59m     192.168.1.110    master.acme.es     <none>           <none>
-kube-system          kube-proxy-bm6fs                           1/1     Running   0          35m     192.168.1.112    worker02.acme.es   <none>           <none>
-kube-system          kube-proxy-cd2xq                           1/1     Running   0          35m     192.168.1.111    worker01.acme.es   <none>           <none>
-kube-system          kube-proxy-fftw7                           1/1     Running   1          59m     192.168.1.110    master.acme.es     <none>           <none>
-kube-system          kube-scheduler-master.acme.es              1/1     Running   1          59m     192.168.1.110    master.acme.es     <none>           <none>
-tigera-operator      tigera-operator-657cc89589-wqgd6           1/1     Running   0          48m     192.168.1.110    master.acme.es     <none>           <none>
-[kubeadmin@master k8slab]$
+calico-system        calico-kube-controllers-546d44f5b7-szm8j   1/1     Running   0          45m     192.169.121.67   kubemaster.acme.es     <none>           <none>
+calico-system        calico-node-dltbq                          1/1     Running   0          45m     192.168.1.110    kubemaster.acme.es     <none>           <none>
+calico-system        calico-node-h86k4                          1/1     Running   0          35m     192.168.1.112    kubenode2.acme.es   <none>           <none>
+calico-system        calico-node-xkxgw                          1/1     Running   0          35m     192.168.1.111    kubenode1.acme.es   <none>           <none>
+calico-system        calico-typha-5698b66ddc-5dbxs              1/1     Running   0          45m     192.168.1.110    kubemaster.acme.es     <none>           <none>
+calico-system        calico-typha-5698b66ddc-6nzxw              1/1     Running   0          34m     192.168.1.111    kubenode1.acme.es   <none>           <none>
+calico-system        calico-typha-5698b66ddc-lsj8t              1/1     Running   0          34m     192.168.1.112    kubenode2.acme.es   <none>           <none>
+haproxy-controller   haproxy-ingress-67f7c8b555-j7qdp           1/1     Running   0          8m44s   192.169.22.1     kubenode2.acme.es   <none>           <none>
+haproxy-controller   ingress-default-backend-78f5cc7d4c-jzfk8   1/1     Running   0          8m46s   192.169.112.1    kubenode1.acme.es   <none>           <none>
+kube-system          coredns-74ff55c5b-5cp24                    1/1     Running   0          59m     192.169.121.65   kubemaster.acme.es     <none>           <none>
+kube-system          coredns-74ff55c5b-w68pg                    1/1     Running   0          59m     192.169.121.66   kubemaster.acme.es     <none>           <none>
+kube-system          etcd-kubemaster.acme.es                        1/1     Running   1          59m     192.168.1.110    kubemaster.acme.es     <none>           <none>
+kube-system          kube-apiserver-kubemaster.acme.es              1/1     Running   1          59m     192.168.1.110    kubemaster.acme.es     <none>           <none>
+kube-system          kube-controller-manager-kubemaster.acme.es     1/1     Running   1          59m     192.168.1.110    kubemaster.acme.es     <none>           <none>
+kube-system          kube-proxy-bm6fs                           1/1     Running   0          35m     192.168.1.112    kubenode2.acme.es   <none>           <none>
+kube-system          kube-proxy-cd2xq                           1/1     Running   0          35m     192.168.1.111    kubenode1.acme.es   <none>           <none>
+kube-system          kube-proxy-fftw7                           1/1     Running   1          59m     192.168.1.110    kubemaster.acme.es     <none>           <none>
+kube-system          kube-scheduler-kubemaster.acme.es              1/1     Running   1          59m     192.168.1.110    kubemaster.acme.es     <none>           <none>
+tigera-operator      tigera-operator-657cc89589-wqgd6           1/1     Running   0          48m     192.168.1.110    kubemaster.acme.es     <none>           <none>
+[kubeadmin@kubemaster k8slab]$
 ```
 
 > ![INFORMATION](../imgs/information-icon.png) [PODs](https://kubernetes.io/docs/concepts/workloads/pods/)
@@ -112,7 +112,7 @@ tigera-operator      tigera-operator-657cc89589-wqgd6           1/1     Running 
 Definimos de forma declarativa como se debe desplegar un POD.
 
 ```console
-[kubeadmin@master k8slab]$ kubectl get deployment -A -o wide
+[kubeadmin@kubemaster k8slab]$ kubectl get deployment -A -o wide
 NAMESPACE     NAME                      READY   UP-TO-DATE   AVAILABLE   AGE   CONTAINERS                IMAGES                                      SELECTOR
 calico-system        calico-kube-controllers   1/1     1            1           46m    calico-kube-controllers   docker.io/calico/kube-controllers:v3.17.1     k8s-app=calico-kube-controllers
 calico-system        calico-typha              3/3     3            3           46m    calico-typha              docker.io/calico/typha:v3.17.1                k8s-app=calico-typha
@@ -120,7 +120,7 @@ haproxy-controller   haproxy-ingress           1/1     1            1           
 haproxy-controller   ingress-default-backend   1/1     1            1           9m9s   ingress-default-backend   gcr.io/google_containers/defaultbackend:1.0   run=ingress-default-backend
 kube-system          coredns                   2/2     2            2           59m    coredns                   k8s.gcr.io/coredns:1.7.0                      k8s-app=kube-dns
 tigera-operator      tigera-operator           1/1     1            1           49m    tigera-operator           quay.io/tigera/operator:v1.13.2               name=tigera-operator
-[kubeadmin@master k8slab]$
+[kubeadmin@kubemaster k8slab]$
 ```
 
 > ![INFORMATION](../imgs/information-icon.png) [Deployments](https://kubernetes.io/docs/concepts/workloads/controllers/deployment/)
@@ -130,11 +130,11 @@ tigera-operator      tigera-operator           1/1     1            1           
 Son un tipo especial de deployment, cada vez que se añada un nodo al clúster los pods definidos como **DaemonSet** se desplegarán de forma automática en el nodo:
 
 ```console
-[kubeadmin@master k8slab]$ kubectl get daemonset -A
+[kubeadmin@kubemaster k8slab]$ kubectl get daemonset -A
 NAMESPACE     NAME          DESIRED   CURRENT   READY   UP-TO-DATE   AVAILABLE   NODE SELECTOR            AGE
 calico-system   calico-node   3         3         3       3            3           kubernetes.io/os=linux   46m
 kube-system     kube-proxy    3         3         3       3            3           kubernetes.io/os=linux   60m
-[kubeadmin@master k8slab]$ 
+[kubeadmin@kubemaster k8slab]$ 
 ```
 
 > ![INFORMATION](../imgs/information-icon.png) [DaemonSet](https://kubernetes.io/docs/concepts/workloads/controllers/daemonset/)
@@ -144,7 +144,7 @@ kube-system     kube-proxy    3         3         3       3            3        
 Podemos obtener información de cualquier objeto con el verbo **describe** indicando el tipo de objeto, el nombre y el namespace donde reside:
 
 ```console
-[kubeadmin@master k8slab]$ kubectl describe deployment coredns --namespace=kube-system
+[kubeadmin@kubemaster k8slab]$ kubectl describe deployment coredns --namespace=kube-system
 Name:                   coredns
 Namespace:              kube-system
 CreationTimestamp:      Mon, 25 Jan 2021 06:09:24 +0100
@@ -193,7 +193,7 @@ Events:
   Type    Reason             Age   From                   Message
   ----    ------             ----  ----                   -------
   Normal  ScalingReplicaSet  60m   deployment-controller  Scaled up replica set coredns-74ff55c5b to 2
-[kubeadmin@master k8slab]$ 
+[kubeadmin@kubemaster k8slab]$ 
 ```
 
 ## Obteniendo el yaml de un objeto
@@ -201,7 +201,7 @@ Events:
 Podemos obtener el yaml de cualquier objeto con el verbo **get** indicando el tipo de objeto, el nombre, el namespace donde reside e indicando el formato de salida **-o yaml**:
 
 ```console
-[kubeadmin@master k8slab]$ kubectl get deployment coredns --namespace=kube-system -o yaml
+[kubeadmin@kubemaster k8slab]$ kubectl get deployment coredns --namespace=kube-system -o yaml
 metadata:
   annotations:
     deployment.kubernetes.io/revision: "1"
@@ -229,7 +229,7 @@ status:
   readyReplicas: 2
   replicas: 2
   updatedReplicas: 2
-[kubeadmin@master k8slab]$  
+[kubeadmin@kubemaster k8slab]$  
 ```
 
 > ![HOMEWORK](../imgs/homework-icon.png) También podemos utilizar **-o json**.
