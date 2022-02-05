@@ -321,8 +321,9 @@ Para permitir que kubernetes maneje correctamente el tráfico con el cortafuegos
 
 ```console
 [root@host ~]# cat <<EOF > /etc/sysctl.d/k8s.conf
-> net.bridge.bridge-nf-call-ip6tables = 1
-> net.bridge.bridge-nf-call-iptables = 1
+net.bridge.bridge-nf-call-ip6tables = 1
+net.bridge.bridge-nf-call-iptables  = 1
+net.ipv4.ip_forward                 = 1
 > EOF
 [root@host ~]# sysctl --system
 ...
@@ -392,27 +393,35 @@ UUID=35d72d21-6f35-4e52-ac4d-523a28ac5b5d /boot                   xfs     defaul
 
 > ![INFORMATION](../imgs/information-icon.png) [Kubernetes ha deprecado docker](https://kubernetes.io/blog/2020/12/02/dont-panic-kubernetes-and-docker/) y desaparecerá en futuras versiones.
 
-> ![INFORMATION](../imgs/information-icon.png) Instalamos la última versión de docker testeada para kubernetes. La podemos ver en el fichero de [dependencias](https://github.com/kubernetes/kubernetes/blob/master/build/dependencies.yaml) para compilar kubernetes. En este caso:
->
->  ```yaml
->    # Docker
->    - name: "docker"
->      version: 20.10
->      refPaths:
->      - path: vendor/k8s.io/system-validators/validators/docker_validator.go
->        match: latestValidatedDockerVersion
->  ```
-
-Instalamos docker que será el engine para ejecutar contenedores:
+Instalamos [CRI-O](https://cri-o.io/) que será el engine para ejecutar contenedores. Configuramos los repositorios:
 
 ```console
-[root@host ~]# dnf config-manager --add-repo=https://download.docker.com/linux/centos/docker-ce.repo
-Adding repo from: https://download.docker.com/linux/centos/docker-ce.repo
-[root@host ~]# dnf install docker-ce-20.10.6-3.el8 -y
+[root@host ~]# wget -O /etc/yum.repos.d/devel:kubic:libcontainers:stable.repo https://download.opensuse.org/repositories/devel:/kubic:/libcontainers:/stable/CentOS_8_Stream/devel:kubic:libcontainers:stable.repo 
 ...
-[root@host ~]# systemctl enable docker
-Created symlink /etc/systemd/system/multi-user.target.wants/docker.service → /usr/lib/systemd/system/docker.service.
-[root@host ~]# systemctl start docker
+[root@host ~]# wget -O /etc/yum.repos.d/devel:kubic:libcontainers:stable:cri-o:1.23:1.23.0.repo https://download.opensuse.org/repositories/devel:kubic:libcontainers:stable:cri-o:1.23:1.23.0/CentOS_8_Stream/devel:kubic:libcontainers:stable:cri-o:1.23:1.23.0.repo
+...
+[root@host ~]#
+```
+
+Configuramos los modulos del kernel necesarios para **CRI-O**:
+
+```console
+[root@host ~]#  cat <<EOF > /etc/modules-load.d/crio.conf
+> overlay
+> br_netfilter
+> EOF
+[root@host ~]# 
+```
+
+Instalamos **CRI-O**. Activamos y arrancamos el servicio:
+
+```console
+[root@host ~]# dnf install cri-o -y
+---
+[root@host ~]# systemctl enable cri-o
+...
+[root@host ~]# systemctl start cri-o
+...
 [root@host ~]#
 ```
 

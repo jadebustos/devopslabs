@@ -1,4 +1,4 @@
-# Desplegando una apliación balanceada
+# Desplegando una aplicación balanceada
 
 Desplegaremos una aplicación balanceada.
 
