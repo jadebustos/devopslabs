@@ -13,7 +13,7 @@ Se debe entregar **ÚNICAMENTE** un informe en PDF que contenga la siguiente inf
 * Si no se ha podido solucionar algún problema, se debe analizar y describir el proceso de troubleshooting que se ha realizado. Indicar conclusiones y posibles soluciones.
 * En el informe **NO** se debe incluir información técnica sobre el código entregado.
 * El objetivo del informe es que **un cliente** a partir del repositorio de código y con el informe sea capaz de realizar el despliegue de kubernetes en el cloud provider, junto con la aplicación a desplegar y acceder a ella.
-* Se deberá crear un Anexo incluyendo las siguientes captura de pantallas:
+* Se deberá crear un Anexo incluyendo las siguientes captura de pantallas (las capturas que se incluyen son ejemplos orientativos, la información no tiene por que corresponder con el despliegue que haga cada alumno):
 
   * Captura de la sección de **Resources** de Azure mostrando **TODOS** los recursos creados. Si es necesario incluir varias caputas.
 
