@@ -12,8 +12,8 @@ Para ello si conocemos el nombre podemos recuperar la información del objeto:
     "addIns": [],
     "alternativeNames": [],
     "appDisplayName": "azure-cli-2022-02-09-17-22-31",
-    "appId": "308e57e8-a253-455e-9bf1-6c24f94d8801",
-    "appOwnerTenantId": "22c8b4a4-d926-43b2-bcc7-87b998590b47",
+    "appId": "308e57e8-a253-455e-6xf1-6c24f94d8801",
+    "appOwnerTenantId": "22c8b4c4-d926-4ab6-bac7-87b798590b47",
     "appRoleAssignmentRequired": false,
     "appRoles": [],
     "applicationTemplateId": null,
@@ -49,12 +49,12 @@ Para ello si conocemos el nombre podemos recuperar la información del objeto:
     "preferredSingleSignOnMode": null,
     "preferredTokenSigningKeyEndDateTime": null,
     "preferredTokenSigningKeyThumbprint": null,
-    "publisherName": "UNIR",
+    "publisherName": "XXXX",
     "replyUrls": [],
     "samlMetadataUrl": null,
     "samlSingleSignOnSettings": null,
     "servicePrincipalNames": [
-      "308e57e8-a253-455e-9bf1-6c24f94d8801"
+      "308e57e8-a253-455e-6xf1-6c24f94d8801"
     ],
     "servicePrincipalType": "Application",
     "signInAudience": "AzureADMyOrg",
