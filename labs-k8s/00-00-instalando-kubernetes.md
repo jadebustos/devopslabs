@@ -91,107 +91,6 @@ Instalamos los siguientes paquetes:
 
 Este servidor lo utilizaremos para ofrecer almacenamiento al cluster de kubernetes.
 
-Lo primero que haremos será configurar el NFS, para ello identificaremos el disco de datos en el sistema:
-
-```console
-[root@nfs ~]# lsblk
-NAME        MAJ:MIN RM SIZE RO TYPE MOUNTPOINT
-vda         252:0    0  20G  0 disk 
-├─vda1      252:1    0   1G  0 part /boot
-└─vda2      252:2    0  19G  0 part 
-  ├─cs-root 253:0    0  17G  0 lvm  /
-  └─cs-swap 253:1    0   2G  0 lvm  [SWAP]
-vdb         252:16   0  10G  0 disk 
-[root@nfs ~]# 
-```
-
-Añadir un disco para datos no es necesario, pero es buena práctica el tener los datos separados del sistema operativo. Si vamos a servir pocos documentos por NFS no sería necesario añadir un disco adicional.
-
-El disco para datos será **/dev/vdb**.
-
-Vamos a crear un VG (volume group) y LV (logical volume) ya que si en un futuro es necesario ampliar el espacio lo podremos hacer de una forma rápida, fácil y transparente:
-
-```console
-[root@nfs ~]# pvcreate /dev/vdb
-  Physical volume "/dev/vdb" successfully created.
-[root@nfs ~]# vgcreate data_vg /dev/vdb
-  Volume group "data_vg" successfully created
-[root@nfs ~]# vgdisplay data_vg
-  --- Volume group ---
-  VG Name               data_vg
-  System ID             
-  Format                lvm2
-  Metadata Areas        1
-  Metadata Sequence No  1
-  VG Access             read/write
-  VG Status             resizable
-  MAX LV                0
-  Cur LV                0
-  Open LV               0
-  Max PV                0
-  Cur PV                1
-  Act PV                1
-  VG Size               <10.00 GiB
-  PE Size               4.00 MiB
-  Total PE              2559
-  Alloc PE / Size       0 / 0   
-  Free  PE / Size       2559 / <10.00 GiB
-  VG UUID               8P6gNC-n3cC-9px1-Lq1P-CV5c-JRiF-rwrKfs
-
-   
-[root@nfs ~]# lvcreate -l+2559 -n nfs_lv /dev/data_vg
-  Logical volume "nfs_lv" created.
-[root@nfs ~]# lvs
-  LV     VG      Attr       LSize   Pool Origin Data%  Meta%  Move Log Cpy%Sync Convert
-  root   cs      -wi-ao---- <17.00g                                                    
-  swap   cs      -wi-ao----   2.00g                                                    
-  nfs_lv data_vg -wi-a----- <10.00g                                                    
-[root@nfs ~]# 
-```
-
-Ahora que tenemos creado el logical volume vamos a crear el filesystem de tipo XFS:
-
-```console
-[root@nfs ~]# mkfs.xfs /dev/data_vg/nfs_lv 
-meta-data=/dev/data_vg/nfs_lv    isize=512    agcount=4, agsize=655104 blks
-         =                       sectsz=512   attr=2, projid32bit=1
-         =                       crc=1        finobt=1, sparse=1, rmapbt=0
-         =                       reflink=1
-data     =                       bsize=4096   blocks=2620416, imaxpct=25
-         =                       sunit=0      swidth=0 blks
-naming   =version 2              bsize=4096   ascii-ci=0, ftype=1
-log      =internal log           bsize=4096   blocks=2560, version=2
-         =                       sectsz=512   sunit=0 blks, lazy-count=1
-realtime =none                   extsz=4096   blocks=0, rtextents=0
-Discarding blocks...Done.
-[root@nfs ~]# 
-```
-
-Ahora crearemos el punto de montaje e incluiremos a este logical volume en **/etc/fstab** para que se monte en los inicios de la VM:
-
-```console
-[root@nfs ~]# mkdir /srv/nfs
-[root@nfs ~]# echo "/dev/data_vg/nfs_lv        /srv/nfs                xfs     defaults        0 0" >> /etc/fstab
-[root@nfs ~]# 
-```
-
-Para comprobar que la configuración de montaje del sistema de ficheros es correcta si ejecutamos **mount -a** deberemos ver el sistema de ficheros montado:
-
-```console
-[root@nfs ~]# mount -a
-[root@nfs ~]# df -hP
-Filesystem                  Size  Used Avail Use% Mounted on
-devtmpfs                    1.9G     0  1.9G   0% /dev
-tmpfs                       1.9G     0  1.9G   0% /dev/shm
-tmpfs                       1.9G  8.6M  1.9G   1% /run
-tmpfs                       1.9G     0  1.9G   0% /sys/fs/cgroup
-/dev/mapper/cs-root          17G  1.8G   16G  11% /
-/dev/vda1                  1014M  401M  614M  40% /boot
-tmpfs                       374M     0  374M   0% /run/user/0
-/dev/mapper/data_vg-nfs_lv   10G  104M  9.9G   2% /srv/nfs
-[root@nfs ~]# 
-```
-
 Instalamos los paquetes de NFS y arrancamos el servicio:
 
 ```console
@@ -203,15 +102,40 @@ Created symlink /etc/systemd/system/multi-user.target.wants/nfs-server.service �
 [root@nfs ~]# 
 ```
 
+Lo siguiente será compartir un directorio para exportar por NFS, para ello creamos un directorio:
+
+```console
+[root@nfs ~]# mkdir /srv/nfs
+[root@nfs ~]#
+```
+
 Ahora tendremos que configurar el acceso al share de NFS de tal forma que el fichero **/etc/exports** sea como el que se muestra cambiando las ips por las de nuestros master y workers:
 
 ```console
 [root@nfs ~]# cat /etc/exports 
-/srv/nfs	192.168.1.110(rw,sync)
-/srv/nfs	192.168.1.111(rw,sync)
-/srv/nfs	192.168.1.112(rw,sync)
+# master
+/srv/nfs	192.168.1.110(rw,sync) 
+# worker01
+/srv/nfs	192.168.1.111(rw,sync) 
+# worker02
+/srv/nfs	192.168.1.112(rw,sync) 
 [root@nfs ~]# 
 ```
+
+> ![TIP](../imgs/tip-icon.png) En este caso el directorio que hemos creado se encontrará en el sistema de ficheros root donde hay 16 GB libres.
+>
+> ```console
+> [root@nfs ~]# df -hP
+> Filesystem                  Size  Used Avail Use% Mounted on
+> devtmpfs                    1.9G     0  1.9G   0% /dev
+> tmpfs                       1.9G     0  1.9G   0% /dev/shm
+> tmpfs                       1.9G  8.6M  1.9G   1% /run
+> tmpfs                       1.9G     0  1.9G   0% /sys/fs/cgroup
+> /dev/mapper/cs-root          17G  1.8G   16G  11% /
+> /dev/vda1                  1014M  401M  614M  40% /boot
+> tmpfs                       374M     0  374M   0% /run/user/0
+> [root@nfs ~]# 
+> ```
 
 Releemos el fichero **/etc/exports** para aplicar la nueva configuración:
 
@@ -247,6 +171,8 @@ Export list for 192.168.1.115:
 [root@kubemaster ~]# 
 ```
 
+> ![TIP](../imgs/tip-icon.png) Añadir un disco para datos no es necesario, pero es buena práctica el tener los datos separados del sistema operativo. Si vamos a servir pocos documentos por NFS no sería necesario añadir un disco adicional. Pero en caso contrario se añade un disco adicional, se crea un filesystem y se monta en el directorio que vamos a exportar.
+
 ## Tareas comunes a realizar en el nodo master y los workers
 
 Configura resolución DNS si dispones de un servidor DNS. Si no dispones de uno siempre puedes incluir en el fichero **/etc/hosts** las siguientes líneas:
@@ -254,7 +180,7 @@ Configura resolución DNS si dispones de un servidor DNS. Si no dispones de uno 
 ```
 192.168.1.110 kubemaster kubemaster.acme.es
 192.168.1.111 kubenode1 kubenode1.acme.es
-192.168.1.112 kubenode2 kubenode2.acme.es5
+192.168.1.112 kubenode2 kubenode2.acme.es
 192.168.1.115 nfs nfs.acme.es
 ```
 
@@ -371,8 +297,8 @@ Ahora es necesario también eliminar la línea del fichero **/etc/fstab** que mo
 /dev/mapper/cs-root     /                       xfs     defaults        0 0
 UUID=35d72d21-6f35-4e52-ac4d-523a28ac5b5d /boot                   xfs     defaults        0 0
 /dev/mapper/cs-swap     none                    swap    defaults        0 0
-# sed -i '/swap/d' /etc/fstab
-# cat /etc/fstab 
+[root@host ~]# sed -i '/swap/d' /etc/fstab
+[root@host ~]# cat /etc/fstab 
 
 #
 # /etc/fstab
