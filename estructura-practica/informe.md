@@ -15,9 +15,11 @@ Se debe entregar **ÚNICAMENTE** un informe en PDF que contenga la siguiente inf
 * El objetivo del informe es que **un cliente** a partir del repositorio de código y con el informe sea capaz de realizar el despliegue de kubernetes en el cloud provider, junto con la aplicación a desplegar y acceder a ella.
 * Se deberá crear un Anexo incluyendo las siguientes captura de pantallas (las capturas que se incluyen son ejemplos orientativos, la información no tiene por que corresponder con el despliegue que haga cada alumno):
 
-  * Captura de la sección de **Resources** de Azure mostrando **TODOS** los recursos creados. Si es necesario incluir varias caputas.
+  * Captura de la sección de **Recursos** creados Azure mostrando **TODOS** los recursos creados. Si es necesario incluir varias caputas.
 
   ![](../imgs/azure-resources.png)
+
+  ![](../imgs/azure-resources-2.png)
 
   * Captura del portal de Azure mostrando el direccionamiento público asinado a cada servidor:
 
