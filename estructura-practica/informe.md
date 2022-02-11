@@ -23,7 +23,9 @@ Se debe entregar **ÚNICAMENTE** un informe en PDF que contenga la siguiente inf
 
   * Captura del portal de Azure mostrando el direccionamiento público asinado a cada servidor:
 
-  **INCLUIR IMAGEN**
+  ![](../imgs/azure-master-ip.png)
+
+  ![](../imgs/azure-worker-ip.png)
 
   * Captura de la salida del comando:
 
