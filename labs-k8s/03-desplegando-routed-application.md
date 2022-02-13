@@ -5,6 +5,8 @@
 Junto con el deployment definimos un servicio en el fichero [first-routed-webapp.yaml](first-routed-webapp/first-routed-webapp.yaml):
 
 ```yaml
+
+---
 apiVersion: apps/v1
 kind: Deployment
 metadata:
@@ -30,7 +32,7 @@ spec:
         readinessProbe:
           httpGet:
             path: /
-            port: 80
+            port: 80 
           initialDelaySeconds: 5
           periodSeconds: 5
           successThreshold: 1
@@ -61,11 +63,11 @@ namespace/webapp-routed created
 deployment.apps/webapp-routed created
 service/webapp-service created
 [kubeadmin@kubemaster first-routed-app]$ kubectl get pods --namespace=webapp-routed -o wide
-NAME                             READY   STATUS    RESTARTS   AGE   IP               NODE               NOMINATED NODE   READINESS GATES
-webapp-routed-865bc5c6b4-fdqzv   0/1     Running   0          9s    192.169.112.7   kubenode1.acme.es   <none>           <none>
+NAME                             READY   STATUS    RESTARTS   AGE   IP              NODE                NOMINATED NODE   READINESS GATES
+webapp-routed-54b7b66f9b-6zb9r   1/1     Running   0          12s   192.169.232.4   kubenode1.acme.es   <none>           <none>
 [kubeadmin@kubemaster first-routed-app]$ kubectl get svc --namespace=webapp-routed -o wide
-NAME             TYPE        CLUSTER-IP     EXTERNAL-IP   PORT(S)   AGE     SELECTOR
-webapp-service   ClusterIP   10.100.141.193   <none>        80/TCP    22s   app=webapp-routed
+NAME             TYPE        CLUSTER-IP      EXTERNAL-IP   PORT(S)   AGE   SELECTOR
+webapp-service   ClusterIP   10.109.18.232   <none>        80/TCP    33s   app=webapp-routed
 [kubeadmin@kubemaster first-routed-app]$ kubectl describe svc webapp-service --namespace=webapp-routed
 Name:              webapp-service
 Namespace:         webapp-routed
@@ -73,12 +75,13 @@ Labels:            <none>
 Annotations:       <none>
 Selector:          app=webapp-routed
 Type:              ClusterIP
-IP Families:       <none>
-IP:                10.100.141.193
-IPs:               10.100.141.193
+IP Family Policy:  SingleStack
+IP Families:       IPv4
+IP:                10.109.18.232
+IPs:               10.109.18.232
 Port:              http  80/TCP
 TargetPort:        80/TCP
-Endpoints:         192.169.112.7:80
+Endpoints:         192.169.232.4:80
 Session Affinity:  None
 Events:            <none>
 [kubeadmin@kubemaster first-routed-app]$ 
@@ -119,10 +122,11 @@ Desplegamos el ingress:
 [kubeadmin@kubemaster first-routed-app]$ kubectl apply -f ingress.yaml
 ingress.networking.k8s.io/webapp-ingress created
 [kubeadmin@kubemaster first-routed-app]$ kubectl get ingress --namespace=webapp-routed
-NAME             CLASS    HOSTS   ADDRESS   PORTS   AGE
-webapp-ingress   <none>   foo.bar             80      7s
+NAME             CLASS    HOSTS     ADDRESS   PORTS   AGE
+webapp-ingress   <none>   foo.bar             80      12s
 [kubeadmin@kubemaster first-routed-app]$ kubectl describe ingress webapp-ingress --namespace=webapp-routed
 Name:             webapp-ingress
+Labels:           app=webapp-routed
 Namespace:        webapp-routed
 Address:          
 Default backend:  default-http-backend:80 (<error: endpoints "default-http-backend" not found>)
@@ -130,7 +134,7 @@ Rules:
   Host        Path  Backends
   ----        ----  --------
   foo.bar     
-              /webapp   webapp-service:80 (192.169.112.7:80)
+              /webapp-routed   webapp-service:80 (192.169.232.4:80)
 Annotations:  haproxy.org/path-rewrite: /
 Events:       <none>
 
@@ -141,15 +145,15 @@ Comprobamos el endpoint:
 
 ```console
 [kubeadmin@kubemaster first-routed-app]$ kubectl get ep --namespace=webapp-routed
-NAME             ENDPOINTS           AGE
-webapp-service   192.169.112.7:80   16m
+NAME             ENDPOINTS          AGE
+webapp-service   192.169.232.4:80   2m19s
 [kubeadmin@kubemaster first-routed-app]$ kubectl describe ep webapp-service --namespace=webapp-routed
 Name:         webapp-service
 Namespace:    webapp-routed
 Labels:       <none>
-Annotations:  endpoints.kubernetes.io/last-change-trigger-time: 2021-01-25T06:41:00Z
+Annotations:  endpoints.kubernetes.io/last-change-trigger-time: 2022-02-13T23:38:47Z
 Subsets:
-  Addresses:          192.169.112.7
+  Addresses:          192.169.232.4
   NotReadyAddresses:  <none>
   Ports:
     Name  Port  Protocol
@@ -163,6 +167,7 @@ Events:  <none>
 Definimos un ConfigMap en el fichero [configmap.yaml](first-routed-webapp/configmap.yaml):
 
 ```yaml
+---
 apiVersion: v1
 kind: ConfigMap
 metadata:
@@ -185,20 +190,20 @@ Comprobamos que es accesible desde fuera:
 
 ```console
 [kubeadmin@kubemaster first-routed-webapp]$ kubectl get svc --namespace=haproxy-controller
-NAME                      TYPE        CLUSTER-IP       EXTERNAL-IP   PORT(S)                                     AGE
-haproxy-ingress           NodePort    10.103.225.131   <none>        80:30432/TCP,443:31967/TCP,1024:31588/TCP   58m
-ingress-default-backend   ClusterIP   10.96.170.15     <none>        8080/TCP                                    58m
+NAME                                         TYPE        CLUSTER-IP       EXTERNAL-IP   PORT(S)                                     AGE
+haproxy-kubernetes-ingress                   NodePort    10.104.187.186   <none>        80:31826/TCP,443:30886/TCP,1024:31734/TCP   69m
+haproxy-kubernetes-ingress-default-backend   ClusterIP   10.103.195.4     <none>        8080/TCP                                    69m
 [kubeadmin@kubemaster first-routed-webapp]$ 
 ```
 
-Tenemos que el puerto **30432** del master se encuentra mapeado al **80** de los contenedores, luego si desde una máquina que no sea el master hacemos:
+Tenemos que el puerto **31826** del master se encuentra mapeado al **80** de los contenedores, luego si desde una máquina que no sea el master hacemos:
 
 ```console
-[jadebustos@archimedes ~]$ curl -I -H 'Host: foo.bar' 'http://192.168.1.110:30432/webapp-routed'
+[jadebustos@archimedes ~]$ curl -I -H 'Host: foo.bar' 'http://192.168.1.110:31826/webapp-routed'
 HTTP/1.1 200 OK
-date: Mon, 25 Jan 2021 07:11:50 GMT
+date: Sun, 13 Feb 2022 23:43:13 GMT
 server: Apache/2.4.38 (Debian)
-x-powered-by: PHP/7.4.14
+x-powered-by: PHP/7.4.20
 content-type: text/html; charset=UTF-8
 
 [jadebustos@archimedes ~]$
@@ -206,7 +211,7 @@ content-type: text/html; charset=UTF-8
 
 Como obtenemos un código **HTTP/1.1 200 OK** ya estaría accesible desde el exterior.
 
-Si hacemos resolver **foo.bar** a la dirección ip del mater **192.168.1.110** podremos acceder a nuestra aplicación accediendo a **http://<span></span>foo.bar:30432/webapp**.
+Si hacemos resolver **foo.bar** a la dirección ip del mater **192.168.1.110** podremos acceder a nuestra aplicación accediendo a **http://<span></span>foo.bar:31826/webapp**.
 
 > ![INFORMATION](../imgs/information-icon.png) [Service](https://kubernetes.io/docs/concepts/services-networking/service/)
 
@@ -220,9 +225,10 @@ El ingress controller se encarga de enrutar el tráfico, nos conectamos al ingre
 
 ```console
 [kubeadmin@kubemaster ~]$ kubectl get pods -A -o wide | grep haproxy
-haproxy-controller     haproxy-ingress-67f7c8b555-j7qdp             1/1     Running   1          6h8m    192.169.22.2     kubenode2.acme.es   <none>           <none>
-haproxy-controller     ingress-default-backend-78f5cc7d4c-jzfk8     1/1     Running   1          6h8m    192.169.112.11   kubenode1.acme.es   <none>           <none>
-[kubeadmin@kubemaster ~]$ kubectl exec --stdin --tty haproxy-ingress-67f7c8b555-j7qdp --namespace=haproxy-controller -- /bin/sh
+haproxy-controller   haproxy-kubernetes-ingress-54f9b477b9-tnq4r                   1/1     Running   0          70m     192.169.49.66   kubenode2.acme.es    <none>           <none>
+haproxy-controller   haproxy-kubernetes-ingress-default-backend-6b7ddb86b9-qztwc   1/1     Running   0          70m     192.169.49.65   kubenode2.acme.es    <none>           <none>
+[kubeadmin@kubemaster ~]$ kubectl exec --stdin --tty haproxy-kubernetes-ingress-54f9b477b9-tnq4r --namespace=haproxy-controller -- /bin/sh
+Defaulted container "haproxy-ingress" out of: haproxy-ingress, sysctl (init)
 / $ 
 ```
 
@@ -230,44 +236,48 @@ Veamos la configuración del **haproxy**:
 
 ```console
 / $ cd /etc/haproxy/
-/etc/haproxy $ ls -lh
-total 12K    
-drwxr-xr-x    5 haproxy  haproxy       47 Jan 25 09:14 certs
-drwxr-xr-x    2 haproxy  haproxy        6 Jan 25 09:14 errors
--rw-r--r--    1 haproxy  haproxy    10.5K Jan 25 09:40 haproxy.cfg
-drwxr-xr-x    2 haproxy  haproxy       82 Jan 25 09:14 maps
-drwxr-xr-x    2 haproxy  haproxy        6 Jan 25 09:40 transactions
-/etc/haproxy $ 
+/usr/local/etc/haproxy $ ls -lh
+total 8K     
+drwxr-xr-x    5 haproxy  haproxy       47 Feb 13 22:33 certs
+-rwxrwxr--    1 haproxy  haproxy        0 Jan 11 11:22 dataplaneapi.hcl
+drwxr-xr-x    2 haproxy  haproxy        6 Feb 13 22:33 errorfiles
+drwxrwxr-x    1 root     haproxy      132 Jan 11 11:22 errors
+-rw-rw-r--    1 haproxy  haproxy        0 Feb 13 22:33 haproxy-aux.cfg
+-rw-r--r--    1 haproxy  haproxy     7.3K Feb 13 23:40 haproxy.cfg
+drwxr-xr-x    2 haproxy  haproxy       82 Feb 13 22:33 maps
+drwxr-xr-x    2 haproxy  haproxy        6 Feb 13 22:33 patterns
 ```
 
 Dentro del fichero **haproxy.cfg** tendremos la siguiente configuración:
 
 ```
-backend webapp-routed-webapp-service-80 
-  mode http
-  balance roundrobin
-  option forwardfor
-  server SRV_1 192.169.112.10:80 check weight 128
-  server SRV_2 127.0.0.1:80 disabled check weight 128
+backend webapp-routed-webapp-service-http
+  mode http                           
+  balance roundrobin                                           
+  option forwardfor                                                                 
+  no option abortonclose                                                                                                                     
+  default-server check                                                                                             
+  server SRV_1 192.169.232.4:80 enabled                                                                                                                      
+  server SRV_2 127.0.0.1:80 disabled         
 ...
-  server SRV_40 127.0.0.1:80 disabled check weight 128
-  server SRV_41 127.0.0.1:80 disabled check weight 128
-  server SRV_42 127.0.0.1:80 disabled check weight 128
+  server SRV_40 127.0.0.1:80 disabled                              
+  server SRV_41 127.0.0.1:80 disabled  
+  server SRV_42 127.0.0.1:80 disabled
 ```
 
 Esta redireccionando las peticiones hacía la dirección del endpoint definido en el ingress que creamos para la aplicación:
 
 ```console
 [kubeadmin@kubemaster ~]$ kubectl get ep webapp-service --namespace=webapp-routed
-NAME             ENDPOINTS           AGE
-webapp-service   192.169.112.10:80   5h22m
+NAME             ENDPOINTS          AGE
+webapp-service   192.169.232.4:80   8m6s
 [kubeadmin@kubemaster ~]$ kubectl describe ep webapp-service --namespace=webapp-routed
 Name:         webapp-service
 Namespace:    webapp-routed
 Labels:       <none>
-Annotations:  endpoints.kubernetes.io/last-change-trigger-time: 2021-01-25T09:13:42Z
+Annotations:  endpoints.kubernetes.io/last-change-trigger-time: 2022-02-13T23:38:47Z
 Subsets:
-  Addresses:          192.169.112.10
+  Addresses:          192.169.232.4
   NotReadyAddresses:  <none>
   Ports:
     Name  Port  Protocol
@@ -275,6 +285,7 @@ Subsets:
     http  80    TCP
 
 Events:  <none>
+
 [kubeadmin@kubemaster ~]$  
 ```
 
