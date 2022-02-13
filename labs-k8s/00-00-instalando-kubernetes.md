@@ -510,12 +510,20 @@ kubemaster.acme.es   NotReady   control-plane,master   9m49s   v1.20.2
 
 Vemos que se muestra como **NotReady**. Eso es debido a que no hemos desplegado la red para los PODs todavía.
 
-## Instalando la SDN (Calico)
+## Instalando la SDN
 
 Ahora es necesario instalar una SDN para que los pods puedan comunicarse. Se proporcionan dos métodos:
 
 + Instalación de [Calico](00-01-sdn-calico.md).
 + Instalación de [SDN en Azure](00-02-sdn-azure.md).
+
+Después de desplegar la SDN veremos algo como esto:
+
+![](../imgs/pod-network-crio.png)
+
+Si nos fijamos aunque hemos inicializado la red de pods como **192.169.1.0/16** no vemos direccionamientos de estas redes. Sin embargo, vemos direccionamientos **10.85.0.X**. Este direccionamiento es asignados a los pods por el engine de contenedores, en este caso **CRI-O**. Llegados a este caso deberemos reiniciar el master para que las IPs a los pods las asigne la SDN que hemos desplegado:
+
+![](../imgs/pod-network-sdn.png)
 
 ## Desplegando un ingress controller
 
@@ -542,18 +550,17 @@ Se crea un namespace para el ingress controller:
 ```console
 [root@kubemaster ~]# kubectl get namespaces
 NAME                 STATUS   AGE
-calico-apiserver     Active   7m4s
-calico-system        Active   8m40s
-default              Active   10m
-haproxy-controller   Active   58s
-kube-node-lease      Active   10m
-kube-public          Active   10m
-kube-system          Active   10m
-tigera-operator      Active   8m56s
+calico-system        Active   53m
+default              Active   55m
+haproxy-controller   Active   26m
+kube-node-lease      Active   56m
+kube-public          Active   56m
+kube-system          Active   56m
+tigera-operator      Active   55m
 [root@kubemaster ~]# kubectl get pods --namespace=haproxy-controller
 NAME                                                          READY   STATUS    RESTARTS   AGE
-haproxy-kubernetes-ingress-54f9b477b9-g5tgw                   1/1     Running   0          63s
-haproxy-kubernetes-ingress-default-backend-6b7ddb86b9-2l5p7   1/1     Running   0          64s
+haproxy-kubernetes-ingress-54f9b477b9-tnq4r                   1/1     Running   0          27m
+haproxy-kubernetes-ingress-default-backend-6b7ddb86b9-qztwc   1/1     Running   0          27m
 [root@kubemaster ~]#  
 ```
 
@@ -562,21 +569,20 @@ Vemos los servicios:
 ```console
 [root@kubemaster ~]# kubectl get svc -A
 NAMESPACE            NAME                                         TYPE        CLUSTER-IP       EXTERNAL-IP   PORT(S)                                     AGE
-calico-apiserver     calico-api                                   ClusterIP   10.96.81.40      <none>        443/TCP                                     7m19s
-calico-system        calico-kube-controllers-metrics              ClusterIP   10.103.77.126    <none>        9094/TCP                                    8m18s
-calico-system        calico-typha                                 ClusterIP   10.111.7.105     <none>        5473/TCP                                    8m55s
-default              kubernetes                                   ClusterIP   10.96.0.1        <none>        443/TCP                                     10m
-haproxy-controller   haproxy-kubernetes-ingress                   NodePort    10.97.114.101    <none>        80:30031/TCP,443:32302/TCP,1024:32122/TCP   70s
-haproxy-controller   haproxy-kubernetes-ingress-default-backend   ClusterIP   10.110.181.233   <none>        8080/TCP                                    72s
-kube-system          kube-dns                                     ClusterIP   10.96.0.10       <none>        53/UDP,53/TCP,9153/TCP                      10m
+calico-system        calico-kube-controllers-metrics              ClusterIP   10.110.61.65     <none>        9094/TCP                                    54m
+calico-system        calico-typha                                 ClusterIP   10.106.50.61     <none>        5473/TCP                                    54m
+default              kubernetes                                   ClusterIP   10.96.0.1        <none>        443/TCP                                     56m
+haproxy-controller   haproxy-kubernetes-ingress                   NodePort    10.104.187.186   <none>        80:31826/TCP,443:30886/TCP,1024:31734/TCP   27m
+haproxy-controller   haproxy-kubernetes-ingress-default-backend   ClusterIP   10.103.195.4     <none>        8080/TCP                                    27m
+kube-system          kube-dns                                     ClusterIP   10.96.0.10       <none>        53/UDP,53/TCP,9153/TCP                      56m
 [root@kubemaster ~]# 
 ```
 
 Según lo anterior tenemos:
 
-+ El puerto del host **30031** se encuentra mapeado al **80** de los contenedores.
-+ El puerto del host **32302** se encuentra mapeado al **443** de los contenedores.
-+ El puerto del host **32122** se encuentra mapeado al **1024** de los contenedores. Este puerto se utiliza para estadísticas de haproxy.
++ El puerto del host **31826** se encuentra mapeado al **80** de los contenedores.
++ El puerto del host **30886** se encuentra mapeado al **443** de los contenedores.
++ El puerto del host **31734** se encuentra mapeado al **1024** de los contenedores. Este puerto se utiliza para estadísticas de haproxy.
 
 > ![INFORMATION](../imgs/information-icon.png) [Ingress Controller](https://kubernetes.io/docs/concepts/services-networking/ingress-controllers/) 
 
@@ -597,7 +603,7 @@ success
 Ahora para unirse al clúster tendremos que ejecutar en los nodos el comando de **kubeadm** que nos produjo la ejecución de **kubadmin init**:
 
 ```console
-[root@kubenodeX ~]# kubeadm join 192.168.1.110:6443 --token gmk4le.8gsfpknu99k78qut --discovery-token-ca-cert-hash sha256:d2cd35c9ab95f4061aa9d9b993f7e8742b2307516a3632b27ea10b64baf8cd71 
+[root@kubenodeX ~]# kubeadm join 192.168.1.110:6443 --token gmk4le.8gsfpknu99k78qut --discovery-token-ca-cert-hash sha256:d2cd35c9ab95f4061aa9d9b993f7e8742b2307516a3632b27ea10b64baf8cd71  
 ...
 
 This node has joined the cluster:
@@ -614,33 +620,31 @@ Run 'kubectl get nodes' on the control-plane to see this node join the cluster.
 Puede llevar unos minutos que los workers aparezcan como **Ready**:
 
 ```console
-[root@kubemaster ~]# kubectl get nodes
-NAME                   STATUS   ROLES                  AGE   VERSION
-kubemaster.acme.es   Ready    control-plane,master   36m   v1.23.3
-kubenode1.acme.es    Ready    <none>                 12m   v1.23.3
-kubenode2.acme.es    Ready    <none>                 12m   v1.23.3
+[root@kubemaster ~]# kubectl get nodes-o wide
+NAME                 STATUS   ROLES                  AGE   VERSION   INTERNAL-IP     EXTERNAL-IP   OS-IMAGE          KERNEL-VERSION          CONTAINER-RUNTIME
+kubemaster.acme.es   Ready    control-plane,master   58m   v1.23.3   192.168.1.110   <none>        CentOS Stream 8   4.18.0-365.el8.x86_64   cri-o://1.23.1
+kubenode1.acme.es    Ready    <none>                 43m   v1.23.3   192.168.1.111   <none>        CentOS Stream 8   4.18.0-365.el8.x86_64   cri-o://1.23.1
+kubenode2.acme.es    Ready    <none>                 43m   v1.23.3   192.168.1.112   <none>        CentOS Stream 8   4.18.0-365.el8.x86_64   cri-o://1.23.1
 [root@kubemaster ~]# kubectl get pods -A -o wide
-NAMESPACE            NAME                                                          READY   STATUS    RESTARTS        AGE   IP               NODE                   NOMINATED NODE   READINESS GATES
-calico-apiserver     calico-apiserver-7b7b5f846c-5992j                             1/1     Running   1               22h   192.169.203.70   kubemaster.acme.es   <none>           <none>
-calico-apiserver     calico-apiserver-7b7b5f846c-gsf2z                             1/1     Running   1               22h   192.169.203.71   kubemaster.acme.es   <none>           <none>
-calico-system        calico-kube-controllers-77c48f5f64-j5dhm                      1/1     Running   1               22h   192.169.203.69   kubemaster.acme.es   <none>           <none>
-calico-system        calico-node-j8lbf                                             1/1     Running   1               22h   192.168.1.161    kubenode1.acme.es    <none>           <none>
-calico-system        calico-node-rtnlm                                             1/1     Running   1               22h   192.168.1.162    kubenode2.acme.es    <none>           <none>
-calico-system        calico-node-w2csz                                             1/1     Running   2 (3h55m ago)   22h   192.168.1.160    kubemaster.acme.es   <none>           <none>
-calico-system        calico-typha-86749877d5-dbn4m                                 1/1     Running   2 (3h56m ago)   22h   192.168.1.162    kubenode2.acme.es    <none>           <none>
-calico-system        calico-typha-86749877d5-rfg85                                 1/1     Running   2               22h   192.168.1.160    kubemaster.acme.es   <none>           <none>
-haproxy-controller   haproxy-kubernetes-ingress-54f9b477b9-g5tgw                   1/1     Running   1               22h   192.169.62.3     kubenode1.acme.es    <none>           <none>
-haproxy-controller   haproxy-kubernetes-ingress-default-backend-6b7ddb86b9-2l5p7   1/1     Running   1               22h   192.169.62.4     kubenode1.acme.es    <none>           <none>
-kube-system          coredns-64897985d-qdqmx                                       1/1     Running   1               22h   192.169.203.67   kubemaster.acme.es   <none>           <none>
-kube-system          coredns-64897985d-xc46v                                       1/1     Running   1               22h   192.169.203.68   kubemaster.acme.es   <none>           <none>
-kube-system          etcd-kubemaster.acme.es                                     1/1     Running   1               22h   192.168.1.160    kubemaster.acme.es   <none>           <none>
-kube-system          kube-apiserver-kubemaster.acme.es                           1/1     Running   1               22h   192.168.1.160    kubemaster.acme.es   <none>           <none>
-kube-system          kube-controller-manager-kubemaster.acme.es                  1/1     Running   2 (3h57m ago)   22h   192.168.1.160    kubemaster.acme.es   <none>           <none>
-kube-system          kube-proxy-k52m6                                              1/1     Running   1               22h   192.168.1.161    kubenode1.acme.es    <none>           <none>
-kube-system          kube-proxy-pk99j                                              1/1     Running   1               22h   192.168.1.160    kubemaster.acme.es   <none>           <none>
-kube-system          kube-proxy-wqkrw                                              1/1     Running   1               22h   192.168.1.162    kubenode2.acme.es    <none>           <none>
-kube-system          kube-scheduler-kubemaster.acme.es                           1/1     Running   1               22h   192.168.1.160    kubemaster.acme.es   <none>           <none>
-tigera-operator      tigera-operator-59fc55759-w9pbq                               1/1     Running   2 (3h56m ago)   22h   192.168.1.160    kubemaster.acme.es   <none>           <none>
+NAMESPACE            NAME                                                          READY   STATUS    RESTARTS   AGE   IP              NODE                 NOMINATED NODE   READINESS GATES
+calico-system        calico-kube-controllers-77c48f5f64-rd8lx                      1/1     Running   1          57m   192.169.200.3   kubemaster.acme.es   <none>           <none>
+calico-system        calico-node-8ktvr                                             1/1     Running   0          44m   192.168.1.112   kubenode2.acme.es    <none>           <none>
+calico-system        calico-node-vhhvt                                             1/1     Running   1          57m   192.168.1.110   kubemaster.acme.es   <none>           <none>
+calico-system        calico-node-vksb2                                             1/1     Running   0          44m   192.168.1.111   kubenode1.acme.es    <none>           <none>
+calico-system        calico-typha-7ff47546d9-c8pf6                                 1/1     Running   0          44m   192.168.1.111   kubenode1.acme.es    <none>           <none>
+calico-system        calico-typha-7ff47546d9-v58w7                                 1/1     Running   1          57m   192.168.1.110   kubemaster.acme.es   <none>           <none>
+haproxy-controller   haproxy-kubernetes-ingress-54f9b477b9-tnq4r                   1/1     Running   0          30m   192.169.49.66   kubenode2.acme.es    <none>           <none>
+haproxy-controller   haproxy-kubernetes-ingress-default-backend-6b7ddb86b9-qztwc   1/1     Running   0          30m   192.169.49.65   kubenode2.acme.es    <none>           <none>
+kube-system          coredns-64897985d-5gfxd                                       1/1     Running   2          59m   192.169.200.2   kubemaster.acme.es   <none>           <none>
+kube-system          coredns-64897985d-zh2g8                                       1/1     Running   2          59m   192.169.200.1   kubemaster.acme.es   <none>           <none>
+kube-system          etcd-kubemaster.acme.es                                       1/1     Running   2          59m   192.168.1.110   kubemaster.acme.es   <none>           <none>
+kube-system          kube-apiserver-kubemaster.acme.es                             1/1     Running   2          59m   192.168.1.110   kubemaster.acme.es   <none>           <none>
+kube-system          kube-controller-manager-kubemaster.acme.es                    1/1     Running   2          59m   192.168.1.110   kubemaster.acme.es   <none>           <none>
+kube-system          kube-proxy-cn7zk                                              1/1     Running   0          44m   192.168.1.111   kubenode1.acme.es    <none>           <none>
+kube-system          kube-proxy-mpwzs                                              1/1     Running   0          44m   192.168.1.112   kubenode2.acme.es    <none>           <none>
+kube-system          kube-proxy-r5c7v                                              1/1     Running   2          59m   192.168.1.110   kubemaster.acme.es   <none>           <none>
+kube-system          kube-scheduler-kubemaster.acme.es                             1/1     Running   2          59m   192.168.1.110   kubemaster.acme.es   <none>           <none>
+tigera-operator      tigera-operator-59fc55759-j862v                               1/1     Running   2          59m   192.168.1.110   kubemaster.acme.es   <none>           <none>
 [root@kubemaster ~]# 
 ```
 
@@ -656,23 +660,15 @@ En los workers:
        valid_lft forever preferred_lft forever
 2: enp1s0: <BROADCAST,MULTICAST,UP,LOWER_UP> mtu 1500 qdisc fq_codel state UP group default qlen 1000
     link/ether 52:54:00:ac:c3:d0 brd ff:ff:ff:ff:ff:ff
-    inet 192.168.1.161/24 brd 192.168.1.255 scope global noprefixroute enp1s0
+    inet 192.168.1.111/24 brd 192.168.1.255 scope global noprefixroute enp1s0
        valid_lft forever preferred_lft forever
     inet6 fe80::bd39:5246:9744:9c2d/64 scope link noprefixroute 
        valid_lft forever preferred_lft forever
-3: cali9388848c991@if3: <BROADCAST,MULTICAST,UP,LOWER_UP> mtu 1450 qdisc noqueue state UP group default 
-    link/ether ee:ee:ee:ee:ee:ee brd ff:ff:ff:ff:ff:ff link-netns 17ecc0b3-8c26-461e-9ead-7d40bf283fa1
-    inet6 fe80::ecee:eeff:feee:eeee/64 scope link 
-       valid_lft forever preferred_lft forever
-4: cali5406fbd410d@if3: <BROADCAST,MULTICAST,UP,LOWER_UP> mtu 1450 qdisc noqueue state UP group default 
-    link/ether ee:ee:ee:ee:ee:ee brd ff:ff:ff:ff:ff:ff link-netns bc94072c-f3fb-44cb-8efb-f56dc39fc254
-    inet6 fe80::ecee:eeff:feee:eeee/64 scope link 
-       valid_lft forever preferred_lft forever
 5: vxlan.calico: <BROADCAST,MULTICAST,UP,LOWER_UP> mtu 1450 qdisc noqueue state UNKNOWN group default 
-    link/ether 66:7a:75:b8:d0:64 brd ff:ff:ff:ff:ff:ff
-    inet 192.169.62.0/32 scope global vxlan.calico
+    link/ether 66:3f:e9:38:75:2e brd ff:ff:ff:ff:ff:ff
+    inet 192.169.232.0/32 scope global vxlan.calico
        valid_lft forever preferred_lft forever
-    inet6 fe80::647a:75ff:feb8:d064/64 scope link 
+    inet6 fe80::643f:e9ff:fe38:752e/64 scope link 
        valid_lft forever preferred_lft forever
 [root@kubenode1 ~]# 
 ```
@@ -687,15 +683,23 @@ En los workers:
        valid_lft forever preferred_lft forever
 2: enp1s0: <BROADCAST,MULTICAST,UP,LOWER_UP> mtu 1500 qdisc fq_codel state UP group default qlen 1000
     link/ether 52:54:00:22:a7:d5 brd ff:ff:ff:ff:ff:ff
-    inet 192.168.1.162/24 brd 192.168.1.255 scope global noprefixroute enp1s0
+    inet 192.168.1.112/24 brd 192.168.1.255 scope global noprefixroute enp1s0
        valid_lft forever preferred_lft forever
     inet6 fe80::672e:9d57:21bb:7b5a/64 scope link noprefixroute 
        valid_lft forever preferred_lft forever
 5: vxlan.calico: <BROADCAST,MULTICAST,UP,LOWER_UP> mtu 1450 qdisc noqueue state UNKNOWN group default 
-    link/ether 66:06:dd:29:b8:7a brd ff:ff:ff:ff:ff:ff
-    inet 192.169.45.128/32 scope global vxlan.calico
+    link/ether 66:e1:e7:74:ad:c7 brd ff:ff:ff:ff:ff:ff
+    inet 192.169.49.64/32 scope global vxlan.calico
        valid_lft forever preferred_lft forever
-    inet6 fe80::6406:ddff:fe29:b87a/64 scope link 
+    inet6 fe80::64e1:e7ff:fe74:adc7/64 scope link 
+       valid_lft forever preferred_lft forever
+6: calid0f47462bc7@if3: <BROADCAST,MULTICAST,UP,LOWER_UP> mtu 1450 qdisc noqueue state UP group default 
+    link/ether ee:ee:ee:ee:ee:ee brd ff:ff:ff:ff:ff:ff link-netns 5e591044-697b-4189-ab3d-52ac7a58fed8
+    inet6 fe80::ecee:eeff:feee:eeee/64 scope link 
+       valid_lft forever preferred_lft forever
+7: calid373a0371b6@if3: <BROADCAST,MULTICAST,UP,LOWER_UP> mtu 1450 qdisc noqueue state UP group default 
+    link/ether ee:ee:ee:ee:ee:ee brd ff:ff:ff:ff:ff:ff link-netns ec57f39f-767e-4e89-be48-d5646ac36202
+    inet6 fe80::ecee:eeff:feee:eeee/64 scope link 
        valid_lft forever preferred_lft forever
 [root@kubenode2 ~]# 
 ```
@@ -703,26 +707,20 @@ En los workers:
 En el nodo2 hacemos ping a la ip configurada en el interface **vxlan.calico** del nodo 1:
 
 ```console
-[root@kubenode2 ~]# ping 192.169.62.0
-PING 192.169.62.0 (192.169.62.0) 56(84) bytes of data.
-64 bytes from 192.169.62.0: icmp_seq=1 ttl=64 time=0.559 ms
-64 bytes from 192.169.62.0: icmp_seq=2 ttl=64 time=0.510 ms
-^C
---- 192.169.62.0 ping statistics ---
-2 packets transmitted, 2 received, 0% packet loss, time 1001ms
-rtt min/avg/max/mdev = 0.510/0.534/0.559/0.033 ms
-[root@kubenode2 ~]# ping -c 4 192.169.62.0
-PING 192.169.62.0 (192.169.62.0) 56(84) bytes of data.
-64 bytes from 192.169.62.0: icmp_seq=1 ttl=64 time=0.752 ms
-64 bytes from 192.169.62.0: icmp_seq=2 ttl=64 time=0.405 ms
-64 bytes from 192.169.62.0: icmp_seq=3 ttl=64 time=0.388 ms
-64 bytes from 192.169.62.0: icmp_seq=4 ttl=64 time=0.658 ms
+[root@kubenode2 ~]# ping -c 4 192.169.232.0
+PING 192.169.232.0 (192.169.232.0) 56(84) bytes of data.
+64 bytes from 192.169.232.0: icmp_seq=1 ttl=64 time=0.548 ms
+64 bytes from 192.169.232.0: icmp_seq=2 ttl=64 time=0.628 ms
+64 bytes from 192.169.232.0: icmp_seq=3 ttl=64 time=0.587 ms
+64 bytes from 192.169.232.0: icmp_seq=4 ttl=64 time=0.489 ms
 
---- 192.169.62.0 ping statistics ---
-4 packets transmitted, 4 received, 0% packet loss, time 3057ms
-rtt min/avg/max/mdev = 0.388/0.550/0.752/0.160 ms
+--- 192.169.232.0 ping statistics ---
+4 packets transmitted, 4 received, 0% packet loss, time 3107ms
+rtt min/avg/max/mdev = 0.489/0.563/0.628/0.051 ms
 [root@kubenode2 ~]# 
 ```
+
+> ![HOMEWORK](../imgs/homework-icon.png) Probar la conectividad desdel nodo 1 al nodo 2.
 
 ## Creamos un usuario no administrador
 
