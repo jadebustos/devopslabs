@@ -63,37 +63,37 @@ Depués de crear el deployment:
 ```console
 [kubeadmin@kubemaster first-app]$ kubectl get pods --namespace=first-app
 NAME                      READY   STATUS    RESTARTS   AGE
-webapp-6857ff4857-ngxfx   1/1     Running   0          2m55s
-[kubeadmin@kubemaster first-app]$ kubectl describe pod webapp-6857ff4857-ngxfx --namespace=first-app
-Name:         webapp-6857ff4857-ngxfx
+webapp-6857ff4857-fx5jx   1/1     Running   0          35s
+[kubeadmin@kubemaster first-app]$ kubectl describe pod webapp-6857ff4857-fx5jx --namespace=first-app
+Name:         webapp-6857ff4857-fx5jx
 Namespace:    first-app
 Priority:     0
-Node:         kubenode1.acme.es/192.168.1.161
-Start Time:   Fri, 28 Jan 2022 16:12:59 +0100
+Node:         kubenode1.acme.es/192.168.1.111
+Start Time:   Mon, 14 Feb 2022 00:22:51 +0100
 Labels:       app=webapp
               pod-template-hash=6857ff4857
-Annotations:  cni.projectcalico.org/containerID: cbffa61fcec1889b45a81123c6d8cd63a4bffaa3873f92a7e92ccd0d29004a50
-              cni.projectcalico.org/podIP: 192.169.62.3/32
-              cni.projectcalico.org/podIPs: 192.169.62.3/32
+Annotations:  cni.projectcalico.org/containerID: 55e70fe7baff17004012b43c32c97e1b79528b2e1d965be8e1ed2139ffc00e94
+              cni.projectcalico.org/podIP: 192.169.232.1/32
+              cni.projectcalico.org/podIPs: 192.169.232.1/32
 Status:       Running
-IP:           192.169.62.3
+IP:           192.169.232.1
 IPs:
-  IP:           192.169.62.3
+  IP:           192.169.232.1
 Controlled By:  ReplicaSet/webapp-6857ff4857
 Containers:
   webapp:
-    Container ID:   cri-o://12daab13b1a724305df3e2a661af8149a9b066039465619bda9d114d7499dda1
+    Container ID:   cri-o://302cec01f09a205a87b9edb0b33461c79da39bf34f599ec39ac77f33d38d2269
     Image:          quay.io/rhte_2019/webapp:v1
     Image ID:       quay.io/rhte_2019/webapp@sha256:d51ff7792bdd9a6e70b6e151adf47f357e6fd6830fceaf403f7c66e34ed367b2
     Port:           80/TCP
     Host Port:      0/TCP
     State:          Running
-      Started:      Fri, 28 Jan 2022 16:13:00 +0100
+      Started:      Mon, 14 Feb 2022 00:23:22 +0100
     Ready:          True
     Restart Count:  0
     Environment:    <none>
     Mounts:
-      /var/run/secrets/kubernetes.io/serviceaccount from kube-api-access-7z786 (ro)
+      /var/run/secrets/kubernetes.io/serviceaccount from kube-api-access-splmh (ro)
 Conditions:
   Type              Status
   Initialized       True 
@@ -101,7 +101,7 @@ Conditions:
   ContainersReady   True 
   PodScheduled      True 
 Volumes:
-  kube-api-access-7z786:
+  kube-api-access-splmh:
     Type:                    Projected (a volume that contains injected data from multiple sources)
     TokenExpirationSeconds:  3607
     ConfigMapName:           kube-root-ca.crt
@@ -112,12 +112,13 @@ Node-Selectors:              <none>
 Tolerations:                 node.kubernetes.io/not-ready:NoExecute op=Exists for 300s
                              node.kubernetes.io/unreachable:NoExecute op=Exists for 300s
 Events:
-  Type    Reason     Age    From               Message
-  ----    ------     ----   ----               -------
-  Normal  Scheduled  3m34s  default-scheduler  Successfully assigned first-app/webapp-6857ff4857-ngxfx to kubenode1.acme.es
-  Normal  Pulled     3m33s  kubelet            Container image "quay.io/rhte_2019/webapp:v1" already present on machine
-  Normal  Created    3m33s  kubelet            Created container webapp
-  Normal  Started    3m33s  kubelet            Started container webapp
+  Type    Reason     Age   From               Message
+  ----    ------     ----  ----               -------
+  Normal  Scheduled  99s   default-scheduler  Successfully assigned first-app/webapp-6857ff4857-fx5jx to kubenode1.acme.es
+  Normal  Pulling    97s   kubelet            Pulling image "quay.io/rhte_2019/webapp:v1"
+  Normal  Pulled     68s   kubelet            Successfully pulled image "quay.io/rhte_2019/webapp:v1" in 29.067822226s
+  Normal  Created    68s   kubelet            Created container webapp
+  Normal  Started    68s   kubelet            Started container webapp
 [kubeadmin@kubemaster first-app]$ 
 ```
 
@@ -126,22 +127,20 @@ Podemos ver los eventos del namespace para ver que está pasando:
 ```console
 [kubeadmin@kubemaster first-app]$ kubectl get events --namespace=first-app
 LAST SEEN   TYPE     REASON              OBJECT                         MESSAGE
-...
-4m20s       Normal   Scheduled           pod/webapp-6857ff4857-ngxfx    Successfully assigned first-app/webapp-6857ff4857-ngxfx to kubenode1.acme.es
-4m19s       Normal   Pulled              pod/webapp-6857ff4857-ngxfx    Container image "quay.io/rhte_2019/webapp:v1" already present on machine
-4m19s       Normal   Created             pod/webapp-6857ff4857-ngxfx    Created container webapp
-4m19s       Normal   Started             pod/webapp-6857ff4857-ngxfx    Started container webapp
-4m20s       Normal   SuccessfulCreate    replicaset/webapp-6857ff4857   Created pod: webapp-6857ff4857-ngxfx
-4m21s       Normal   ScalingReplicaSet   deployment/webapp              Scaled up replica set webapp-6857ff4857 to 1
-
-...
+2m6s        Normal   Scheduled           pod/webapp-6857ff4857-fx5jx    Successfully assigned first-app/webapp-6857ff4857-fx5jx to kubenode1.acme.es
+2m4s        Normal   Pulling             pod/webapp-6857ff4857-fx5jx    Pulling image "quay.io/rhte_2019/webapp:v1"
+95s         Normal   Pulled              pod/webapp-6857ff4857-fx5jx    Successfully pulled image "quay.io/rhte_2019/webapp:v1" in 29.067822226s
+95s         Normal   Created             pod/webapp-6857ff4857-fx5jx    Created container webapp
+95s         Normal   Started             pod/webapp-6857ff4857-fx5jx    Started container webapp
+2m6s        Normal   SuccessfulCreate    replicaset/webapp-6857ff4857   Created pod: webapp-6857ff4857-fx5jx
+2m6s        Normal   ScalingReplicaSet   deployment/webapp              Scaled up replica set webapp-6857ff4857 to 1.
 [kubeadmin@kubemaster first-app]$ 
 ```
 
 Podemos consultar el yaml del pod:
 
 ```console
-[kubeadmin@kubemaster first-app]$ kubectl get pod webapp-6857ff4857-ngxfx -o yaml > webapp-6857ff4857-ngxfx.yaml
+[kubeadmin@kubemaster first-app]$ kubectl get pod webapp-6857ff4857-fx5jx -o yaml > webapp-6857ff4857-fx5jx.yaml
 ```
 > ![HOMEWORK](../imgs/homework-icon.png) Probar con **-o json**.
 
@@ -152,12 +151,12 @@ Podemos borrar el pod:
 ```console
 [kubeadmin@kubemaster first-app]$ kubectl get pods --namespace=first-app
 NAME                      READY   STATUS    RESTARTS   AGE
-webapp-6857ff4857-ngxfx   1/1     Running   0          5m54s
-[kubeadmin@kubemaster first-app]$ kubectl delete pods webapp-6857ff4857-ngxfx --namespace=first-app
+webapp-6857ff4857-fx5jx   1/1     Running   0          83s
+[kubeadmin@kubemaster first-app]$ kubectl delete pods webapp-6857ff4857-fx5jx --namespace=first-app
 pod "webapp-6857ff4857-ngxfx" deleted
 [kubeadmin@kubemaster first-app]$ kubectl get pods --namespace=first-app
 NAME                      READY   STATUS    RESTARTS   AGE
-webapp-6857ff4857-4d8n7   1/1     Running   0          40s
+webapp-6857ff4857-ksxz6   1/1     Running   0          27s
 [kubeadmin@kubemaster first-app]$ 
 ```
 
@@ -165,21 +164,20 @@ Vemos que existe todavía, pero si nos fijamos tiene un nombre diferente:
 
 ```console
 [kubeadmin@kubemaster first-app]$ kubectl get events --namespace=first-app
-LAST SEEN   TYPE     REASON             OBJECT                         MESSAGE
-...
-76s         Normal   Scheduled           pod/webapp-6857ff4857-4d8n7    Successfully assigned first-app/webapp-6857ff4857-4d8n7 to kubenode1.acme.es
-75s         Normal   Pulled              pod/webapp-6857ff4857-4d8n7    Container image "quay.io/rhte_2019/webapp:v1" already present on machine
-75s         Normal   Created             pod/webapp-6857ff4857-4d8n7    Created container webapp
-75s         Normal   Started             pod/webapp-6857ff4857-4d8n7    Started container webapp
-7m49s       Normal   Scheduled           pod/webapp-6857ff4857-ngxfx    Successfully assigned first-app/webapp-6857ff4857-ngxfx to kubenode1.acme.es
-7m48s       Normal   Pulled              pod/webapp-6857ff4857-ngxfx    Container image "quay.io/rhte_2019/webapp:v1" already present on machine
-7m48s       Normal   Created             pod/webapp-6857ff4857-ngxfx    Created container webapp
-7m48s       Normal   Started             pod/webapp-6857ff4857-ngxfx    Started container webapp
-76s         Normal   Killing             pod/webapp-6857ff4857-ngxfx    Stopping container webapp
-7m49s       Normal   SuccessfulCreate    replicaset/webapp-6857ff4857   Created pod: webapp-6857ff4857-ngxfx
-76s         Normal   SuccessfulCreate    replicaset/webapp-6857ff4857   Created pod: webapp-6857ff4857-4d8n7
-7m50s       Normal   ScalingReplicaSet   deployment/webapp              Scaled up replica set webapp-6857ff4857 to 1
-...
+LAST SEEN   TYPE     REASON              OBJECT                         MESSAGE
+4m53s       Normal   Scheduled           pod/webapp-6857ff4857-fx5jx    Successfully assigned first-app/webapp-6857ff4857-fx5jx to kubenode1.acme.es
+4m51s       Normal   Pulling             pod/webapp-6857ff4857-fx5jx    Pulling image "quay.io/rhte_2019/webapp:v1"
+4m22s       Normal   Pulled              pod/webapp-6857ff4857-fx5jx    Successfully pulled image "quay.io/rhte_2019/webapp:v1" in 29.067822226s
+4m22s       Normal   Created             pod/webapp-6857ff4857-fx5jx    Created container webapp
+4m22s       Normal   Started             pod/webapp-6857ff4857-fx5jx    Started container webapp
+87s         Normal   Killing             pod/webapp-6857ff4857-fx5jx    Stopping container webapp
+87s         Normal   Scheduled           pod/webapp-6857ff4857-ksxz6    Successfully assigned first-app/webapp-6857ff4857-ksxz6 to kubenode1.acme.es
+86s         Normal   Pulled              pod/webapp-6857ff4857-ksxz6    Container image "quay.io/rhte_2019/webapp:v1" already present on machine
+86s         Normal   Created             pod/webapp-6857ff4857-ksxz6    Created container webapp
+86s         Normal   Started             pod/webapp-6857ff4857-ksxz6    Started container webapp
+4m53s       Normal   SuccessfulCreate    replicaset/webapp-6857ff4857   Created pod: webapp-6857ff4857-fx5jx
+87s         Normal   SuccessfulCreate    replicaset/webapp-6857ff4857   Created pod: webapp-6857ff4857-ksxz6
+4m53s       Normal   ScalingReplicaSet   deployment/webapp              Scaled up replica set webapp-6857ff4857 to 1
 [kubeadmin@kubemaster first-app]$
 ```
 
@@ -198,7 +196,7 @@ Para borrar la aplicación deberemos borrar el deployment:
 ```console
 [kubeadmin@kubemaster first-app]$ kubectl get deployments --namespace=first-app
 NAME     READY   UP-TO-DATE   AVAILABLE   AGE
-webapp   1/1     1            1           8m44s
+webapp   1/1     1            1           5m22s
 [kubeadmin@kubemaster first-app]$ kubectl delete deployments webapp --namespace=first-app
 deployment.apps "webapp" deleted
 [kubeadmin@kubemaster first-app]$ kubectl get pods --namespace=first-app
@@ -206,7 +204,7 @@ NAME                      READY   STATUS        RESTARTS   AGE
 webapp-68965f4fcc-vfgsnwebapp-586c6d8b87-b5n5g
 [kubeadmin@kubemaster first-app]$ kubectl get pods --namespace=first-app
 NAME                      READY   STATUS        RESTARTS   AGE
-webapp-6857ff4857-4d8n7   1/1     Terminating   0          2m48s
+webapp-6857ff4857-ksxz6   1/1     Terminating   0          2m34s
 [kubeadmin@kubemaster first-app]$ kubectl get pods --namespace=first-app
 No resources found in first-app namespace.
 [kubeadmin@kubemaster first-app]$ 
@@ -214,19 +212,16 @@ No resources found in first-app namespace.
 
 ## Escalando un deployment
 
+> ![TIP](imgs/tip-icon.png) Si borraste el deployment en el paso anterior tendrás que volver a desplegarlo.
+
 Para escalar un deployment:
 
 ```console
 [kubeadmin@kubemaster first-app]$ kubectl get pods --namespace=first-app
 NAME                      READY   STATUS    RESTARTS   AGE
-webapp-6857ff4857-8qt9d   1/1     Running   0          5m10s
-[kubeadmin@kubemaster first-app]$ kubectl get deployments --namespace=first-app
-NAME     READY   UP-TO-DATE   AVAILABLE   AGE
-webapp   1/1     1            1           5m29s
+webapp-6857ff4857-wfhz5   1/1     Running   0          15s
 [kubeadmin@kubemaster first-app]$ kubectl edit deployment webapp --namespace=first-app
 ```
-
-> ![TIP](imgs/tip-icon.png) Si borraste el deployment en el paso anterior tendrás que volver a desplegarlo.
 
 Editará el deployment en el editor por defecto. Iremos a las especificaciones y en el campo **replica** especificaremos cuantas replicas queremos:
 
@@ -239,56 +234,52 @@ spec:
 Guardamos los cambios y salimos:
 
 ```console
-[kubeadmin@kubemaster first-app]$ kubectl get pods --namespace=first-app
-NAME                      READY   STATUS    RESTARTS   AGE
-webapp-6857ff4857-48rvj   1/1     Running   0          36s
-webapp-6857ff4857-8qt9d   1/1     Running   0          7m13s
 [kubeadmin@kubemaster first-app]$ kubectl get pods --namespace=first-app -o wide
-NAME                      READY   STATUS    RESTARTS   AGE     IP               NODE                  NOMINATED NODE   READINESS GATES
-webapp-6857ff4857-48rvj   1/1     Running   0          61s     192.169.45.129   kubenode2.acme.es   <none>           <none>
-webapp-6857ff4857-8qt9d   1/1     Running   0          7m38s   192.169.62.5     kubenode1.acme.es   <none>           <none>
+NAME                      READY   STATUS    RESTARTS   AGE   IP              NODE                NOMINATED NODE   READINESS GATES
+webapp-6857ff4857-2gphd   1/1     Running   0          40s   192.169.49.67   kubenode2.acme.es   <none>           <none>
+webapp-6857ff4857-wfhz5   1/1     Running   0          2m    192.169.232.3   kubenode1.acme.es   <none>           <none>
 [kubeadmin@kubemaster first-app]$ 
 ```
 
 Como ambos contenedores se están ejecutando en diferentes workers vamos a uno de ellos y hacemos un ping a sus ips:
 
 ```console
-[root@kubenode1 ~]# ping -c 4 192.169.45.129
-PING 192.169.45.129 (192.169.45.129) 56(84) bytes of data.
-64 bytes from 192.169.45.129: icmp_seq=1 ttl=63 time=0.630 ms
-64 bytes from 192.169.45.129: icmp_seq=2 ttl=63 time=0.532 ms
-64 bytes from 192.169.45.129: icmp_seq=3 ttl=63 time=0.678 ms
-64 bytes from 192.169.45.129: icmp_seq=4 ttl=63 time=0.450 ms
+[root@kubenode1 ~]# ping -c 4 192.169.49.67
+PING 192.169.49.67 (192.169.49.67) 56(84) bytes of data.
+64 bytes from 192.169.49.67: icmp_seq=1 ttl=63 time=0.748 ms
+64 bytes from 192.169.49.67: icmp_seq=2 ttl=63 time=0.619 ms
+64 bytes from 192.169.49.67: icmp_seq=3 ttl=63 time=0.512 ms
+64 bytes from 192.169.49.67: icmp_seq=4 ttl=63 time=0.456 ms
 
---- 192.169.45.129 ping statistics ---
-4 packets transmitted, 4 received, 0% packet loss, time 3106ms
-rtt min/avg/max/mdev = 0.450/0.572/0.678/0.091 ms
-[root@kubenode1 ~]# ping -c 4 192.169.62.5
-PING 192.169.62.5 (192.169.62.5) 56(84) bytes of data.
-64 bytes from 192.169.62.5: icmp_seq=1 ttl=64 time=0.111 ms
-64 bytes from 192.169.62.5: icmp_seq=2 ttl=64 time=0.082 ms
-64 bytes from 192.169.62.5: icmp_seq=3 ttl=64 time=0.087 ms
-64 bytes from 192.169.62.5: icmp_seq=4 ttl=64 time=0.098 ms
+--- 192.169.49.67 ping statistics ---
+4 packets transmitted, 4 received, 0% packet loss, time 3065ms
+rtt min/avg/max/mdev = 0.456/0.583/0.748/0.115 ms
+[root@kubenode1 ~]# ping -c 4 192.169.232.3
+PING 192.169.232.3 (192.169.232.3) 56(84) bytes of data.
+64 bytes from 192.169.232.3: icmp_seq=1 ttl=64 time=0.153 ms
+64 bytes from 192.169.232.3: icmp_seq=2 ttl=64 time=0.135 ms
+64 bytes from 192.169.232.3: icmp_seq=3 ttl=64 time=0.106 ms
+64 bytes from 192.169.232.3: icmp_seq=4 ttl=64 time=0.098 ms
 
---- 192.169.62.5 ping statistics ---
-4 packets transmitted, 4 received, 0% packet loss, time 3051ms
-rtt min/avg/max/mdev = 0.082/0.094/0.111/0.014 ms
-[root@kubenode1 ~]#
+--- 192.169.232.3 ping statistics ---
+4 packets transmitted, 4 received, 0% packet loss, time 3115ms
+rtt min/avg/max/mdev = 0.098/0.123/0.153/0.022 ms
+[root@kubenode1 ~]# 
 ```
 
 Borramos uno de los pods:
 
 ```console
 [kubeadmin@kubemaster first-app]$ kubectl get pods --namespace=first-app 
-NAME                      READY   STATUS    RESTARTS   AGE
-webapp-6857ff4857-48rvj   1/1     Running   0          5m26s
-webapp-6857ff4857-8qt9d   1/1     Running   0          12m
-[kubeadmin@kubemaster first-app]$ kubectl delete pod webapp-6857ff4857-48rvj --namespace=first-app
-pod "webapp-6857ff4857-48rvj" deleted
+NAME                      READY   STATUS    RESTARTS   AGE   IP              NODE                NOMINATED NODE   READINESS GATES
+webapp-6857ff4857-2gphd   1/1     Running   0          2m38s 192.169.49.67   kubenode2.acme.es   <none>           <none>
+webapp-6857ff4857-wfhz5   1/1     Running   0          3m58s 192.169.232.3   kubenode1.acme.es   <none>           <none>
+[kubeadmin@kubemaster first-app]$ kubectl delete pod webapp-6857ff4857-2gphd --namespace=first-app
+pod "webapp-6857ff4857-2gphd" deleted
 [kubeadmin@kubemaster first-app]$ kubectl get pods --namespace=first-app -o wide
-NAME                      READY   STATUS    RESTARTS   AGE   IP               NODE                  NOMINATED NODE   READINESS GATES
-webapp-6857ff4857-8qt9d   1/1     Running   0          13m   192.169.62.5     kubenode1.acme.es   <none>           <none>
-webapp-6857ff4857-j6pjt   1/1     Running   0          34s   192.169.45.130   kubenode2.acme.es   <none>           <none>
+NAME                      READY   STATUS    RESTARTS   AGE    IP              NODE                NOMINATED NODE   READINESS GATES
+webapp-6857ff4857-84jxg   1/1     Running   0          35s    192.169.49.68   kubenode2.acme.es   <none>           <none>
+webapp-6857ff4857-wfhz5   1/1     Running   0          5m4s   192.169.232.3   kubenode1.acme.es   <none>           <none>
 [kubeadmin@kubemaster first-app]$
 ```
 
