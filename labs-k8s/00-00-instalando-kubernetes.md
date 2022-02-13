@@ -423,13 +423,13 @@ Configuramos **kudeadm**:
 
 ```console
 [root@kubemaster ~]# kubeadm config images pull
-[config/images] Pulled k8s.gcr.io/kube-apiserver:v1.20.2
-[config/images] Pulled k8s.gcr.io/kube-controller-manager:v1.20.2
-[config/images] Pulled k8s.gcr.io/kube-scheduler:v1.20.2
-[config/images] Pulled k8s.gcr.io/kube-proxy:v1.20.2
-[config/images] Pulled k8s.gcr.io/pause:3.2
-[config/images] Pulled k8s.gcr.io/etcd:3.4.13-0
-[config/images] Pulled k8s.gcr.io/coredns:1.7.0
+[config/images] Pulled k8s.gcr.io/kube-apiserver:v1.23.3
+[config/images] Pulled k8s.gcr.io/kube-controller-manager:v1.23.3
+[config/images] Pulled k8s.gcr.io/kube-scheduler:v1.23.3
+[config/images] Pulled k8s.gcr.io/kube-proxy:v1.23.3
+[config/images] Pulled k8s.gcr.io/pause:3.6
+[config/images] Pulled k8s.gcr.io/etcd:3.5.1-0
+[config/images] Pulled k8s.gcr.io/coredns:1.8.6
 [root@kubemaster ~]# 
 ```
 Permitiremos el acceso desde los workers:
@@ -445,33 +445,6 @@ success
 ```
 
 > ![IMPORTANT](../imgs/important-icon.png) Esto no es una buena práctica. En un entorno en producción deberíamos permitir únicamente el tráfico necesario y no todo el tráfico entre el master y los workers.
-
-<!-- Permitimos el acceso de los contenedores a localhost: 
-
-```console
-[root@kubemaster ~]# ip a
-1: lo: <LOOPBACK,UP,LOWER_UP> mtu 65536 qdisc noqueue state UNKNOWN group default qlen 1000
-    link/loopback 00:00:00:00:00:00 brd 00:00:00:00:00:00
-    inet 127.0.0.1/8 scope host lo
-       valid_lft forever preferred_lft forever
-    inet6 ::1/128 scope host 
-       valid_lft forever preferred_lft forever
-2: enp1s0: <BROADCAST,MULTICAST,UP,LOWER_UP> mtu 1500 qdisc fq_codel state UP group default qlen 1000
-    link/ether 52:54:00:77:3a:3a brd ff:ff:ff:ff:ff:ff
-    inet 192.168.1.110/24 brd 192.168.1.255 scope global noprefixroute enp1s0
-       valid_lft forever preferred_lft forever
-    inet6 fe80::5054:ff:fe77:3a3a/64 scope link 
-       valid_lft forever preferred_lft forever
-3: docker0: <NO-CARRIER,BROADCAST,MULTICAST,UP> mtu 1500 qdisc noqueue state DOWN group default 
-    link/ether 02:42:58:7f:3f:fc brd ff:ff:ff:ff:ff:ff
-    inet 172.17.0.1/16 brd 172.17.255.255 scope global docker0
-       valid_lft forever preferred_lft forever
-[root@kubemaster ~]# firewall-cmd --zone=public --permanent --add-rich-rule 'rule family=ipv4 source address=172.17.0.0/16 accept'
-success
-[root@kubemaster ~]# firewall-cmd --reload
-success
-[root@kubemaster ~]#
-``` -->
 
 Instalamos el plugin CNI (Container Network Interface) de kubernetes y definimos la red de los PODs:
 
@@ -504,36 +477,7 @@ Then you can join any number of worker nodes by running the following on each as
 
 kubeadm join 192.168.1.110:6443 --token gmk4le.8gsfpknu99k78qut \
     --discovery-token-ca-cert-hash sha256:d2cd35c9ab95f4061aa9d9b993f7e8742b2307516a3632b27ea10b64baf8cd71 
-[root@kubemaster ~]# ip a
-1: lo: <LOOPBACK,UP,LOWER_UP> mtu 65536 qdisc noqueue state UNKNOWN group default qlen 1000
-    link/loopback 00:00:00:00:00:00 brd 00:00:00:00:00:00
-    inet 127.0.0.1/8 scope host lo
-       valid_lft forever preferred_lft forever
-    inet6 ::1/128 scope host
-       valid_lft forever preferred_lft forever
-2: enp1s0: <BROADCAST,MULTICAST,UP,LOWER_UP> mtu 1500 qdisc fq_codel state UP group default qlen 1000
-    link/ether 52:54:00:b5:e5:fd brd ff:ff:ff:ff:ff:ff
-    inet 192.168.1.160/24 brd 192.168.1.255 scope global noprefixroute enp1s0
-       valid_lft forever preferred_lft forever
-    inet6 fe80::575b:3545:bbe3:d7b8/64 scope link noprefixroute
-       valid_lft forever preferred_lft forever
-3: cni0: <BROADCAST,MULTICAST,UP,LOWER_UP> mtu 1500 qdisc noqueue state UP group default qlen 1000
-    link/ether 76:93:dc:f0:91:b7 brd ff:ff:ff:ff:ff:ff
-    inet 10.85.0.1/16 brd 10.85.255.255 scope global cni0
-       valid_lft forever preferred_lft forever
-    inet6 1100:200::1/24 scope global
-       valid_lft forever preferred_lft forever
-    inet6 fe80::7493:dcff:fef0:91b7/64 scope link
-       valid_lft forever preferred_lft forever
-4: veth1da9c175@if3: <BROADCAST,MULTICAST,UP,LOWER_UP> mtu 1500 qdisc noqueue master cni0 state UP group default
-    link/ether 72:6a:2c:eb:a6:84 brd ff:ff:ff:ff:ff:ff link-netns 2528f8e3-ee2d-494b-8275-2ec56d4a3eb5
-    inet6 fe80::706a:2cff:feeb:a684/64 scope link
-       valid_lft forever preferred_lft forever
-5: veth1f3c7838@if3: <BROADCAST,MULTICAST,UP,LOWER_UP> mtu 1500 qdisc noqueue master cni0 state UP group default
-    link/ether 32:a7:14:6c:6f:5d brd ff:ff:ff:ff:ff:ff link-netns 8a1d4ca7-d884-42f3-8c48-4aeea11de70f
-    inet6 fe80::30a7:14ff:fe6c:6f5d/64 scope link
-       valid_lft forever preferred_lft forever
-[root@kubemaster ~]#
+[root@kubemaster ~]# 
 ```
 
 > ![IMPORTANT](../imgs/important-icon.png) Guarda el comando kubeadm ya que lo necesitarás para unir los workers al clúster.
