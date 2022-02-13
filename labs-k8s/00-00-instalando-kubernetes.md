@@ -720,7 +720,7 @@ rtt min/avg/max/mdev = 0.489/0.563/0.628/0.051 ms
 [root@kubenode2 ~]# 
 ```
 
-> ![HOMEWORK](../imgs/homework-icon.png) Probar la conectividad desdel nodo 1 al nodo 2.
+> ![HOMEWORK](../imgs/homework-icon.png) Probar la conectividad desde el nodo 1 al nodo 2.
 
 ## Creamos un usuario no administrador
 
