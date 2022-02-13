@@ -7,7 +7,7 @@ Crear las siguientes máquinas virtuales con una interface de red sobre la misma
 -----------------------------------------------------------------
 | Role | Sistema Operativo | vCPUs | Memoria (GiB) | Disco Duro |
 |------|-------------------|-------|---------------|------------|
-| NFS  | CentOS 8          | 2     | 4             | 1 x 20 GiB (boot), 1 x 10 GiB (data) |
+| NFS  | CentOS 8          | 2     | 4             | 1 x 20 GiB (boot) |
 | Master | CentOS 8        | 2     | 8             | 1 x 20 GiB (boot) |
 | Worker | CentOS 8        | 2     | 4             | 1 x 20 GiB (boot) |
 | Worker | CentOS 8        | 2     | 4             | 1 x 20 GiB (boot) |
@@ -247,9 +247,9 @@ Para permitir que kubernetes maneje correctamente el tráfico con el cortafuegos
 
 ```console
 [root@host ~]# cat <<EOF > /etc/sysctl.d/k8s.conf
-net.bridge.bridge-nf-call-ip6tables = 1
-net.bridge.bridge-nf-call-iptables  = 1
-net.ipv4.ip_forward                 = 1
+> net.bridge.bridge-nf-call-ip6tables = 1
+> net.bridge.bridge-nf-call-iptables  = 1
+> net.ipv4.ip_forward                 = 1
 > EOF
 [root@host ~]# sysctl --system
 ...
@@ -324,7 +324,7 @@ Instalamos [CRI-O](https://cri-o.io/) que será el engine para ejecutar contened
 ```console
 [root@host ~]# wget -O /etc/yum.repos.d/devel:kubic:libcontainers:stable.repo https://download.opensuse.org/repositories/devel:/kubic:/libcontainers:/stable/CentOS_8_Stream/devel:kubic:libcontainers:stable.repo 
 ...
-[root@host ~]# wget -O /etc/yum.repos.d/devel:kubic:libcontainers:stable:cri-o:1.23:1.23.0.repo https://download.opensuse.org/repositories/devel:kubic:libcontainers:stable:cri-o:1.23:1.23.0/CentOS_8_Stream/devel:kubic:libcontainers:stable:cri-o:1.23:1.23.0.repo
+[root@host ~]# wget -O /etc/yum.repos.d/devel:kubic:libcontainers:stable:cri-o:1.23:1.23.1.repo https://download.opensuse.org/repositories/devel:kubic:libcontainers:stable:cri-o:1.23:1.23.1/CentOS_8_Stream/devel:kubic:libcontainers:stable:cri-o:1.23:1.23.1.repo
 ...
 [root@host ~]#
 ```
@@ -344,9 +344,9 @@ Instalamos **CRI-O**. Activamos y arrancamos el servicio:
 ```console
 [root@host ~]# dnf install cri-o -y
 ---
-[root@host ~]# systemctl enable cri-o
+[root@host ~]# systemctl enable crio
 ...
-[root@host ~]# systemctl start cri-o
+[root@host ~]# systemctl start crio
 ...
 [root@host ~]#
 ```
@@ -377,6 +377,18 @@ Created symlink /etc/systemd/system/multi-user.target.wants/kubelet.service → 
 [root@host ~]# systemctl start kubelet
 [root@host ~]#
 ```
+
+> ![TIP](../imgs/tip-icon.png) Si queremos instalar una versión especifica de kubernetes podemos ver las versiones disponibles:
+>
+> ```console
+> [root@host ~]# dnf --showduplicates list available kubelet --disableexcludes=kubernetes
+> ```
+>
+> Y para instalar una versión específica:
+>
+> ```console
+> [root@host ~]# dnf install kubelet-1.21.9-0 kubeadm-1.21.9-0 kubectl-1.21.9-0 --disableexcludes=kubernetes -y
+> ```
 
 ## Configurando kubernetes en el nodo master
 

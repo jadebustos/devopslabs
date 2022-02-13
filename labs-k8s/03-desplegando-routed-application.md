@@ -104,7 +104,7 @@ spec:
   - host: foo.bar
     http:
       paths:
-      - path: /webapp
+      - path: /webapp-routed
         pathType: "Prefix"
         backend:
           service:
@@ -194,7 +194,7 @@ ingress-default-backend   ClusterIP   10.96.170.15     <none>        8080/TCP   
 Tenemos que el puerto **30432** del master se encuentra mapeado al **80** de los contenedores, luego si desde una máquina que no sea el master hacemos:
 
 ```console
-[jadebustos@archimedes ~]$ curl -I -H 'Host: foo.bar' 'http://192.168.1.110:30432/webapp'
+[jadebustos@archimedes ~]$ curl -I -H 'Host: foo.bar' 'http://192.168.1.110:30432/webapp-routed'
 HTTP/1.1 200 OK
 date: Mon, 25 Jan 2021 07:11:50 GMT
 server: Apache/2.4.38 (Debian)
