@@ -103,51 +103,6 @@ tigera-operator   tigera-operator-657cc89589-wqgd6           1/1     Running   0
 
 Aunque hemos utilizado [Calico](https://docs.projectcalico.org/getting-started/kubernetes/) como [SDN](https://en.wikipedia.org/wiki/Software-defined_networking) podemos utilizar otras SDNs. Mas información en [Kubernetes Networking](https://kubernetes.io/docs/concepts/cluster-administration/networking/).
 
-Podemos ver la configuración del master de red:
-
-```console
-[root@kubemaster ~]# ip a 
-1: lo: <LOOPBACK,UP,LOWER_UP> mtu 65536 qdisc noqueue state UNKNOWN group default qlen 1000
-    link/loopback 00:00:00:00:00:00 brd 00:00:00:00:00:00
-    inet 127.0.0.1/8 scope host lo
-       valid_lft forever preferred_lft forever
-    inet6 ::1/128 scope host 
-       valid_lft forever preferred_lft forever
-2: enp1s0: <BROADCAST,MULTICAST,UP,LOWER_UP> mtu 1500 qdisc fq_codel state UP group default qlen 1000
-    link/ether 52:54:00:b5:e5:fd brd ff:ff:ff:ff:ff:ff
-    inet 192.168.1.160/24 brd 192.168.1.255 scope global noprefixroute enp1s0
-       valid_lft forever preferred_lft forever
-    inet6 fe80::575b:3545:bbe3:d7b8/64 scope link noprefixroute 
-       valid_lft forever preferred_lft forever
-3: califb7b94e8489@if3: <BROADCAST,MULTICAST,UP,LOWER_UP> mtu 1450 qdisc noqueue state UP group default 
-    link/ether ee:ee:ee:ee:ee:ee brd ff:ff:ff:ff:ff:ff link-netns ef0488ff-2306-40cd-b73e-e22e96930eb3
-    inet6 fe80::ecee:eeff:feee:eeee/64 scope link 
-       valid_lft forever preferred_lft forever
-4: calieadd1ac9441@if3: <BROADCAST,MULTICAST,UP,LOWER_UP> mtu 1450 qdisc noqueue state UP group default 
-    link/ether ee:ee:ee:ee:ee:ee brd ff:ff:ff:ff:ff:ff link-netns 2737497d-4870-4081-8524-892c1c490fd6
-    inet6 fe80::ecee:eeff:feee:eeee/64 scope link 
-       valid_lft forever preferred_lft forever
-5: calieef5ab7c4dd@if3: <BROADCAST,MULTICAST,UP,LOWER_UP> mtu 1450 qdisc noqueue state UP group default 
-    link/ether ee:ee:ee:ee:ee:ee brd ff:ff:ff:ff:ff:ff link-netns 7204c8d2-e9a8-4665-9b5b-4ac07aadadf3
-    inet6 fe80::ecee:eeff:feee:eeee/64 scope link 
-       valid_lft forever preferred_lft forever
-6: cali4472774d629@if3: <BROADCAST,MULTICAST,UP,LOWER_UP> mtu 1450 qdisc noqueue state UP group default 
-    link/ether ee:ee:ee:ee:ee:ee brd ff:ff:ff:ff:ff:ff link-netns 761f7fac-f20d-4803-a945-82769c314a9a
-    inet6 fe80::ecee:eeff:feee:eeee/64 scope link 
-       valid_lft forever preferred_lft forever
-7: cali18a3987744e@if3: <BROADCAST,MULTICAST,UP,LOWER_UP> mtu 1450 qdisc noqueue state UP group default 
-    link/ether ee:ee:ee:ee:ee:ee brd ff:ff:ff:ff:ff:ff link-netns 6d229dbc-a415-4aa0-a82a-957d73dc3bc7
-    inet6 fe80::ecee:eeff:feee:eeee/64 scope link 
-       valid_lft forever preferred_lft forever
-10: vxlan.calico: <BROADCAST,MULTICAST,UP,LOWER_UP> mtu 1450 qdisc noqueue state UNKNOWN group default 
-    link/ether 66:a3:48:c8:28:0b brd ff:ff:ff:ff:ff:ff
-    inet 192.169.203.64/32 scope global vxlan.calico
-       valid_lft forever preferred_lft forever
-    inet6 fe80::64a3:48ff:fec8:280b/64 scope link 
-       valid_lft forever preferred_lft forever
-[root@kubemaster ~]# 
-```
-
 > ![INFORMATION](../imgs/information-icon.png) [Calico Quickstart](https://docs.projectcalico.org/getting-started/kubernetes/quickstart)
 
 > ![INFORMATION](../imgs/information-icon.png) [Calico Requirements](https://docs.projectcalico.org/getting-started/kubernetes/requirements)
