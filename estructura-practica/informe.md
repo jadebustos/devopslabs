@@ -67,11 +67,11 @@ Se debe entregar **ÚNICAMENTE** un informe en PDF que contenga la siguiente inf
   ```console
   $ kubectl get pv -A
   ```
-  **INCLUIR IMAGEN**
+  ![](../imgs/kubectl-get-pv.png)
 
   * Captura de la salida del comando:
 
   ```console
   $ kubectl get pvc -A
   ```
-  **INCLUIR IMAGEN**
+  ![](../imgs/kubectl-get-pvc.png)
