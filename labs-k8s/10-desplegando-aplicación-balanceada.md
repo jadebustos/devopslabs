@@ -412,7 +412,7 @@ En este caso el desplegar con un servicio de tipo **LoadBalancer** desplegaría 
 ![IMG](../imgs/SVC-LoadBalancer-Cloud-Provider.png)
 
 ```console
-kubectl get svc balanced-service --namespace webapp-balanced -o wide
+[kubeadmin@kubemaster network-policies]$ kubectl get svc balanced-service --namespace webapp-balanced -o wide
 NAME               TYPE           CLUSTER-IP      EXTERNAL-IP   PORT(S)        AGE    SELECTOR
 balanced-service   LoadBalancer   10.107.139.65   <pending>     80:30551/TCP   133m   app=webapp-balanced
 [kubeadmin@kubemaster network-policies]$
