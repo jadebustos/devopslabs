@@ -521,6 +521,8 @@ Después de desplegar la SDN veremos algo como esto:
 
 ![](../imgs/pod-network-crio.png)
 
+> ![INFORMATION](../imgs/information-icon.png) Dependiendo de la SDN desplegada los pods y el nombre pueden variar.
+
 Si nos fijamos aunque hemos inicializado la red de pods como **192.169.1.0/16** no vemos direccionamientos de estas redes. Sin embargo, vemos direccionamientos **10.85.0.X**. Este direccionamiento es asignado a los pods por el engine de contenedores, en este caso **CRI-O**, y los PODs en cuestión ya tienen direccionamiento asignado antes de desplegar la SDN. Llegados a este caso deberemos reiniciar el master para que las IPs a los pods las asigne la SDN que hemos desplegado:
 
 ![](../imgs/pod-network-sdn.png)

@@ -60,7 +60,7 @@ Se debe entregar **ÚNICAMENTE** un informe en PDF que contenga la siguiente inf
   ```console
   $ kubectl get ingress -A
   ```
-  **INCLUIR IMAGEN**
+  ![](../imgs/kubectl-get-ingress.png)
 
   * Captura de la salida del comando:
 

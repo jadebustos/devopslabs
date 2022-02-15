@@ -308,7 +308,7 @@ drwxr-xr-x. 2 root root  23 Feb  3 18:45 custom-php
 -rw-r--r--. 1 root root 116 Feb  3 18:45 index.php
 -rw-r--r--. 1 root root 164 Feb  3 18:45 start-apache.sh
 -rw-r--r--. 1 root root 218 Feb  3 18:45 virtualhost.conf
-[root@docker apache]# [root@docker apache]# docker build -t myapache .
+[root@docker apache]# docker build -t myapache .
 Sending build context to Docker daemon  6.656kB
 Step 1/9 : FROM php:7-apache
 7-apache: Pulling from library/php
