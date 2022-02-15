@@ -61,6 +61,8 @@ Data Base Updated
 Una vez que tenemos el certificado es necesario crear un secret con el certificado y la clave. Creamos el **secret** en kubernetes, incluye la clave y el certificado:
 
 ```console
+[kubeadmin@kubemaster ~]$ kubectl create namespace webapp-tls
+namespace/webapp-tls created
 [kubeadmin@kubemaster ~]$ kubectl create secret tls foo-tls-secret --key devopslabs/labs-k8s/webapp-tls/server.key --cert devopslabs/labs-k8s/webapp-tls/server.crt --namespace webapp-tls
 secret/foo-tls-secret created
 [kubeadmin@kubemaster ~]$ kubectl get secrets/foo-tls-secret --namespace webapp-tls

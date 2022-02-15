@@ -152,6 +152,13 @@ spec:
           initialDelaySeconds: 5
           periodSeconds: 5
           successThreshold: 1
+        volumeMounts:
+        - name: site-pvc
+          mountPath: /var/www/public
+      volumes:
+      - name: site-pvc
+        persistentVolumeClaim:
+          claimName: nfs-pvc
 ---
 apiVersion: v1
 kind: Service
