@@ -23,9 +23,9 @@ En el servidor NFS crearemos un share:
 
 ```console
 [root@kubemaster ~]# cat /etc/exports
-/srv/nfs/weblb 192.168.1.160(rw,sync)
-/srv/nfs/weblb 192.168.1.161(rw,sync)
-/srv/nfs/weblb 192.168.1.162(rw,sync)
+/srv/balanced 192.168.1.110(rw,sync)
+/srv/balanced 192.168.1.111(rw,sync)
+/srv/balanced 192.168.1.112(rw,sync)
 [root@kubemaster ~]# exportfs -r
 [root@kubemaster ~]#
 ```
@@ -40,7 +40,7 @@ Creamos el persistent volume y el claim:
 apiVersion: v1
 kind: PersistentVolume
 metadata:
-  name: nfs-pv
+  name: nfs-pv-balanced
   namespace: webapp-balanced
 spec:
   capacity:
@@ -54,13 +54,13 @@ spec:
     - hard
     - nfsvers=4.1
   nfs:
-    path: /srv/nfs/weblb
-    server: 192.168.1.160
+    path: /srv/balanced
+    server: 192.168.1.110
 ---
 apiVersion: v1
 kind: PersistentVolumeClaim
 metadata:
-  name: nfs-pvc
+  name: nfs-pvc-balanced
   namespace: webapp-balanced
 spec:
   storageClassName: nfs
@@ -116,12 +116,12 @@ spec:
           periodSeconds: 5
           successThreshold: 1
         volumeMounts:
-        - name: site-pvc
+        - name: site-pvc-balanced
           mountPath: /var/www/public
       volumes:
-      - name: site-pvc
+      - name: site-pvc-balanced
         persistentVolumeClaim:
-          claimName: nfs-pvc
+          claimName: nfs-pvc-balanced
 ```
 
 > ![TIP](../imgs/tip-icon.png) Incluimos una regla de antiafinidad ya que queremos que cada pod se esté ejecutando en un nodo diferente para evitar que si un nodo cae nos quedemos sin servicio.
@@ -188,8 +188,8 @@ Listamos los pods:
 
 ```console
 [kubeadmin@kubemaster webapp-balanced]$ kubectl get pods --namespace webapp-balanced -o wide
-NAME                               READY   STATUS    RESTARTS   AGE    IP               NODE                  NOMINATED NODE   READINESS GATES
-webapp-balanced-6f4f8dcd99-p2vd7   1/1     Running   0          117s   192.169.45.166   kubenode2.acme.es   <none>           <none>
+NAME                               READY   STATUS    RESTARTS   AGE   IP               NODE                NOMINATED NODE   READINESS GATES
+webapp-balanced-5897c4887c-zdjvv   1/1     Running   0          84s   192.169.232.24   kubenode1.acme.es   <none>           <none>
 [kubeadmin@kubemaster webapp-balanced]$
 ```
 
@@ -197,9 +197,9 @@ La ip expuesta para conexiones:
 
 ```console
 [kubeadmin@kubemaster webapp-balanced]$ kubectl get svc --namespace haproxy-controller
-NAME                      TYPE        CLUSTER-IP       EXTERNAL-IP   PORT(S)                                     AGE
-haproxy-ingress           NodePort    10.102.13.90     <none>        80:31716/TCP,443:32613/TCP,1024:32192/TCP   11d
-ingress-default-backend   ClusterIP   10.110.195.119   <none>        8080/TCP                                    11d
+NAME                                         TYPE        CLUSTER-IP       EXTERNAL-IP   PORT(S)                                     AGE
+haproxy-kubernetes-ingress                   NodePort    10.104.187.186   <none>        80:31826/TCP,443:30886/TCP,1024:31734/TCP   3d1h
+haproxy-kubernetes-ingress-default-backend   ClusterIP   10.103.195.4     <none>        8080/TCP 
 [kubeadmin@kubemaster webapp-balanced]$ 
 ```
 
@@ -215,9 +215,9 @@ Escalamos el deployment para tener dos pods:
 [kubeadmin@kubemaster webapp-balanced]$ kubectl scale --replicas=2 deployment/webapp-balanced --namespace=webapp-balanced
 deployment.apps/webapp-balanced scaled
 [kubeadmin@kubemaster webapp-balanced]$ kubectl get pods --namespace webapp-balanced -o wide
-NAME                               READY   STATUS    RESTARTS   AGE     IP               NODE                  NOMINATED NODE   READINESS GATES
-webapp-balanced-6f4f8dcd99-b4qpj   1/1     Running   0          20s     192.169.62.43    kubenode1.acme.es   <none>           <none>
-webapp-balanced-6f4f8dcd99-p2vd7   1/1     Running   0          8m16s   192.169.45.166   kubenode2.acme.es   <none>           <none>
+NAME                               READY   STATUS    RESTARTS   AGE   IP               NODE                NOMINATED NODE   READINESS GATES
+webapp-balanced-7b84c97b95-9k85s   1/1     Running   0          94s   192.169.232.27   kubenode1.acme.es   <none>           <none>
+webapp-balanced-7b84c97b95-blh6w   1/1     Running   0          12s   192.169.49.91    kubenode2.acme.es   <none>           <none>
 [kubeadmin@kubemaster webapp-balanced]$
 ```
 
@@ -235,10 +235,11 @@ Escalamos la aplicación para tener tres pods:
 [kubeadmin@kubemaster devopslabs]$ kubectl scale --replicas=3 deployment/webapp-balanced --namespace=webapp-balanced
 deployment.apps/webapp-balanced scaled
 [kubeadmin@kubemaster devopslabs]$ kubectl get pods --namespace webapp-balanced -o wide
-NAME                               READY   STATUS    RESTARTS   AGE     IP               NODE                  NOMINATED NODE   READINESS GATES
-webapp-balanced-6f4f8dcd99-9pdqs   1/1     Running   0          5m17s   192.169.45.163   kubenode2.acme.es   <none>           <none>
-webapp-balanced-6f4f8dcd99-drxfw   0/1     Pending   0          7s      <none>           <none>                <none>           <none>
-webapp-balanced-6f4f8dcd99-zfspg   1/1     Running   0          3m11s   192.169.62.38    kubenode1.acme.es   <none>           <none>
+NAME                               READY   STATUS    RESTARTS   AGE     IP               NODE                NOMINATED NODE   READINESS GATES
+webapp-balanced-7b84c97b95-9nd6s   1/1     Running   0          95s     192.169.232.14   kubenode1.acme.es   <none>           <none>
+webapp-balanced-7b84c97b95-cghdx   0/1     Pending   0          25s      <none>           <none>             <none>           <none>
+webapp-balanced-7b84c97b95-k98jf   1/1     Running   1          4h32m   192.169.49.88    kubenode2.acme.es   <none>           <none>
+
 [kubeadmin@kubemaster devopslabs]$
 ```
 
@@ -246,10 +247,10 @@ Vemos que el tercer pod no se ha desplegado. En el clúster tenemos dos nodos y 
 
 ```console
 [kubeadmin@kubemaster devopslabs]$ kubectl get nodes
-NAME                   STATUS   ROLES                  AGE   VERSION
-kubemaster.acme.es   Ready    control-plane,master   11d   v1.21.1
-kubenode1.acme.es    Ready    <none>                 11d   v1.21.1
-kubenode2.acme.es    Ready    <none>                 9d    v1.21.1
+NAME                 STATUS   ROLES                  AGE    VERSION
+kubemaster.acme.es   Ready    control-plane,master   3d1h   v1.23.3
+kubenode1.acme.es    Ready    <none>                 3d1h   v1.23.3
+kubenode2.acme.es    Ready    <none>                 3d1h   v1.23.3
 [kubeadmin@kubemaster devopslabs]$ 
 ```
 
@@ -257,23 +258,10 @@ Podemos ver los eventos del namespace en el que vemos que no se cumplen las regl
 
 ```console
 [kubeadmin@kubemaster devopslabs]$ kubectl get events --namespace webapp-balanced
-LAST SEEN   TYPE      REASON              OBJECT                                  MESSAGE
-5m49s       Normal    Scheduled           pod/webapp-balanced-6f4f8dcd99-9pdqs    Successfully assigned webapp-balanced/webapp-balanced-6f4f8dcd99-9pdqs to kubenode2.acme.es
-5m46s       Normal    Pulled              pod/webapp-balanced-6f4f8dcd99-9pdqs    Container image "quay.io/rhte_2019/webapp:v1" already present on machine
-5m45s       Normal    Created             pod/webapp-balanced-6f4f8dcd99-9pdqs    Created container webapp-balanced
-5m45s       Normal    Started             pod/webapp-balanced-6f4f8dcd99-9pdqs    Started container webapp-balanced
-38s         Warning   FailedScheduling    pod/webapp-balanced-6f4f8dcd99-drxfw    0/3 nodes are available: 1 node(s) had taint {node-role.kubernetes.io/master: }, that the pod didn't tolerate, 2 node(s) didn't match pod affinity/anti-affinity rules, 2 node(s) didn't match pod anti-affinity rules.
-36s         Warning   FailedScheduling    pod/webapp-balanced-6f4f8dcd99-drxfw    0/3 nodes are available: 1 node(s) had taint {node-role.kubernetes.io/master: }, that the pod didn't tolerate, 2 node(s) didn't match pod affinity/anti-affinity rules, 2 node(s) didn't match pod anti-affinity rules.
-3m43s       Normal    Scheduled           pod/webapp-balanced-6f4f8dcd99-zfspg    Successfully assigned webapp-balanced/webapp-balanced-6f4f8dcd99-zfspg to kubenode1.acme.es
-3m41s       Normal    Pulled              pod/webapp-balanced-6f4f8dcd99-zfspg    Container image "quay.io/rhte_2019/webapp:v1" already present on machine
-3m41s       Normal    Created             pod/webapp-balanced-6f4f8dcd99-zfspg    Created container webapp-balanced
-3m40s       Normal    Started             pod/webapp-balanced-6f4f8dcd99-zfspg    Started container webapp-balanced
-5m49s       Normal    SuccessfulCreate    replicaset/webapp-balanced-6f4f8dcd99   Created pod: webapp-balanced-6f4f8dcd99-9pdqs
-3m43s       Normal    SuccessfulCreate    replicaset/webapp-balanced-6f4f8dcd99   Created pod: webapp-balanced-6f4f8dcd99-zfspg
-39s         Normal    SuccessfulCreate    replicaset/webapp-balanced-6f4f8dcd99   Created pod: webapp-balanced-6f4f8dcd99-drxfw
-5m49s       Normal    ScalingReplicaSet   deployment/webapp-balanced              Scaled up replica set webapp-balanced-6f4f8dcd99 to 1
-3m43s       Normal    ScalingReplicaSet   deployment/webapp-balanced              Scaled up replica set webapp-balanced-6f4f8dcd99 to 2
-39s         Normal    ScalingReplicaSet   deployment/webapp-balanced              Scaled up replica set webapp-balanced-6f4f8dcd99 to 3
+...
+38s         Warning   FailedScheduling    pod/webapp-balanced-7b84c97b95-cghdx    0/3 nodes are available: 1 node(s) had taint {node-role.kubernetes.io/master: }, that the pod didn't tolerate, 2 node(s) didn't match pod affinity/anti-affinity rules, 2 node(s) didn't match pod anti-affinity rules.
+36s         Warning   FailedScheduling    pod/webapp-balanced-7b84c97b95-cghdx   0/3 nodes are available: 1 node(s) had taint {node-role.kubernetes.io/master: }, that the pod didn't tolerate, 2 node(s) didn't match pod affinity/anti-affinity rules, 2 node(s) didn't match pod anti-affinity rules.
+...
 [kubeadmin@kubemaster devopslabs]$ 
 ```
 
@@ -291,12 +279,12 @@ Selector:                 app=webapp-balanced
 Type:                     LoadBalancer
 IP Family Policy:         SingleStack
 IP Families:              IPv4
-IP:                       10.107.139.65
-IPs:                      10.107.139.65
+IP:                       10.110.197.47
+IPs:                      10.110.197.47
 Port:                     http  80/TCP
 TargetPort:               80/TCP
-NodePort:                 http  31707/TCP
-Endpoints:                192.169.45.166:80,192.169.62.43:80
+NodePort:                 http  30339/TCP
+Endpoints:                192.169.232.14:80,192.169.232.15:80,192.169.49.88:80
 Session Affinity:         None
 External Traffic Policy:  Cluster
 Events:                   <none>

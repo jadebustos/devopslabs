@@ -9,7 +9,7 @@ metadata:
 apiVersion: v1
 kind: PersistentVolume
 metadata:
-  name: nfs-pv
+  name: nfs-pv-balanced
   namespace: webapp-balanced
 spec:
   capacity:
@@ -23,13 +23,13 @@ spec:
     - hard
     - nfsvers=4.1
   nfs:
-    path: /srv/nfs/weblb
-    server: 192.168.1.160
+    path: /srv/balanced
+    server: 192.168.1.110
 ---
 apiVersion: v1
 kind: PersistentVolumeClaim
 metadata:
-  name: nfs-pvc
+  name: nfs-pvc-balanced
   namespace: webapp-balanced
 spec:
   storageClassName: nfs
@@ -79,12 +79,12 @@ spec:
           periodSeconds: 5
           successThreshold: 1
         volumeMounts:
-        - name: site-pvc
+        - name: site-pvc-balanced
           mountPath: /var/www/public
       volumes:
-      - name: site-pvc
+      - name: site-pvc-balanced
         persistentVolumeClaim:
-          claimName: nfs-pvc
+          claimName: nfs-pvc-balanced
 ---
 apiVersion: v1
 kind: Service
