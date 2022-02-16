@@ -96,23 +96,23 @@ Ahora hemos definido el servicio de tipo **NodePort**. En los anteriores ejemplo
 
 Un servicio creado como **NodePort** expone el servicio en un puerto estático en el nodo que ejecuta el pod. Este puerto se indica con **nodePort** y en este caso se va a exponer en el puerto **31234**.
 
-Para desplegar PostgreSQL procedemos:
+Para desplegar PostgreSQL procedemos con el [Deployment](postgres/postgres.yaml):
 
 ```console
-[kubeadmin@kubemaster postgresql]$ kubectl apply -f postgres.yaml 
+[kubeadmin@kubemaster postgres]$ kubectl apply -f postgres.yaml 
 namespace/postgres created
 deployment.apps/postgres created
 service/postgres-service created
-[kubeadmin@kubemaster postgresql]$ kubectl get pods --namespace=postgres -o wide
+[kubeadmin@kubemaster postgres]$ kubectl get pods --namespace=postgres -o wide
 NAME                        READY   STATUS    RESTARTS   AGE   IP               NODE                NOMINATED NODE   READINESS GATES
 postgres-6dfcf566fc-hcls6   1/1     Running   0          9s    192.169.232.28   kubenode1.acme.es   <none>           <none>
-[kubeadmin@kubemaster postgresql]$
+[kubeadmin@kubemaster postgres]$
 ```
 
 Los servicios creados:
 
 ```console
-[kubeadmin@kubemaster postgresql]$ kubectl get svc -A -o wide
+[kubeadmin@kubemaster postgres]$ kubectl get svc -A -o wide
 NAMESPACE            NAME                                         TYPE        CLUSTER-IP       EXTERNAL-IP   PORT(S)                                     AGE     SELECTOR
 calico-system        calico-kube-controllers-metrics              ClusterIP   10.110.61.65     <none>        9094/TCP                                    2d      k8s-app=calico-kube-controllers
 calico-system        calico-typha                                 ClusterIP   10.106.50.61     <none>        5473/TCP                                    2d      k8s-app=calico-typha
@@ -124,7 +124,7 @@ postgres             postgres-service                             NodePort    10
 webapp-routed        webapp-service                               ClusterIP   10.111.154.238   <none>        80/TCP                                      4h15m   app=webapp-routed
 webapp-tls           webapp-tls-service                           ClusterIP   10.105.148.63    <none>        443/TCP                                     3h21m   app=webapp-tls
 webapp-volumes       volumes-service                              ClusterIP   10.96.145.167    <none>        80/TCP                                      3h37m   app=webapp-volumes
-[kubeadmin@kubemaster postgresql]$
+[kubeadmin@kubemaster postgres]$
 ```
 
 Como podemos ver PostgreSQL se está ejecutando en un container en el nodo **kubenode1.acme.es**, luego si accedemos a ese nodo al puerto **31234** podremos logearnos:
@@ -151,9 +151,15 @@ postgres=# \l
 postgres=# 
 ```
 
-Esta configuración presenta un problema, y gordo. Necesitaremos conocer en que nodo del cluster se está ejecutando lo cual no será posible.
+Esta configuración presenta dos problemas:
 
-Para solucionar este problema se configura un balanceador externo que balancea a todos los nodos del cluster al puerto definido como **nodePort**. De esta forma para conectarnos a PostgreSQL atacaremos el servicio balanceado.
+1. Necesitaremos conocer en que nodo del cluster se está ejecutando lo cual no será posible.
+
+   Para solucionar este problema se configura un balanceador externo que balancea a todos los nodos del cluster al puerto definido como **nodePort**. De esta forma para conectarnos a PostgreSQL atacaremos el servicio balanceado.
+
+2. Los contenedores son efímeros, por lo tanto cualquier escritura en la bbdd se perdera al parar el pod.
+
+> ![HOMEWORK](../imgs/homework-icon.png) Se deberá mapear un volumen persistente en el directorio del pod donde se encuentran los ficheros de la bbdd para que las escrituras se persistan.
 
 ## Configurando un balanceador externo
 
