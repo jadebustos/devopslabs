@@ -148,21 +148,6 @@ spec:
       targetPort: 80
     type: LoadBalancer
 ---
-apiVersion: v1
-kind: Service
-metadata:
-    name: balanced-service
-    namespace: webapp-balanced
-spec:
-    selector:
-      app: webapp-balanced
-    ports:
-    - name: http
-      protocol: TCP
-      port: 80
-      targetPort: 80
-    type: LoadBalancer
----
 apiVersion: networking.k8s.io/v1
 kind: Ingress
 metadata:
