@@ -111,7 +111,7 @@ postgres-6dfcf566fc-hcls6   1/1     Running   0          9s    192.169.232.28   
 
 Los servicios creados:
 
-```yaml
+```console
 [kubeadmin@kubemaster postgresql]$ kubectl get svc -A -o wide
 NAMESPACE            NAME                                         TYPE        CLUSTER-IP       EXTERNAL-IP   PORT(S)                                     AGE     SELECTOR
 calico-system        calico-kube-controllers-metrics              ClusterIP   10.110.61.65     <none>        9094/TCP                                    2d      k8s-app=calico-kube-controllers
@@ -149,4 +149,49 @@ postgres=# \l
 (3 rows)
 
 postgres=# 
+```
+
+Esta configuración presenta un problema, y gordo. Necesitaremos conocer en que nodo del cluster se está ejecutando lo cual no será posible.
+
+Para solucionar este problema se configura un balanceador externo que balancea a todos los nodos del cluster al puerto definido como **nodePort**. De esta forma para conectarnos a PostgreSQL atacaremos el servicio balanceado.
+
+## Configurando un balanceador externo
+
+Si desplegamos dos máquinas CentOS 8 Stream con los siguientes requerimientos:
+
+* Creado un usuario **ansible** con acceso a sudo sin password.
+* Configurada una clave SSH para hacer ssh con el usuario **ansible**.
+
+Con el siguiente fichero de inventario:
+
+```ini
+[all:vars]
+ansible_user=ansible
+
+[lb]
+192.168.1.121
+192.168.1.122
+
+[master]
+192.168.1.121
+
+[backup]
+192.168.1.122
+```
+
+Se configurará un **haproxy** en alta disponibilidad utilizando **keepalived** para acceder al PostgreSQL que hemos desplegado en kubernetes.
+
+Para ello en [postgres/ansible/group_vars/haproxy.yaml](postgres/ansible/group_vars/haproxy.yaml) configuramos:
+
+* **worker1** con la ip del primer worker.
+* **worker2** con la ip del segundo worker.
+
+Y en [postgres/ansible/group_vars/keepalived.yaml](postgres/ansible/group_vars/keepalived.yaml) configuramos:
+
+* **vip** configuramos la vip que utilizaremos para acceder al PostgreSQL.
+
+Una vez hayamos configurado lo anterior para configurar el balanceador:
+
+```console
+[jadebustos@archimedes ansible]$ ansible-playbook -i hosts deploy-balancer.yaml
 ```
