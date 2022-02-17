@@ -215,9 +215,9 @@ Escalamos el deployment para tener dos pods:
 [kubeadmin@kubemaster webapp-balanced]$ kubectl scale --replicas=2 deployment/webapp-balanced --namespace=webapp-balanced
 deployment.apps/webapp-balanced scaled
 [kubeadmin@kubemaster webapp-balanced]$ kubectl get pods --namespace webapp-balanced -o wide
-NAME                               READY   STATUS    RESTARTS   AGE   IP               NODE                NOMINATED NODE   READINESS GATES
-webapp-balanced-7b84c97b95-9k85s   1/1     Running   0          94s   192.169.232.27   kubenode1.acme.es   <none>           <none>
-webapp-balanced-7b84c97b95-blh6w   1/1     Running   0          12s   192.169.49.91    kubenode2.acme.es   <none>           <none>
+NAME                               READY   STATUS    RESTARTS   AGE    IP               NODE                NOMINATED NODE   READINESS GATES
+webapp-balanced-5897c4887c-89s4n   1/1     Running   0          11s    192.169.49.92    kubenode2.acme.es   <none>           <none>
+webapp-balanced-5897c4887c-zdjvv   1/1     Running   0          6m7s   192.169.232.24   kubenode1.acme.es   <none>           <none>
 [kubeadmin@kubemaster webapp-balanced]$
 ```
 
@@ -236,10 +236,9 @@ Escalamos la aplicación para tener tres pods:
 deployment.apps/webapp-balanced scaled
 [kubeadmin@kubemaster devopslabs]$ kubectl get pods --namespace webapp-balanced -o wide
 NAME                               READY   STATUS    RESTARTS   AGE     IP               NODE                NOMINATED NODE   READINESS GATES
-webapp-balanced-7b84c97b95-9nd6s   1/1     Running   0          95s     192.169.232.14   kubenode1.acme.es   <none>           <none>
-webapp-balanced-7b84c97b95-cghdx   0/1     Pending   0          25s      <none>           <none>             <none>           <none>
-webapp-balanced-7b84c97b95-k98jf   1/1     Running   1          4h32m   192.169.49.88    kubenode2.acme.es   <none>           <none>
-
+webapp-balanced-5897c4887c-89s4n   1/1     Running   0          2m48s   192.169.49.92    kubenode2.acme.es   <none>           <none>
+webapp-balanced-5897c4887c-x7xch   0/1     Pending   0          27s     <none>           <none>              <none>           <none>
+webapp-balanced-5897c4887c-zdjvv   1/1     Running   0          8m44s   192.169.232.24   kubenode1.acme.es   <none>           <none>
 [kubeadmin@kubemaster devopslabs]$
 ```
 
@@ -259,8 +258,7 @@ Podemos ver los eventos del namespace en el que vemos que no se cumplen las regl
 ```console
 [kubeadmin@kubemaster devopslabs]$ kubectl get events --namespace webapp-balanced
 ...
-38s         Warning   FailedScheduling    pod/webapp-balanced-7b84c97b95-cghdx    0/3 nodes are available: 1 node(s) had taint {node-role.kubernetes.io/master: }, that the pod didn't tolerate, 2 node(s) didn't match pod affinity/anti-affinity rules, 2 node(s) didn't match pod anti-affinity rules.
-36s         Warning   FailedScheduling    pod/webapp-balanced-7b84c97b95-cghdx   0/3 nodes are available: 1 node(s) had taint {node-role.kubernetes.io/master: }, that the pod didn't tolerate, 2 node(s) didn't match pod affinity/anti-affinity rules, 2 node(s) didn't match pod anti-affinity rules.
+59s         Warning   FailedScheduling         pod/webapp-balanced-5897c4887c-x7xch    0/3 nodes are available: 1 node(s) had taint {node-role.kubernetes.io/master: }, that the pod didn't tolerate, 2 node(s) didn't match pod anti-affinity rules.
 ...
 [kubeadmin@kubemaster devopslabs]$ 
 ```
@@ -284,13 +282,13 @@ IPs:                      10.110.197.47
 Port:                     http  80/TCP
 TargetPort:               80/TCP
 NodePort:                 http  30339/TCP
-Endpoints:                192.169.232.14:80,192.169.232.15:80,192.169.49.88:80
+Endpoints:                192.169.232.24:80,192.169.49.92:80
 Session Affinity:         None
 External Traffic Policy:  Cluster
 Events:                   <none>
 [kubeadmin@kubemaster webapp-balanced]$ kubectl get svc balanced-service --namespace webapp-balanced -o wide
 NAME               TYPE           CLUSTER-IP      EXTERNAL-IP   PORT(S)        AGE    SELECTOR
-balanced-service   LoadBalancer   10.107.139.65   <pending>     80:30551/TCP   133m   app=webapp-balanced
+balanced-service   LoadBalancer   10.110.197.47   <pending>     80:30339/TCP   5h5m   app=webapp-balanced
 [kubeadmin@kubemaster network-policies]$
 ```
 
@@ -304,22 +302,24 @@ metadata:
   annotations:
     kubectl.kubernetes.io/last-applied-configuration: |
       {"apiVersion":"v1","kind":"Service","metadata":{"annotations":{},"name":"balanced-service","namespace":"webapp-balanced"},"spec":{"ports":[{"name":"http","port":80,"protocol":"TCP","targetPort":80}],"selector":{"app":"webapp-balanced"},"type":"LoadBalancer"}}
-  creationTimestamp: "2021-06-20T09:49:09Z"
+  creationTimestamp: "2022-02-16T18:59:01Z"
   name: balanced-service
   namespace: webapp-balanced
-  resourceVersion: "138095"
-  uid: 938861ad-3f63-40ea-a7e2-52150aa4bd70
+  resourceVersion: "171850"
+  uid: 8479a356-276b-4918-bc62-c7289bb33e62
 spec:
-  clusterIP: 10.107.139.65
+  allocateLoadBalancerNodePorts: true
+  clusterIP: 10.110.197.47
   clusterIPs:
-  - 10.107.139.65
+  - 10.110.197.47
   externalTrafficPolicy: Cluster
+  internalTrafficPolicy: Cluster
   ipFamilies:
   - IPv4
   ipFamilyPolicy: SingleStack
   ports:
   - name: http
-    nodePort: 31707
+    nodePort: 30339
     port: 80
     protocol: TCP
     targetPort: 80
@@ -337,7 +337,7 @@ Prestemos atención a:
 ```yaml
   ports:
   - name: http
-    nodePort: 31707
+    nodePort: 30339
     port: 80
     protocol: TCP
     targetPort: 80
@@ -349,20 +349,23 @@ Prestemos atención a:
 + **port** indica el puerto expuesto internamente.
 + **targetPort** indica el puerto en el que los contenedores están escuchando.
 
-Se ha expuesto la aplicación por un puerto en el nodo master, 31707:
+Se ha expuesto la aplicación por un puerto (nodeport) en el nodo master, 30339:
 
 ```console
-[kubeadmin@kubemaster webapp-balanced]$ netstat -ln | grep 31707
-tcp        0      0 0.0.0.0:31707           0.0.0.0:*               LISTEN     
+[kubeadmin@kubemaster webapp-balanced]$ netstat -ln | grep 30339
+tcp        0      0 0.0.0.0:30339           0.0.0.0:*               LISTEN    
 [kubeadmin@kubemaster webapp-balanced]$
 ```
+
+> ![HOMEWORK](../imgs/homework-icon.png) También en los workers. Prueba a acceder a los workers y al puerto **30339**.
+
 Si accedemos a la aplicación por ese puerto:
 
 ![IMG](../imgs/webapp-balanced-nodeport.png)
 
 Si recargamos la página con el navegador veremos que la dirección IP no cambia. Si lo hacemos varias veces terminará cambiando la dirección IP (balanceará al otro contenedor).
 
-Cuando accedemos al servicio por **http://foo-balanced.bar:31716/balanced** estamos accediendo por el ingress, que reenvia la petición al servicio y desde el servicio se balancea a los pods que se encuentren levantados. Sin embargro, cuando accedemos utilizando el nodePort creado al indicar que el servicio es de tipo **LoadBalancer** es decir por la url **http://foo-balanced.bar:31707** estamos accediendo por el balanceador creado.
+Cuando accedemos al servicio por **http://foo-balanced.bar:31826/balanced** estamos accediendo por el ingress, que reenvia la petición al servicio y desde el servicio se balancea a los pods que se encuentren levantados. Sin embargro, cuando accedemos utilizando el nodePort creado al indicar que el servicio es de tipo **LoadBalancer**, es decir por la url **http://foo-balanced.bar:30339**, estamos accediendo por el balanceador creado.
 
 Luego con esta configuración tenemos dos accesos posibles a la aplicación.
 
@@ -372,7 +375,7 @@ En los siguientes apartados vamos a clarificar esto.
 
 Hemos especificado que el servicio es de tipo [LoadBalancer](https://kubernetes.io/docs/concepts/services-networking/service/#loadbalancer), este tipo requiere de un balanceador externo proporcionado por un proveedor cloud (**AWS**, **Azure**, **GCP**, ...). Pero no estamos utilizando ningún balanceador externo. ¿Que está pasando?
 
-Un balanceador externo recibirá las peticiones y serán balanceadas a **http://foo-balanced.bar:31707**. Como no tenemos ninguno estamos accediendo directamente al puerto. Cuando despleguemos en un proveedor cloud al crear un servicio de tipo **LoadBalancer** se creará un balanceador que balanceará el tráfico a los pods.
+Un balanceador externo recibirá las peticiones y serán balanceadas a **http://foo-balanced.bar:30339**. Como no tenemos ninguno desplegado estamos accediendo directamente al puerto. Cuando despleguemos en un proveedor cloud al crear un servicio de tipo **LoadBalancer** se creará un balanceador que balanceará el tráfico a los pods.
 
 Si utilizamos un servicio de tipo **LoadBalancer** no necesitaremos crear el ingress. En este caso como no hemos desplegado en un cloud provider:
 
