@@ -448,15 +448,13 @@ status:
 
 Podemos observar que el nodeport ya no se encuentra presente.
 
-> ![HOMEWORK](../imgs/homework-icon.png) Redespliega la aplicación eliminando el ingress. Verifica que se realiza el balanceo y que no hay acceso por el ingress.
-
 ## Acceso por un servicio de tipo NodePort
 
 Con un servicio de tipo [NodePort](https://kubernetes.io/docs/concepts/services-networking/service/#nodeport) no es necesario un ingress. 
 
 ![IMG](../imgs/SVC-NodePort.png)
 
-> ![HOMEWORK](../imgs/homework-icon.png) Redespliega la aplicación eliminando el ingress y configurando el servicio como **NodePort**.
+> ![HOMEWORK](../imgs/homework-icon.png) Redespliega la aplicación eliminando el ingress, configurando el servicio como **NodePort** y que no hay acceso por el ingress.
 
 Este tipo de acceso expone un puerto en el master a través del cual será accesible la aplicación:
 
@@ -467,15 +465,15 @@ Namespace:                webapp-balanced
 Labels:                   <none>
 Annotations:              <none>
 Selector:                 app=webapp-balanced
-Type:                     NodePort
+Type:                     LoadBalancer
 IP Family Policy:         SingleStack
 IP Families:              IPv4
-IP:                       10.103.138.209
-IPs:                      10.103.138.209
+IP:                       10.97.148.96
+IPs:                      10.97.148.96
 Port:                     http  80/TCP
 TargetPort:               80/TCP
-NodePort:                 http  31183/TCP
-Endpoints:                192.169.45.168:80
+NodePort:                 http  30928/TCP
+Endpoints:                192.169.232.47:80,192.169.49.93:80
 Session Affinity:         None
 External Traffic Policy:  Cluster
 Events:                   <none>
@@ -485,36 +483,38 @@ kind: Service
 metadata:
   annotations:
     kubectl.kubernetes.io/last-applied-configuration: |
-      {"apiVersion":"v1","kind":"Service","metadata":{"annotations":{},"name":"balanced-service","namespace":"webapp-balanced"},"spec":{"ports":[{"name":"http","port":80,"protocol":"TCP","targetPort":80}],"selector":{"app":"webapp-balanced"},"type":"NodePort"}}
-  creationTimestamp: "2021-06-20T13:23:50Z"
+      {"apiVersion":"v1","kind":"Service","metadata":{"annotations":{},"name":"balanced-service","namespace":"webapp-balanced"},"spec":{"ports":[{"name":"http","port":80,"protocol":"TCP","targetPort":80}],"selector":{"app":"webapp-balanced"},"type":"LoadBalancer"}}
+  creationTimestamp: "2022-02-17T00:51:07Z"
   name: balanced-service
   namespace: webapp-balanced
-  resourceVersion: "173008"
-  uid: b593443d-3256-44f7-b8d9-3fcc80f8f06b
+  resourceVersion: "195132"
+  uid: f35fad18-dc2b-4410-a8df-17686d7c37bb
 spec:
-  clusterIP: 10.103.138.209
+  allocateLoadBalancerNodePorts: true
+  clusterIP: 10.97.148.96
   clusterIPs:
-  - 10.103.138.209
+  - 10.97.148.96
   externalTrafficPolicy: Cluster
+  internalTrafficPolicy: Cluster
   ipFamilies:
   - IPv4
   ipFamilyPolicy: SingleStack
   ports:
   - name: http
-    nodePort: 31183
+    nodePort: 30928
     port: 80
     protocol: TCP
     targetPort: 80
   selector:
     app: webapp-balanced
   sessionAffinity: None
-  type: NodePort
+  type: LoadBalancer
 status:
   loadBalancer: {}
 [kubeadmin@kubemaster webapp-balanced]$
 ```
 
-Si observamos las salidas anteriores y las comparamos con las del servicio de tipo **LoadBalancer** veremos que son iguales. Es debido a que en ambos casos se está utilizando un **NodePort**. Cuando no utilizamos un balanceador externo, desactivando **NodePort** ambos servicios son equivalentes. Al desactivar **NodePort** y utilizar un balanceador externo se balanceará directamente a los pods.
+Si observamos las salidas anteriores y las comparamos con las del servicio de tipo **LoadBalancer** veremos que son iguales. Es debido a que en ambos casos se está utilizando un **NodePort**. Cuando no utilizamos un balanceador externo, desactivando **NodePort** ambos servicios son equivalentes. Al desactivar **NodePort** y utilizar un balanceador externo se balanceará directamente a los pods ya que en los workers se encuentra creado el **NodePort**.
 
 ## Acceso por un servicio de tipo ClusterIP
 
