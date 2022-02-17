@@ -530,7 +530,7 @@ Cuando hemos creado aplicaciones accesibles desde el exterior hemos utilizado un
 
 > ![HOMEWORK](../imgs/homework-icon.png) Después de desplegar la aplicación y antes de escalarla para tener dos pods conectarese al pod del ingress y revisar la configuración del haproxy para ver como está definido el balanceo al único pod.
 
-> ![HOMEWORK](../imgs/homework-icon.png) Escalar la aplicación a dos pods y revisar la configuración del haproxy para ver como está definido el balanceo a los dos pods.
+> ![HOMEWORK](../imgs/homework-icon.png) Escalar la aplicación a dos pods y revisa la configuración del haproxy para ver como está definido el balanceo a los dos pods.
 
 > ![TIP](../imgs/tip-icon.png) En [actividades anteriores](03-desplegando-routed-application.md) ya hemos visto como conectarse al pod del ingress y revisar la configuración del haproxy.
 
@@ -546,11 +546,11 @@ Selector:          app=webapp-balanced
 Type:              ClusterIP
 IP Family Policy:  SingleStack
 IP Families:       IPv4
-IP:                10.101.93.25
-IPs:               10.101.93.25
+IP:                10.96.0.241
+IPs:               10.96.0.241
 Port:              http  80/TCP
 TargetPort:        80/TCP
-Endpoints:         192.169.45.171:80,192.169.62.47:80
+Endpoints:         192.169.232.54:80,192.169.49.94:80
 Session Affinity:  None
 Events:            <none>
 [kubeadmin@kubemaster webapp-balanced]$ kubectl get svc balanced-service --namespace webapp-balanced -o yaml
@@ -560,15 +560,16 @@ metadata:
   annotations:
     kubectl.kubernetes.io/last-applied-configuration: |
       {"apiVersion":"v1","kind":"Service","metadata":{"annotations":{},"name":"balanced-service","namespace":"webapp-balanced"},"spec":{"ports":[{"name":"http","port":80,"protocol":"TCP","targetPort":80}],"selector":{"app":"webapp-balanced"}}}
-  creationTimestamp: "2021-06-20T13:38:28Z"
+  creationTimestamp: "2022-02-17T01:11:14Z"
   name: balanced-service
   namespace: webapp-balanced
-  resourceVersion: "175274"
-  uid: 2888ee98-d3ec-42bc-8354-7b0ca0c8ddda
+  resourceVersion: "198233"
+  uid: 67e13cbc-d4ca-4161-99d2-6b77a9216f5d
 spec:
-  clusterIP: 10.101.93.25
+  clusterIP: 10.96.0.241
   clusterIPs:
-  - 10.101.93.25
+  - 10.96.0.241
+  internalTrafficPolicy: Cluster
   ipFamilies:
   - IPv4
   ipFamilyPolicy: SingleStack
@@ -591,6 +592,7 @@ Para acceder a la aplicación:
 ```console
 [kubeadmin@kubemaster webapp-balanced]$ kubectl describe ingress balanced-ingress --namespace webapp-balanced
 Name:             balanced-ingress
+Labels:           app=webapp-balanced
 Namespace:        webapp-balanced
 Address:          
 Default backend:  default-http-backend:80 (<error: endpoints "default-http-backend" not found>)
@@ -598,17 +600,17 @@ Rules:
   Host              Path  Backends
   ----              ----  --------
   foo-balanced.bar  
-                    /balanced   balanced-service:80 (192.169.45.171:80,192.169.62.47:80)
+                    /balanced   balanced-service:80 (192.169.232.54:80,192.169.49.94:80)
 Annotations:        haproxy.org/path-rewrite: /
 Events:             <none>
 [kubeadmin@kubemaster webapp-balanced]$ kubectl get svc --namespace haproxy-controller
-NAME                      TYPE        CLUSTER-IP       EXTERNAL-IP   PORT(S)                                     AGE
-haproxy-ingress           NodePort    10.102.13.90     <none>        80:31716/TCP,443:32613/TCP,1024:32192/TCP   11d
-ingress-default-backend   ClusterIP   10.110.195.119   <none>        8080/TCP                                    11d
+NAME                                         TYPE        CLUSTER-IP       EXTERNAL-IP   PORT(S)                                     AGE
+haproxy-kubernetes-ingress                   NodePort    10.104.187.186   <none>        80:31826/TCP,443:30886/TCP,1024:31734/TCP   3d2h
+haproxy-kubernetes-ingress-default-backend   ClusterIP   10.103.195.4     <none>        8080/TCP                                    3d2h
 [kubeadmin@kubemaster webapp-balanced]$
 ```
 
-lo haremos a través **http://foo-balanced.bar:31716/balanced** y si recargamos la página cada carga será servida por un pod.
+lo haremos a través **http://foo-balanced.bar:31826/balanced** y si recargamos la página cada carga será servida por un pod.
 
 Por lo tanto para balancear utilizando un ingress a varios pods no es necesario nada más.
 
