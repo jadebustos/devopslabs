@@ -357,15 +357,17 @@ tcp        0      0 0.0.0.0:30339           0.0.0.0:*               LISTEN
 [kubeadmin@kubemaster webapp-balanced]$
 ```
 
-> ![HOMEWORK](../imgs/homework-icon.png) También en los workers. Prueba a acceder a los workers y al puerto **30339**.
+> ![HOMEWORK](../imgs/homework-icon.png) También en los workers.
 
 Si accedemos a la aplicación por ese puerto:
 
 ![IMG](../imgs/webapp-balanced-nodeport.png)
 
+> ![HOMEWORK](../imgs/homework-icon.png) Prueba a acceder a los workers y al puerto **30339**.
+
 Si recargamos la página con el navegador veremos que la dirección IP no cambia. Si lo hacemos varias veces terminará cambiando la dirección IP (balanceará al otro contenedor).
 
-Cuando accedemos al servicio por **http://foo-balanced.bar:31826/balanced** estamos accediendo por el ingress, que reenvia la petición al servicio y desde el servicio se balancea a los pods que se encuentren levantados. Sin embargro, cuando accedemos utilizando el nodePort creado al indicar que el servicio es de tipo **LoadBalancer**, es decir por la url **http://foo-balanced.bar:30339**, estamos accediendo por el balanceador creado.
+Cuando accedemos al servicio por **http://foo-balanced.bar:31826/balanced** estamos accediendo por el ingress, que reenvia la petición al servicio y desde el servicio se balancea a los pods que se encuentren levantados. Sin embargo, cuando accedemos utilizando el nodePort creado al indicar que el servicio es de tipo **LoadBalancer**, es decir por la url **http://foo-balanced.bar:30339**, estamos accediendo por el balanceador creado.
 
 Luego con esta configuración tenemos dos accesos posibles a la aplicación.
 
@@ -381,22 +383,22 @@ Si utilizamos un servicio de tipo **LoadBalancer** no necesitaremos crear el ing
 
 ![IMG](../imgs/SVC-LoadBalancer.png)
 
-Desplegar en un service provider implica integrar kubernetes con el service provider. Para está integración se desplegará el [Cloud Controller Manager de Kubernetes](https://kubernetes.io/docs/concepts/architecture/cloud-controller/) que permitirá la integración de Kubernetes con el proveedor cloud.
+Desplegar en un cloud provider implica integrar kubernetes con el cloud provider. Para está integración se desplegará el [Cloud Controller Manager de Kubernetes](https://kubernetes.io/docs/concepts/architecture/cloud-controller/) que permitirá la integración de Kubernetes con el proveedor cloud.
 
 En este caso el desplegar con un servicio de tipo **LoadBalancer** desplegaría un balanceador de carga en el cloud provider y tendríamos algo similar a:
 
 ![IMG](../imgs/SVC-LoadBalancer-Cloud-Provider.png)
 
 ```console
-[kubeadmin@kubemaster network-policies]$ kubectl get svc balanced-service --namespace webapp-balanced -o wide
-NAME               TYPE           CLUSTER-IP      EXTERNAL-IP   PORT(S)        AGE    SELECTOR
-balanced-service   LoadBalancer   10.107.139.65   <pending>     80:30551/TCP   133m   app=webapp-balanced
-[kubeadmin@kubemaster network-policies]$
+[kubeadmin@kubemaster webapp-balanced]$ kubectl get svc balanced-service --namespace webapp-balanced -o wide
+NAME               TYPE           CLUSTER-IP      EXTERNAL-IP   PORT(S)        AGE     SELECTOR
+balanced-service   LoadBalancer   10.110.197.47   <pending>     80:30339/TCP   5h35m   app=webapp-balanced
+[kubeadmin@kubemaster webapp-balanced]$
 ```
 
-Podemos observar que la **EXTERNAL-IP** se queda en **<pending>**. Ello es debido a que como no se despliega un balanceador al no estar desplegado kubernetes en un proveedor cloud y con integración en el mismo no se desplegará un balanceador.
+Podemos observar que la **EXTERNAL-IP** se queda en **\<pending>**. Ello es debido a que no se despliega un balanceador al no estar desplegado kubernetes en un proveedor cloud, con integración en el mismo.
 
-En este caso para evitar que se cree un NodePort será necesario especificar en el servicio:
+En este caso para evitar que se cree un NodePort y que se acceda por el ingress será necesario especificar en el servicio:
 
 ```yaml
 spec:
@@ -405,7 +407,48 @@ spec:
   ...
 ```
 
-> ![HOMEWORK](../imgs/homework-icon.png) Redespliega la aplicación eliminando el ingress. Verifica que se realiza el balanceo.
+Si desplegamos añandiendo lo anterior tendremos:
+
+```yaml
+[kubeadmin@kubemaster webapp-balanced]$ kubectl get svc balanced-service --namespace webapp-balanced -o yaml
+apiVersion: v1
+kind: Service
+metadata:
+  annotations:
+    kubectl.kubernetes.io/last-applied-configuration: |
+      {"apiVersion":"v1","kind":"Service","metadata":{"annotations":{},"name":"balanced-service","namespace":"webapp-balanced"},"spec":{"allocateLoadBalancerNodePorts":false,"ports":[{"name":"http","port":80,"protocol":"TCP","targetPort":80}],"selector":{"app":"webapp-balanced"},"type":"LoadBalancer"}}
+  creationTimestamp: "2022-02-17T00:47:02Z"
+  name: balanced-service
+  namespace: webapp-balanced
+  resourceVersion: "194377"
+  uid: 044c2f94-774a-48ad-854c-4afa5539b8ce
+spec:
+  allocateLoadBalancerNodePorts: false
+  clusterIP: 10.109.158.179
+  clusterIPs:
+  - 10.109.158.179
+  externalTrafficPolicy: Cluster
+  internalTrafficPolicy: Cluster
+  ipFamilies:
+  - IPv4
+  ipFamilyPolicy: SingleStack
+  ports:
+  - name: http
+    port: 80
+    protocol: TCP
+    targetPort: 80
+  selector:
+    app: webapp-balanced
+  sessionAffinity: None
+  type: LoadBalancer
+status:
+  loadBalancer: {}
+[kubeadmin@kubemaster webapp-balanced]$
+```
+
+Podemos observar que el nodeport ya no se encuentra presente.
+
+> ![HOMEWORK](../imgs/homework-icon.png) Redespliega la aplicación eliminando el ingress. Verifica que se realiza el balanceo y que no hay acceso por el ingress.
 
 ## Acceso por un servicio de tipo NodePort
 
