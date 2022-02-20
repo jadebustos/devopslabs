@@ -1,0 +1,5 @@
+[all:vars]
+ansible_user=ansible
+
+[lb]
+192.168.1.121

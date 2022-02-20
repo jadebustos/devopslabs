@@ -1,0 +1,9 @@
+---
+
+- name: deploying loadbalancer
+  hosts: lb
+  vars_files:
+    - "group_vars/haproxy.yaml"
+  gather_facts: false
+  roles:
+    - haproxy

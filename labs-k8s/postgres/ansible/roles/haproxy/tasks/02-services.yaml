@@ -1,0 +1,19 @@
+---
+
+- name: configure selinux booleans for haproxy
+  seboolean:
+    name: haproxy_connect_any
+    state: yes
+    persistent: yes
+  become: yes
+
+- name: enable services
+  systemd:
+    name: "{{ item }}"
+    state: restarted
+    enabled: yes
+    masked: no
+    daemon_reload: yes
+  become: yes
+  with_items:
+    - "haproxy"

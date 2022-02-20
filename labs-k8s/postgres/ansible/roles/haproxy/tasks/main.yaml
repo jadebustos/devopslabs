@@ -1,0 +1,5 @@
+---
+
+- include_tasks: 01-install.yaml
+- include_tasks: 02-services.yaml
+- include_tasks: 03-firewall.yaml

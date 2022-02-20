@@ -1,0 +1,17 @@
+---
+
+- name: install haproxy
+  dnf:
+    name: "{{ haproxy_rpms }}"
+    state: present
+  become: yes
+
+- name: copy haproxy configuration file
+  template:
+    src: haproxy.cfg.j2
+    dest: /etc/haproxy/haproxy.cfg
+    owner: root
+    group: root
+    mode: 0644
+    setype: etc_t
+  become: yes

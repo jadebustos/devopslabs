@@ -1,0 +1,9 @@
+---
+
+- name: firewall configuration for nodeport
+  firewalld:
+    port: "{{ postgresport }}/{{ protocol }}"
+    permanent: yes
+    state: enabled
+    immediate: yes
+  become: true

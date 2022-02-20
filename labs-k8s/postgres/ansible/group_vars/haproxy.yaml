@@ -1,0 +1,10 @@
+---
+
+haproxy_rpms: ['haproxy', 'python3-libsemanage']
+
+worker1: '192.168.1.111'
+worker2: '192.168.1.112'
+
+postgresport: '5432'
+nodeport: '31234'
+protocol: 'tcp'
