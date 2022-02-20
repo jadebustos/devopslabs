@@ -1,4 +1,4 @@
-# Desplegando aplicaciones que no utilizan tráfico HTTP (WIP)
+# Desplegando aplicaciones que no utilizan tráfico HTTP
 
 Las aplicaciones que hemos visto hasta ahora utilizan el protocolo HTTP(s), es decir son aplicaciones web.
 
@@ -163,7 +163,7 @@ Esta configuración presenta dos problemas:
 
 ## Configurando un balanceador externo
 
-Si desplegamos dos máquinas CentOS 8 Stream con los siguientes requerimientos:
+Desplegamos una máquina CentOS 8 Stream con los siguientes requerimientos:
 
 * Creado un usuario **ansible** con acceso a sudo sin password.
 * Configurada una clave SSH para hacer ssh con el usuario **ansible**.
@@ -176,28 +176,41 @@ ansible_user=ansible
 
 [lb]
 192.168.1.121
-192.168.1.122
-
-[master]
-192.168.1.121
-
-[backup]
-192.168.1.122
 ```
 
-Se configurará un **haproxy** en alta disponibilidad utilizando **keepalived** para acceder al PostgreSQL que hemos desplegado en kubernetes.
+Se configurará un **haproxy** para acceder al PostgreSQL que hemos desplegado en kubernetes.
 
 Para ello en [postgres/ansible/group_vars/haproxy.yaml](postgres/ansible/group_vars/haproxy.yaml) configuramos:
 
 * **worker1** con la ip del primer worker.
 * **worker2** con la ip del segundo worker.
-
-Y en [postgres/ansible/group_vars/keepalived.yaml](postgres/ansible/group_vars/keepalived.yaml) configuramos:
-
-* **vip** configuramos la vip que utilizaremos para acceder al PostgreSQL.
+* **nodeport** con el puerto expuesto en kubernetes para el acceso a PostgreSQL.
 
 Una vez hayamos configurado lo anterior para configurar el balanceador:
 
 ```console
 [jadebustos@archimedes ansible]$ ansible-playbook -i hosts deploy-balancer.yaml
 ```
+
+Si incluimos la siguiente línea en **/etc/hosts** para tener resolución DNS:
+
+```
+192.168.1.121 postgres.acme.es
+```
+
+Podemos realizar la conexión a la base de datos vía el balanceador que previamente hemos configurado:
+
+```console
+[jadebustos@archimedes ansible]$ psql -h postgres.acme.es -p 5432 -U postgres
+Password for user postgres: 
+psql (13.4, server 14.2 (Debian 14.2-1.pgdg110+1))
+WARNING: psql major version 13, server major version 14.
+         Some psql features might not work.
+Type "help" for help.
+
+postgres=# 
+```
+
+> ![HOMEWORK](../imgs/homework-icon.png) Será necesario instalar un cliente de PostgreSQL en algún equipo para probar el acceso.
+
+> ![HOMEWORK](../imgs/homework-icon.png) Comprueba en que nodo de kubernetes se está ejecutando el contenedor de PostgreSQL, fuerza a que se ejecute en otro nodo. Apagando, por ejemplo, el nodo en el que se está ejecutando. Cuando el contenedor se haya arrancado en el otro nodo prueba a realizar la conexión.
