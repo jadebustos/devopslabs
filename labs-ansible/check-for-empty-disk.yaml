@@ -20,4 +20,5 @@
       with_dict: "{{ ansible_devices }}"
 
     - name: mostrar
-      debug: msg="Disco vacio {{ disks }}"
+      debug: msg="Primer disco vacio {{ disks }}"
+      when: disks is defined

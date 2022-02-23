@@ -476,9 +476,12 @@ El playbook [check-for-empty-disk.yaml](check-for-empty-disk.yaml) detecta el pr
       with_dict: "{{ ansible_devices }}"
 
     - name: mostrar
-      debug: msg="Disco vacio {{ disks }}"
+      debug: msg="Primer disco vacio {{ disks }}"
+      when: disks is defined
 ```
 
 > ![INFORMATION](../imgs/information-icon.png) Una vez que tenemos el dispositivo en una variable ya podemos operar con el como necesitemos.
+
+> ![HOMEWORK](../imgs/homework-icon.png) Modificar el playbook para realizar la misma tarea usando un role.
 
 
