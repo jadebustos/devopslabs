@@ -257,6 +257,7 @@ http {
             index  index.html index.htm;
         }
     }
+}
 ```
 
 Salimos del contenedor, lo destruimos. Creamos la nueva imagen e instanciamos un nuevo contenedor a partir de la imagen nueva:

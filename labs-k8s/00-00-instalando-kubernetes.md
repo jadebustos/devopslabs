@@ -595,7 +595,7 @@ Según lo anterior tenemos:
 Lo primero que tenemos que hacer en los workers es abrir los puertos:
 
 ```console
-[root@kubenodeX ~]# firewall-cmd --zone=public --permanent --add-port={10250,30000-32767}/tcp
+[root@kubenodeX ~]# firewall-cmd --zone=public --permanent --add-port={10250/tcp,30000-32767/tcp}
 success
 [root@kubenodeX ~]# firewall-cmd --reload
 success
