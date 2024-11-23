@@ -89,12 +89,7 @@ users:
 
 > ![IMPORTANT](../imgs/important-icon.png) Password is in plain text in this example. This is not a best practice. You will see how address this issue later.
 
-You will create an ansible role named **users**:[ansible@controller ~]$ mkdir -p homework/roles
-[ansible@controller ~]$ cd homework/roles/
-[ansible@controller roles]$ ansible-galaxy init users
-- Role users was created successfully
-[ansible@controller roles]$ 
-
+You will create an ansible role named **users**:
 
 ```console
 [ansible@controller ~]$ mkdir -p homework/roles
