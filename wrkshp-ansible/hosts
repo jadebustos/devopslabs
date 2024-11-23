@@ -15,13 +15,10 @@ debapache1.acme.es ansible_user=executor ansible_python_interpreter=/usr/bin/pyt
 debapache2.acme.es ansible_user=executor ansible_python_interpreter=/usr/bin/python3
 
 [controller]
-ansiblectrl.jadpb.lab ansible_connection=local
+controller.melmac.univ ansible_connection=local
 
 [client]
-ansibleclient.jadbp.lab ansible_user=ansible
+client.melmac.univ ansible_user=ansible
 
 [local]
 localhost ansible_connection=local
-
-[lab]
-192.168.1.200 ansible_user=jadebustos

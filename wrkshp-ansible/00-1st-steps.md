@@ -12,17 +12,17 @@ You will need two virtual machines (CentOS Stream 9):
 You will need to configure the [EPEL repository](https://dl.fedoraproject.org/pub/epel/) in the ansible controller to deploy the ansible engine:
 
 ```console
-[root@ansiblectrl ~]# dnf install https://dl.fedoraproject.org/pub/epel/epel{,-next}-release-latest-9.noarch.rpm
+[root@controller ~]# dnf install https://dl.fedoraproject.org/pub/epel/epel{,-next}-release-latest-9.noarch.rpm
 ...
-[root@ansiblectrl ~]#
+[root@controller ~]#
 ```
 
 Once the repository has been configured we can install ansible and another utils:
 
 ```console
-[root@ansiblectrl ~]# dnf install ansible git tree jq tmux -y
+[root@controller ~]# dnf install ansible git tree jq tmux -y
 ...
-[root@ansiblectrl ~]#
+[root@controller ~]#
 ```
 
 Check that on the ansible cliente the **python36** package is installed:
@@ -40,14 +40,14 @@ You will have to create one user in both servers:
 In the both servers you will create the **ansible** user that will be the user we will use:
 
 ```console
-[root@ansiblectrl ~]# useradd -md /home/ansible ansible
-[root@ansiblectrl ~]# passwd ansible
+[root@controller ~]# useradd -md /home/ansible ansible
+[root@controller ~]# passwd ansible
 Changing password for user ansible.
 New password: 
 BAD PASSWORD: The password is shorter than 8 characters
 Retype new password: 
 passwd: all authentication tokens updated successfully.
-[root@ansiblectrl ~]#
+[root@controller ~]#
 ```
 
 ## Accessing nodes
@@ -57,18 +57,18 @@ To be able to access the nodes using ansible to run tasks you will need to confi
 To check if there already are public/private keys:
 
 ```console
-[ansible@ansiblectrl ~]$ ls -lh .ssh/*
+[ansible@controller ~]$ ls -lh .ssh/*
 -rw-------. 1 ansible ansible 1.9K Oct 14 20:00 .ssh/authorized_keys
 -rw-------. 1 ansible ansible 1.7K Apr 15  2018 .ssh/id_rsa
 -rw-r--r--. 1 ansible ansible  408 Jan 17 10:50 .ssh/id_rsa.pub
 -rw-------. 1 ansible ansible 4.1K Jan 24 16:11 .ssh/known_hosts
-[ansible@ansiblectrl ~]$ 
+[ansible@controller ~]$ 
 ```
 
 If no keys are present you can create them:
 
 ```console
-[ansible@ansiblectrl ~]$ ssh-keygen -t rsa -b 4096
+[ansible@controller ~]$ ssh-keygen -t rsa -b 4096
 Generating public/private rsa key pair.
 Enter file in which to save the key (/home/ansible/.ssh/id_rsa): 
 Enter passphrase (empty for no passphrase): 
@@ -76,7 +76,7 @@ Enter same passphrase again:
 Your identification has been saved in id_rsa
 Your public key has been saved in id_rsa.pub
 The key fingerprint is:
-SHA256:d6ePc0yE/+ZhkgTgxPqpNn4iEV5vmbUnCUFt0YXPPUc ansible@ansiblectrl.jadbp.lab
+SHA256:d6ePc0yE/+ZhkgTgxPqpNn4iEV5vmbUnCUFt0YXPPUc ansible@controller.jadbp.lab
 The key's randomart image is:
 +---[RSA 4096]----+
 |        o+..o o. |
@@ -89,7 +89,7 @@ The key's randomart image is:
 |     . = .  .o= +|
 |      +.+   .o.o.|
 +----[SHA256]-----+
-[ansible@ansiblectrl ~]$
+[ansible@controller ~]$
 ```
 
 > ![IMPORTANT](../imgs/important-icon.png) Do not configure the private key with a password to allow ansible to connect to the nodes in an unattended way.
@@ -97,7 +97,7 @@ The key's randomart image is:
 Once you have created the public/private keys in the ansible controller you will have to configure the ansible client server to accept that public key for the **ansible** user:
 
 ```console
-[ansible@ansiblectrl ~]$ ssh-copy-id -i .ssh/id_rsa.pub ansible@ansibleclient
+[ansible@controller ~]$ ssh-copy-id -i .ssh/id_rsa.pub ansible@client
 /usr/bin/ssh-copy-id: INFO: Source of key(s) to be installed: ".ssh/id_rsa.pub"
 /usr/bin/ssh-copy-id: INFO: attempting to log in with the new key(s), to filter out any that are already installed
 /usr/bin/ssh-copy-id: INFO: 1 key(s) remain to be installed -- if you are prompted now it is to install the new keys
@@ -108,7 +108,7 @@ Number of key(s) added: 1
 Now try logging into the machine, with:   "ssh 'ansible@ansibleclient'"
 and check to make sure that only the key(s) you wanted were added.
 
-[ansible@ansiblectrl ~]$
+[ansible@controller ~]$
 ```
 
 Si despliegas las máquinas con terraform puedes utilizar **cloud-init** tanto para crear el usuario como para configurar la clave pública. En el código para desplegar las imágenes del laboratorio se pueden ver [ejemplos](../terraform/kvm/docker/user_config.cfg):
@@ -133,7 +133,7 @@ runcmd:
 
 ## Privilege escalation
 
-To perform administrative tasks you will need to configure sudo to become root. So you will have to create the file **/etc/sudoers.d/ansible** with:
+To perform administrative tasks you will need to configure sudo to become root in the client server. So you will have to create the file **/etc/sudoers.d/ansible** with:
 
 ```bash
 ansible ALL=(ALL) NOPASSWD:ALL
@@ -170,13 +170,13 @@ localhost ansible_user=ansible
 To run an ansible playbook using an inventory file named **hosts**:
 
 ```console
-[ansible@ansiblectrl ansible]$ ansible-playbook -i hosts playbook.yaml
+[ansible@controller ansible]$ ansible-playbook -i hosts playbook.yaml
 ```
 
 To run an ansible playbook using an inventory file named **hosts** but only on the ansible clients on the **containers** group:
 
 ```console
-[ansible@ansiblectrl ansible]$ ansible-playbook -i hosts -l containers playbook.yaml
+[ansible@controller ansible]$ ansible-playbook -i hosts -l containers playbook.yaml
 ```
 
 You will create an inventory for your enviroment:
@@ -186,13 +186,13 @@ You will create an inventory for your enviroment:
 ansible_python_interpreter=/usr/bin/python3
 
 [controller]
-ansiblectrl.melmac.univ ansible_connection=local
+controller.melmac.univ ansible_connection=local
 
 [client]
 ansibleclient.melmac.univ ansible_user=ansible
 ```
 
-The **ansible_connection** is used to configure the connection method. By default SSH will be used, in this case as **local** is defined that means that SSH will not be used. So we can run ansible tasks locally on **ansiblectrl.melmac.univ** without using SSH.
+The **ansible_connection** is used to configure the connection method. By default SSH will be used, in this case as **local** is defined that means that SSH will not be used. So we can run ansible tasks locally on **controller.melmac.univ** without using SSH.
 
 > ![IMPORTANT](../imgs/important-icon.png) If you do not have DNS resolution for your enviroment servers you can use your **/etc/hosts** file.
 
@@ -201,17 +201,17 @@ The **ansible_connection** is used to configure the connection method. By defaul
 To verify that **ansible** has been properly configured in the controller:
 
 ```console
-[ansible@ansiblectrl ansible]$ cat hosts 
+[ansible@controller ansible]$ cat hosts 
 [all:vars]
 ansible_python_interpreter=/usr/bin/python3
 
 [controller]
-ansiblectrl.melmac.univ ansible_connection=local
+controller.melmac.univ ansible_connection=local
 
 [client]
 ansibleclient.melmac.univ ansible_user=ansible
-[ansible@ansiblectrl ansible]$ ansible -i hosts -m ping all
-ansiblectrl.melmac.univ | SUCCESS => {
+[ansible@controller ansible]$ ansible -i hosts -m ping all
+controller.melmac.univ | SUCCESS => {
     "changed": false,
     "ping": "pong"
 }
@@ -219,14 +219,14 @@ ansibleclient.melmac.univ | SUCCESS => {
     "changed": false,
     "ping": "pong"
 }
-[ansible@ansiblectrl ansible]$ 
+[ansible@controller ansible]$ 
 ```
 
 If you want to manage a node using ansible, python need to be installed on that node. If python is not installed:
 
 
 ```console
-[ansible@ansiblectrl ansible]$ ansible -i hosts -m ping all
+[ansible@controller ansible]$ ansible -i hosts -m ping all
 ansibleclient.melmac.univ | FAILED! => {
     "changed": false,
     "module_stderr": "Shared connection to ansibleclient.melmac.univ closed.\r\n",
@@ -234,11 +234,11 @@ ansibleclient.melmac.univ | FAILED! => {
     "msg": "The module failed to execute correctly, you probably need to set the interpreter.\nSee stdout/stderr for the exact error",
     "rc": 127
 }
-ansiblectrl.melmac.univ | SUCCESS => {
+controller.melmac.univ | SUCCESS => {
     "changed": false,
     "ping": "pong"
 }
-[ansible@ansiblectrl ansible]$
+[ansible@controller ansible]$
 ```
 
 > ![TIP](../imgs/tip-icon.png) Ansible's ping module was used on all servers defined in the inventory file **hosts** to check if ansible is able to manage the nodes. The user used to connect is the one configured on the **ansible_user** variable.
