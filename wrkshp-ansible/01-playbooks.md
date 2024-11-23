@@ -1,4 +1,4 @@
-# Playbooks
+# Ansible playbooks
 
 Para ejecutar tareas en ansible escribiremos playbooks. Aunque es posible incluir todas las tareas en un único playbook como en [generate-linux-pass-hash.yaml](generate-linux-pass-hash.yaml) lo recomendable es escribir roles para poder reutilizarlos.
 

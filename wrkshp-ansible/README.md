@@ -10,6 +10,9 @@ The following workshops are intended to learn the Ansible fundamentals:
 + Privilege scalation.
 + Managing secrets, vaults.
 
+1. [First steps with ansible](00-1st-steps.md)
+1. [Ansible playbooks](01-playbooks.md)
+
 ## Aditional resources
 
 + [Red Hat Ansible Automation Platform Workshops](https://github.com/ansible/workshops)
