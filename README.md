@@ -6,7 +6,6 @@ I created these workshops to facilitate my students to learn about these technol
 
 I decided to update and translate it into English.
 
-+ [Como desplegar el laboratorio](labs)
 + [Laboratorios de Ansible](labs-ansible)
 + [Laboratorios de Contenedores](labs-contenedores)
 + [Laboratorios de Kubernetes](labs-k8s)
