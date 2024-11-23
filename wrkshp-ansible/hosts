@@ -1,24 +1,7 @@
 [all:vars]
 
-[rhlb]
-lb.acme.es ansible_user=executor
-
-[rhapache]
-apache1.acme.es ansible_user=executor
-apache2.acme.es ansible_user=executor
-
-[deblb]
-deblb.acme.es ansible_user=executor ansible_python_interpreter=/usr/bin/python3
-
-[debapache]
-debapache1.acme.es ansible_user=executor ansible_python_interpreter=/usr/bin/python3
-debapache2.acme.es ansible_user=executor ansible_python_interpreter=/usr/bin/python3
-
 [controller]
 controller.melmac.univ ansible_connection=local
 
 [client]
 client.melmac.univ ansible_user=ansible
-
-[local]
-localhost ansible_connection=local

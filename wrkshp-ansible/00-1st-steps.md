@@ -203,19 +203,24 @@ To verify that **ansible** has been properly configured in the controller:
 ```console
 [ansible@controller ansible]$ cat hosts 
 [all:vars]
-ansible_python_interpreter=/usr/bin/python3
 
 [controller]
 controller.melmac.univ ansible_connection=local
 
 [client]
-ansibleclient.melmac.univ ansible_user=ansible
+client.melmac.univ ansible_user=ansible
 [ansible@controller ansible]$ ansible -i hosts -m ping all
 controller.melmac.univ | SUCCESS => {
+    "ansible_facts": {
+        "discovered_interpreter_python": "/usr/bin/python3"
+    },
     "changed": false,
     "ping": "pong"
 }
-ansibleclient.melmac.univ | SUCCESS => {
+client.melmac.univ | SUCCESS => {
+    "ansible_facts": {
+        "discovered_interpreter_python": "/usr/bin/python3"
+    },
     "changed": false,
     "ping": "pong"
 }
