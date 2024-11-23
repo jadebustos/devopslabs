@@ -12,7 +12,7 @@ In that course I was on charge to teach them about Open Source Software, Cloud a
 * Kubernetes
 * Azure
 
-I decided to update and translate them into English.
+I decided to update and translate them into English. I will add some more extra material. 
 
 1. [Ansible workshop](wrkshp-ansible)
 1. [Laboratorios de Contenedores](labs-contenedores)
@@ -22,9 +22,14 @@ I decided to update and translate them into English.
 
 > ![IMPORTANT](imgs/important-icon.png) This workshop contains links to different components as they are evolving it could be possible that the information in the links will be for an older version that the one you are using.
 
+This workshop is free software: you can redistribute it and/or modify it under the terms of  the GNU General Public License v3 as published by the Free Software Foundation. This workshop is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public License v3 for more details.
+
+You should have received a copy of the GNU General Public License v3 along with the IdM workshop. If not, see https://www.gnu.org/licenses/gpl-3.0.en.html.
+
 ## Requirements
 
-You will need some linux knowledge.
+1. You will need some Linux knowledge.
+1. You will need to be able to create virtual machines.
 
 > ![NOTE](imgs/note-icon.png) An effort has been made to provide as much detail as possible to assist users with limited experience in Linux environments in understanding the content. However, some basic knowledge of Linux is still required.
 
