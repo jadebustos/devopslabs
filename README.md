@@ -14,9 +14,9 @@ In that course I was on charge to teach them about Open Source Software, Cloud a
 
 I decided to update and translate them into English.
 
-+ [Ansible workshop](wrkshp-ansible)
-+ [Laboratorios de Contenedores](labs-contenedores)
-+ [Laboratorios de Kubernetes](labs-k8s)
+1. [Ansible workshop](wrkshp-ansible)
+1. [Laboratorios de Contenedores](labs-contenedores)
+1. [Laboratorios de Kubernetes](labs-k8s)
 
 > ![INFORMATION](imgs/information-icon.png) These workshops are based on CentOS Stream. If you prefer to try with a different distro you should make some changes, but it will be no a difficult task.
 
