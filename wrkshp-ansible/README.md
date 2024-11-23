@@ -10,6 +10,8 @@ The following workshops are intended to learn the Ansible fundamentals:
 + Privilege escalation.
 + Managing secrets, vaults.
 
+> ![TIP](../imgs/tip-icon.png) All the playbooks are given, but it would be a good idea to create a new directory outside the repository and try all the examples there. You can also experiment there modifying them, adding some more stuff, ...
+
 1. [First steps with ansible](00-1st-steps.md)
 1. [Ansible playbooks](01-playbooks.md)
 
