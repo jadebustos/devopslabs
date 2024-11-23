@@ -25,14 +25,6 @@ Once the repository has been configured we can install ansible and another utils
 [root@controller ~]#
 ```
 
-Check that on the ansible cliente the **python36** package is installed:
-
-```console
-[root@ansibleclient ~]# dnf install python36 -y
-...
-[root@ansibleclient ~]#
-```
-
 ## User creation
 
 You will have to create one user in both servers:
@@ -101,7 +93,7 @@ Once you have created the public/private keys in the ansible controller you will
 /usr/bin/ssh-copy-id: INFO: Source of key(s) to be installed: ".ssh/id_rsa.pub"
 /usr/bin/ssh-copy-id: INFO: attempting to log in with the new key(s), to filter out any that are already installed
 /usr/bin/ssh-copy-id: INFO: 1 key(s) remain to be installed -- if you are prompted now it is to install the new keys
-ansible@ansibleclient's password: 
+ansible@client's password: 
 
 Number of key(s) added: 1
 
@@ -109,26 +101,6 @@ Now try logging into the machine, with:   "ssh 'ansible@ansibleclient'"
 and check to make sure that only the key(s) you wanted were added.
 
 [ansible@controller ~]$
-```
-
-Si despliegas las máquinas con terraform puedes utilizar **cloud-init** tanto para crear el usuario como para configurar la clave pública. En el código para desplegar las imágenes del laboratorio se pueden ver [ejemplos](../terraform/kvm/docker/user_config.cfg):
-
-```yaml
-#cloud-config
-# configuracion de usuarios
-#
-users:
-  - name: terraform
-    gecos: terraform created user
-    sudo: ALL=(ALL) NOPASSWD:ALL
-    groups: users
-    ssh_import_id: None
-    lock_passwd: true
-    ssh_authorized_keys:
-      - ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAABAQDbV8HMtQ1D6qfn+pRINxB4x4QROfbxiS4TQNcffzvaID0baF/t951aRuvHaexy2QKKVb9u3RJSZfEuUvDJaFq2Oo5An8wWZqKvj6AC+yrBpD8D1M7E9uUuwqOfDwEu7pw7Otz+bUWD/x1mbJ4UUQ2fe+kFuiI/siILm7mAAAj7JfKDF3T6OdmHjzVKXHlWiuaLEXns0IkiogBrC4v83ziMt8nq6P3jbPDqI87UOi1Dkvi5vdI7maSBfBwE2vWJGSsnOovDu1kYQJOFje/AQx1sByve/36prBsW1zehfXl/3/tPJtQc8j7h+IaUg8ZRvDazncgirKuneQ6rvyXcfzDX ansible@beast.melmac.univ
-
-runcmd:
-  - hostnamectl set-hostname lab-docker.frontend.lab
 ```
 
 ## Privilege escalation
