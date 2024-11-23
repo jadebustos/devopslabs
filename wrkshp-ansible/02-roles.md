@@ -89,20 +89,42 @@ users:
 
 > ![IMPORTANT](../imgs/important-icon.png) Password is in plain text in this example. This is not a best practice. You will see how address this issue later.
 
-You will create an ansible role named **users**:
+You will create an ansible role named **users**:[ansible@controller ~]$ mkdir -p homework/roles
+[ansible@controller ~]$ cd homework/roles/
+[ansible@controller roles]$ ansible-galaxy init users
+- Role users was created successfully
+[ansible@controller roles]$ 
+
 
 ```console
-[ansible@ansiblectrl labs-ansible]$ tree roles/users/
-roles/users/
-└── tasks
-    ├── 01-create.yaml
-    └── main.yaml
+[ansible@controller ~]$ mkdir -p homework/roles
+[ansible@controller ~]$ cd homework/roles/
+[ansible@controller roles]$ ansible-galaxy init users
+- Role users was created successfully
+[ansible@controller roles]$ tree users/
+users/
+├── defaults
+│   └── main.yml
+├── files
+├── handlers
+│   └── main.yml
+├── meta
+│   └── main.yml
+├── README.md
+├── tasks
+│   └── main.yml
+├── templates
+├── tests
+│   ├── inventory
+│   └── test.yml
+└── vars
+    └── main.yml
 
-1 directory, 2 files
-[ansible@ansiblectrl labs-ansible]$ 
+8 directories, 8 files
+[ansible@controller roles]$ 
 ```
 
-El fichero [roles/users/tasks/main.yaml](roles/users/tasks/main.yaml) incluye todas las tareas a realizar por el role:
+File [roles/users/tasks/main.yaml](roles/users/tasks/main.yaml) will include all tasks to be performed by the role:
 
 ```yaml
 ---
@@ -110,7 +132,7 @@ El fichero [roles/users/tasks/main.yaml](roles/users/tasks/main.yaml) incluye to
 - include_tasks: 01-create.yaml
 ```
 
-En este caso las tareas las hemos incluido en un fichero [roles/users/tasks/01-create.yaml](roles/users/tasks/01-create.yaml):
+We can organize the role tasks in different files such [roles/users/tasks/01-create.yaml](roles/users/tasks/01-create.yaml):
 
 ```yaml
 ---
@@ -302,3 +324,4 @@ Los datos confidenciales se deben incluir en **vaults**. En [06-protegiendo-info
 ## Resources
 
 * [Ansible Roles](https://docs.ansible.com/ansible/latest/playbook_guide/playbooks_reuse_roles.html)
+* [Ansible Galaxy](https://docs.ansible.com/ansible/latest/cli/ansible-galaxy.html)
