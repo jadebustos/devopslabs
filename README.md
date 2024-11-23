@@ -2,7 +2,15 @@
 
 This repository includes several workshops to initiate you in DevOps.
 
-I created these workshops to facilitate my students to learn about these technologies when I taught a university course on DevOps and Cloud for several terms.
+I created these workshops when I taught a university course on DevOps and Cloud for several terms. Although these workshops were not required for the course and they not were part of the official or academic documentation of the course; I decided to create them to facilitate my students' learning.
+
+In that course I was on charge to teach them about Open Source Software, Cloud and DevOps. The technologies I taught were:
+
+* Terraform
+* Ansible
+* Containers
+* Kubernetes
+* Azure
 
 I decided to update and translate it into English.
 
