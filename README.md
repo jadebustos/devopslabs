@@ -1,25 +1,26 @@
 # DevOps Labs
 
-Este repositorio contiene una serie de laboratorios de iniciación sobre tecnologías DevOps.
+This repository includes several workshops to initiate you in DevOps.
+
+I created these workshops to facilitate my students to learn about these technologies when I taught a university course on DevOps and Cloud for several terms.
+
+I decided to update and translate it into English.
 
 + [Como desplegar el laboratorio](labs)
 + [Laboratorios de Ansible](labs-ansible)
 + [Laboratorios de Contenedores](labs-contenedores)
 + [Laboratorios de Kubernetes](labs-k8s)
 
-> ![INFORMACION](imgs/information-icon.png) Estos laboratorios se encuentran basados en CentOS Stream 8.
+> ![INFORMATION](imgs/information-icon.png) These workshops are based on CentOS Stream. If you prefer to try with a different distro you should make some changes, but it will be no a difficult task.
 
-> ![IMPORTANT](imgs/important-icon.png) En este workshop se enlazan a paginas con información sobre diferentes componentes. A medida que pasa el tiempo esos componentes se van actualizando con lo cual en algún caso puede pasar que el link lleve a información sobre una versión más antigua de la que se haya instalado. 
+> ![IMPORTANT](imgs/important-icon.png) This workshop contains links to different components as they are evolving it could be possible that the information in the links will be for an older version that the one you are using.
 
-## Requerimientos
+## Requirements
 
-Para aprovechar estos laboratorios será necesario unos conocimientos mínimos de Linux.
+You will need some linux knowledge.
 
-> ![NOTA](imgs/note-icon.png) Se ha tratado de detallar lo máximo posible para facilitar a aquellos usuarios con poca experiencia en entornos Linux su entendimiento, pero aún así es necesario de algún conocimiento de Linux.
+> ![NOTE](imgs/note-icon.png) An effort has been made to provide as much detail as possible to assist users with limited experience in Linux environments in understanding the content. However, some basic knowledge of Linux is still required.
 
-> ![HOMEWORK](imgs/homework-icon.png) En este [workshop](https://github.com/xtophd/RHEL8-Workshop) se puede aprender sobre Linux (RHEL 8).
-
-> ![HOMEWORK](imgs/homework-icon.png) En [RHEL-LABS](https://katacoda.com/rhel-labs) se pueden encontrar tutoriales interactivos sobre Linux (RHEL 8).
-
+> ![HOMEWORK](imgs/homework-icon.png) In [RHEL-LABS](https://www.redhat.com/en/interactive-labs/enterprise-linux) you can find some interactive labs about RHEL.
 
 
