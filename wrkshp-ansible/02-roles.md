@@ -1,96 +1,105 @@
-# Roles en ansible
+# Ansible roles
 
-Los [roles](https://docs.ansible.com/ansible/latest/user_guide/playbooks_reuse_roles.html) en ansible es una forma de "empaquetar" código para poder reutilizarlo de forma fácil y sencilla.
+[Ansible roles](https://docs.ansible.com/ansible/latest/user_guide/playbooks_reuse_roles.html) are a medium to "group" your code to be reusable in an easy and simple way.
 
-Para la reutilización del código es muy importante el no hardcodear información en el playbook. Es decir toda aquella información susceptible de depender del entorno donde se vaya a ejecutar deberemos configurarla via variables. Separando código de datos.
+To reuse code is mandatory not to hadcode data on your playbooks. All data related to the environment where you want to execute your code MUST be present in variables outside the code.
 
-De esta forma podremos reutilizar los roles de forma sencilla modificando únicamente el fichero de variables para proporcionar la información del entorno sobre el que vamos a realizar la ejecución.
+Doing it this way, we can reuse the ansible roles in an easy way. Changing the variables according the environment we can use the same code in different environments.
 
-## Estructura de un role
+## Ansible role estructure
 
-Un role tiene definida una estructura de directorios. No es necesario incluir todos los directorios, únicamente será necesario incluir aquellos que se utilicen:
+Ansible roles have a defined directory structure:
 
 ```
-roles/
-    common/
-        tasks/
-        handlers/
-        library/
-        files/
-        templates/
-        vars/
-        defaults/
-        meta/
+rroles/
+    common/               
+        tasks/            
+            main.yml      
+        handlers/         
+            main.yml      
+        templates/        
+            ntp.conf.j2   
+        files/            
+            bar.txt       
+            foo.sh        
+        vars/             
+            main.yml      
+        defaults/         
+            main.yml      
+        meta/             
+            main.yml      
 ```
 
-Los roles se incluiran dentro de un directorio llamado **roles**. Dentro de este directorio se creará un directorio con el nombre del role, y dentro de el estarán los directorios que definen la estructura del role.
+Ansible roles are included in the **roles** directory. The first directory inside the **roles** directory will be the name of the role and inside this directory will be some other directories. The only mandatory directory is the **tasks** directory.
 
-Los principales directorios, más utilizados, son los siguientes:
+The most used directories are:
 
-+ **tasks**, contendrá las tareas a ejecutar por el role. Deberán ir en un fichero llamado **main.yaml**.
-+ **files**, contendrá ficheros que se quieran copiar a los clientes con el role de ansible.
-+ **templates**, contendrá templates de ficheros que se quieran copiar a los clientes con el role de ansible.
++ **tasks**, all tasks that the role must execute will be included in this directory. They must be included in the  **main.yaml** file (or **main.yml**).
++ **files**, all the files that the role must copy to the ansible clients.
++ **templates**, file templates to copy to ansible clients. These files will be customized based on variable values.
+* **vars**, variables used by the ansible role.
 
-## Creación de un playbook usando roles
+## Ansible playbook using roles
 
-Vamos a crear un playbook usando roles.
+You are going to create an ansible playbook using roles.
 
-El playbook que vamos a crear se encargará de crear varios usuarios y asignarles un password. Para ello crearemos dos roles, uno para crear los usuarios y otro para asignarles el password a los usuarios.
+You will create a role which will create users and the password for the users will be configured as well. You will create two roles:
 
-> ![NOTE](../imgs/note-icon.png) Sería posible incluir todas las tareas en un único role. Se han utilizado dos roles para ilustrar como invocar varios roles desde un playbook.
+1. One role to create users.
+2. Another role to configure user password.
 
-Lo primero que vamos a hacer es crear un fichero con los datos de los usuarios. Aunque hemos visto que existe un directorio **vars** dentro de la estructura del role que tiene el propósito de almacenar las variables del role, en este caso crearemos un fichero [group_vars/users.yaml](group_vars/users.yaml):
+> ![IMPORTANT](../imgs/important-icon.png) Once the users are create we will need to assign the password, not only when the users were created. Users can ask for a password change due to they forgot it. In this case the system admins will only need to use the role for password change. Two use case are covered, initial users creation and user password changes.
+
+You will create a file containing user data. This file will be placed in the [group_vars/users.yaml](group_vars/users.yaml). As the user data will be used by two different roles we will use this directory instead of the **vars** directory in the ansible role directory structure:
 
 ```yaml
 ---
 
-# diccionario con la información de usuarios a crear
+# user information. Data is stored using a dictionary
 users:
   operator:
     password: 'temporal123'
     home: '/home/operator'
-    gecos: 'usuario para tareas de operacion'
+    gecos: 'operation user'
     shell: '/bin/bash'
     generate_ssh_keys: 'yes'
     ssh_key_size: 3072
   security:
     password: '12345'
     home: '/home/security'
-    gecos: 'usuario de seguridad'
+    gecos: 'security user'
     shell: '/bin/bash'
     generate_ssh_keys: 'yes'
     ssh_key_size: 4096
   backup:
     password: 'password'
     home: '/var/lib/backup'
-    gecos: 'usuario para ejecutar el agente de backup'
+    gecos: 'backup user'
     shell: '/sbin/nologin'
     generate_ssh_keys: 'no'
     ssh_key_size: 0
   monitoring:
-    password: 'enunlugardelamancha'
+    password: 'monitoring'
     home: '/var/lib/monitoring'
-    gecos: 'usuario para ejecutar el agente de monitorizacion'
+    gecos: 'monontoring user'
     shell: '/sbin/nologin'
     generate_ssh_keys: 'no'
     ssh_key_size: 0
 ```
 
-> ![IMPORTANT](../imgs/important-icon.png) En este caso la contraseña va en claro. Esto no es una buena práctica.
+> ![IMPORTANT](../imgs/important-icon.png) Password is in plain text in this example. This is not a best practice. You will see how address this issue later.
 
-La estructura anterior crea un diccionario, **users**, cuyas claves son los nombres de los usuarios (**operator**, **security**, **backup** y **monitoring**) y a cada usuario se le definen sus propiedades (**password**, **home**, **gecos**, **shell**, **generate_ssh_keys** y **ssh_key_size**).
-
-A cotinuación crearemos un role llamado **users** dentro de [roles/users](roles/users):
+You will create an ansible role named **users**:
 
 ```console
-[jadebustos@ansiblectrl labs-ansible]$ tree roles/users/
+[ansible@ansiblectrl labs-ansible]$ tree roles/users/
 roles/users/
 └── tasks
     ├── 01-create.yaml
     └── main.yaml
 
 1 directory, 2 files
-[jadebustos@ansiblectrl labs-ansible]$ 
+[ansible@ansiblectrl labs-ansible]$ 
 ```
 
 El fichero [roles/users/tasks/main.yaml](roles/users/tasks/main.yaml) incluye todas las tareas a realizar por el role:
@@ -289,3 +298,7 @@ Los datos confidenciales se deben incluir en **vaults**. En [06-protegiendo-info
 > ![TIP](../imgs/tip-icon.png) También es posible utilizar vaults comerciales con ansible.
 
 > ![HOMEWORK](../imgs/homework-icon.png) Un buen ejercicio sería transformar los roles anteriores para recuperar las contraseñas de los usuarios del vault que incluye ansible por defecto.
+
+## Resources
+
+* [Ansible Roles](https://docs.ansible.com/ansible/latest/playbook_guide/playbooks_reuse_roles.html)

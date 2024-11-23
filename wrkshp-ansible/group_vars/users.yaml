@@ -1,32 +1,45 @@
 ---
+# Copyright 2022 (c) José Ángel de Bustos Pérez 
+#   Author: José Ángel de Bustos Pérez <jadebustos@gmail.com>
+#
+# This file is part of the IdM workshop.
+#
+# This workshop is free software: you can redistribute it and/or modify it under the terms of 
+# the GNU General Public License v3 as published by the Free Software Foundation.
+# This workshop is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; 
+# without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. 
+# See the GNU General Public License v3 for more details.
 
-# diccionario con la información de usuarios a crear
+# You should have received a copy of the GNU General Public License v3 along with the IdM workshop. 
+# If not, see https://www.gnu.org/licenses/gpl-3.0.en.html.
+
+# user information. Data is stored using a dictionary
 users:
   operator:
     password: 'temporal123'
     home: '/home/operator'
-    gecos: 'usuario para tareas de operacion'
+    gecos: 'operation user'
     shell: '/bin/bash'
     generate_ssh_keys: 'yes'
     ssh_key_size: 3072
   security:
     password: '12345'
     home: '/home/security'
-    gecos: 'usuario de seguridad'
+    gecos: 'security user'
     shell: '/bin/bash'
     generate_ssh_keys: 'yes'
     ssh_key_size: 4096
   backup:
     password: 'password'
     home: '/var/lib/backup'
-    gecos: 'usuario para ejecutar el agente de backup'
+    gecos: 'backup user'
     shell: '/sbin/nologin'
     generate_ssh_keys: 'no'
     ssh_key_size: 0
   monitoring:
-    password: 'enunlugardelamancha'
+    password: 'monitoring'
     home: '/var/lib/monitoring'
-    gecos: 'usuario para ejecutar el agente de monitorizacion'
+    gecos: 'monontoring user'
     shell: '/sbin/nologin'
     generate_ssh_keys: 'no'
     ssh_key_size: 0
