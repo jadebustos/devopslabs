@@ -6,7 +6,7 @@ I created these workshops to facilitate my students to learn about these technol
 
 I decided to update and translate it into English.
 
-+ [Laboratorios de Ansible](labs-ansible)
++ [Ansible workshop](wrkshp-ansible)
 + [Laboratorios de Contenedores](labs-contenedores)
 + [Laboratorios de Kubernetes](labs-k8s)
 
