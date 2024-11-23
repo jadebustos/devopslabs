@@ -232,14 +232,17 @@ If you want to manage a node using ansible, python need to be installed on that 
 
 ```console
 [ansible@controller ansible]$ ansible -i hosts -m ping all
-ansibleclient.melmac.univ | FAILED! => {
-    "changed": false,
-    "module_stderr": "Shared connection to ansibleclient.melmac.univ closed.\r\n",
-    "module_stdout": "/bin/sh: /usr/bin/python3: No such file or directory\r\n",
-    "msg": "The module failed to execute correctly, you probably need to set the interpreter.\nSee stdout/stderr for the exact error",
-    "rc": 127
-}
 controller.melmac.univ | SUCCESS => {
+    "ansible_facts": {
+        "discovered_interpreter_python": "/usr/bin/python3"
+    },
+    "changed": false,
+    "ping": "pong"
+}
+client.melmac.univ | SUCCESS => {
+    "ansible_facts": {
+        "discovered_interpreter_python": "/usr/bin/python3"
+    },
     "changed": false,
     "ping": "pong"
 }

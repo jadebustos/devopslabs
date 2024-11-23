@@ -9,24 +9,24 @@ In [generate-linux-pass-hash.yaml](generate-linux-pass-hash.yaml):
 + How to run tasks in the ansible controller without having to use SSH.
 
 ```console
-[ansible@archimedes labs-ansible]$ ansible-playbook -i hosts generate-linux-pass-hash.yaml 
-Write you password to get the password hash:  
+[ansible@archimedes wrkshp-ansible]$ ansible-playbook -i hosts generate-linux-pass-hash.yaml 
+Write you password to get the password hash: : 
 
-PLAY [localhost] *****************************************************************************************************************************************************************************************************************************
+PLAY [localhost] *************************************************************************************************************************************************************************************
 
-TASK [random value to be used as salt to create the password] *********************************************************************************************************************************************************************
-changed: [localhost]
+TASK [random value to be used as salt to create the password] ****************************************************************************************************************************************
+changed: [localhost -> 127.0.0.1]
 
-TASK [hash creation (sha512)] **************************************************************************************************************************************************************************************************************
-changed: [localhost]
+TASK [hash creation (sha512)] ************************************************************************************************************************************************************************
+changed: [localhost -> 127.0.0.1]
 
-TASK [debug] *********************************************************************************************************************************************************************************************************************************
-ok: [localhost] => {
-    "msg": "Password hash is $6$2FWHee0JFh9gUZFR$z72.TcPg4epTlJmoUVDyuHpHnmQAOgmHoWlJl4T4vRMIwprdlgx6Pw9G6FPlsiKJu/W9JdrWjMHOKeY/HYxhL0"
+TASK [debug] *****************************************************************************************************************************************************************************************
+ok: [localhost -> 127.0.0.1] => {
+    "msg": "Password hash is $6$vCe5cnAZ8h7Pv9UY$p5UwZugjyyTu6jLoLoM0s1gTwWrD0uZXH1/OXpS82MaQ1P7aE5FJcvj9QAnxxo11YwNZ08xnrzIhtAWf9OpSU1"
 }
 
-PLAY RECAP ***********************************************************************************************************************************************************************************************************************************
+PLAY RECAP *******************************************************************************************************************************************************************************************
 localhost                  : ok=3    changed=2    unreachable=0    failed=0    skipped=0    rescued=0    ignored=0   
 
-[ansible@archimedes labs-ansible]$
+[ansible@archimedes wrkshp-ansible]$
 ```
