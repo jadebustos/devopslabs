@@ -12,7 +12,7 @@ In that course I was on charge to teach them about Open Source Software, Cloud a
 * Kubernetes
 * Azure
 
-I decided to update and translate it into English.
+I decided to update and translate them into English.
 
 + [Ansible workshop](wrkshp-ansible)
 + [Laboratorios de Contenedores](labs-contenedores)
