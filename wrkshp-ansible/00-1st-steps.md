@@ -20,7 +20,7 @@ You will need to configure the [EPEL repository](https://dl.fedoraproject.org/pu
 Once the repository has been configured we can install ansible and another utils:
 
 ```console
-[root@ansiblectrl ~]# dnf install ansible git tree jq -y
+[root@ansiblectrl ~]# dnf install ansible git tree jq tmux -y
 ...
 [root@ansiblectrl ~]#
 ```
