@@ -7,7 +7,7 @@ The following workshops are intended to learn the Ansible fundamentals:
 + Facts.
 + Variables, lists and dictionaries.
 + How to iterate through lists and dictionaries.
-+ Privilege scalation.
++ Privilege escalation.
 + Managing secrets, vaults.
 
 1. [First steps with ansible](00-1st-steps.md)
