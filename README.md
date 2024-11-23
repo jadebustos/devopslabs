@@ -22,9 +22,17 @@ I decided to update and translate them into English. I will add some more extra 
 
 > ![IMPORTANT](imgs/important-icon.png) This workshop contains links to different components as they are evolving it could be possible that the information in the links will be for an older version that the one you are using.
 
-This workshop is free software: you can redistribute it and/or modify it under the terms of  the GNU General Public License v3 as published by the Free Software Foundation. This workshop is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public License v3 for more details.
+These workshops are free software: you can redistribute it and/or modify it under the terms of  the GNU General Public License v3 as published by the Free Software Foundation. These workshops are distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public License v3 for more details.
 
 You should have received a copy of the GNU General Public License v3 along with the IdM workshop. If not, see https://www.gnu.org/licenses/gpl-3.0.en.html.
+
+## What's it and What's not it.
+
+These worshops are a introductory ones and were designed to help my students to understand the concepts and the technologies to which are related to.
+
+I will not explain syntax or architectures in depth. However, I will add some useful links to complement the workshops.
+
+These workshops are a practical ones designed to help to understand the basic concepts of the technologies by simple examples to facilitate the students to face by themselves more complex situations in which they can use these technologies.
 
 ## Requirements
 
