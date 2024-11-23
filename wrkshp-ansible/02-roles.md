@@ -127,7 +127,7 @@ File [roles/users/tasks/main.yaml](roles/users/tasks/main.yaml) will include all
 - include_tasks: 01-create.yaml
 ```
 
-We can organize the role tasks in different files such [roles/users/tasks/01-create.yaml](roles/users/tasks/01-create.yaml):
+We can organize the role tasks in different files such [roles/users/tasks/01-create.yaml](roles/users/tasks/01-create.yaml) and including them in the [roles/users/tasks/main.yaml](roles/users/tasks/main.yaml) file:
 
 ```yaml
 ---
