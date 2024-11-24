@@ -3,76 +3,44 @@
 When ansible connects to a node it can recollect node's information, store it in variables which can be used for the tasks being executed in that node:
 
 ```console
-[ansible@controller wrkshp-ansible]$ ansible -i hosts -l local -m setup all
-localhost | SUCCESS => {
-    "ansible_facts": {
-        "ansible_all_ipv4_addresses": [
-            "192.168.1.176"
-        ],
-        "ansible_all_ipv6_addresses": [
-            "fe80::69e4:6df:909d:bde7"
-        ],
-        "ansible_apparmor": {
-            "status": "disabled"
-        },
-        "ansible_architecture": "x86_64",
-        "ansible_bios_date": "04/01/2014",
-        "ansible_bios_version": "1.14.0-3.fc34",
-        "ansible_cmdline": {
-            "BOOT_IMAGE": "(hd0,msdos1)/vmlinuz-4.18.0-310.el8.x86_64",
-            "crashkernel": "auto",
-            "quiet": true,
-            "rd.lvm.lv": "cs/swap",
-            "resume": "/dev/mapper/cs-swap",
-            "rhgb": true,
-            "ro": true,
-            "root": "/dev/mapper/cs-root"
-        },
-...
-}
+[ansible@controller wrkshp-ansible]$ ansible -i hosts -l client -m setup all
+
+
 [ansible@controller wrkshp-ansible]$
 ```
 
-> ![HOMEWORK](../imgs/homework-icon.png) Verifica que en el fichero de inventario que utilices exista un grupo llamado local. Sobre el hosts o hosts incluidos en ese grupo se ejecutará la acción.
-
-Si queremos enviar los facts a un fichero podemos redirigir la salida estandar hacía el fichero:
+You can redirect the output to a file:
 
 ```console
-[ansible@controller wrkshp-ansible]$ ansible -i hosts -l local -m setup all > /tmp/local.json
+[ansible@controller wrkshp-ansible]$ ansible -i hosts -l client -m setup all > /tmp/local.json
 [ansible@controller wrkshp-ansible]$ ls -lh /tmp/
-total 28K
--rw-rw-r--. 1 ansible ansible 25K Jun 19 18:55 local.json
+
+
+
 [ansible@controller wrkshp-ansible]$ 
 ```
 
-También podemos indicar que se redirigan de forma automática a un directorio. Esto es útil cuando queremos recuperar los facts de varios sistemas:
+You can also forward the output to a directory:
 
 ```console
-[ansible@controller wrkshp-ansible]$ ansible -i hosts -l localhost,client.melmac.univ -m setup all --tree /tmp/facts
-localhost | SUCCESS => {
-    "ansible_facts": {
-        "ansible_all_ipv4_addresses": [
-            "192.168.1.176"
-        ],
-        "ansible_all_ipv6_addresses": [
-            "fe80::69e4:6df:909d:bde7"
-        ],
-        "ansible_apparmor": {
-            "status": "disabled"
-        },
-...
+[ansible@controller wrkshp-ansible]$ ansible -i hosts -l client -m setup all --tree /tmp/facts
+
+
+
+
 [ansible@controller wrkshp-ansible]$ ls -lh /tmp/
-total 28K
-drwxrwxr-x. 2 ansible ansible  54 Jun 19 18:58 facts
--rw-rw-r--. 1 ansible ansible 25K Jun 19 18:55 local.json
+
+
+
 [ansible@controller wrkshp-ansible]$ ls -lh /tmp/facts/
-total 32K
--rw-rw-r--. 1 ansible ansible 16K Jun 19 18:58 client.melmac.univ
--rw-rw-r--. 1 ansible ansible 16K Jun 19 18:58 localhost
+
+
+
+
 [ansible@controller wrkshp-ansible]$ 
 ```
 
-Si editamos los ficheros generados veremos que son un único stream, es decir que es una única línea. Si queremos consultarlos podemos reescribirlos de una forma más legible:
+The JSON facts file is an one-line file, so you can pretty print them:
 
 ```console
 [ansible@controller wrkshp-ansible]$ cd /tmp/facts/
@@ -81,29 +49,26 @@ Si editamos los ficheros generados veremos que son un único stream, es decir qu
 > python3 -m json.tool $i > "formatted-$i.json"
 > done
 [ansible@controller facts]$ ls -lh
-total 88K
--rw-rw-r--. 1 ansible ansible 16K Jun 19 18:58 client.melmac.univ
--rw-rw-r--. 1 ansible ansible 25K Jun 19 19:05 formatted-client.melmac.univ.json
--rw-rw-r--. 1 ansible ansible 25K Jun 19 19:05 formatted-localhost.json
--rw-rw-r--. 1 ansible ansible 16K Jun 19 18:58 localhost
+
+
+
+
 [ansible@controller facts]$ 
 ```
 
-También podemos utilizar el comando **jq** sobre el fichero de facts para extraer información:
+You can use the **jq** command to extract information from the JSON facts file:
 
 ```console
 [ansible@controller facts]$ cat client.melmac.univ | jq '.ansible_facts.ansible_fqdn'
 "client.melmac.univ"
 [ansible@controller facts]$ cat client.melmac.univ | jq '.ansible_facts.ansible_all_ipv4_addresses[0]'
-"192.168.1.177"
+"192.168.122.231
 [ansible@controller facts]$ cat client.melmac.univ | jq '.ansible_facts.ansible_all_ipv4_addresses'
 [
-  "192.168.1.177"
+  "192.168.122.231"
 ]
 [ansible@controller facts]$ 
 ```
-
-> ![INFORMATION](../imgs/information-icon.png): [Ansible Facts](https://docs.ansible.com/ansible/latest/user_guide/playbooks_vars_facts.html)
 
 ## Utilizando facts (Ejemplo)
 
@@ -481,4 +446,7 @@ El playbook [check-for-empty-disk.yaml](check-for-empty-disk.yaml) detecta el pr
 
 > ![INFORMATION](../imgs/information-icon.png) Una vez que tenemos el dispositivo en una variable ya podemos operar con el como necesitemos.
 
+## Resources
+
++ [Ansible Facts](https://docs.ansible.com/ansible/latest/user_guide/playbooks_vars_facts.html)
 
