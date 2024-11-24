@@ -119,7 +119,7 @@ users/
 [ansible@controller roles]$ 
 ```
 
-File [roles/users/tasks/main.yaml](roles/users/tasks/main.yaml) will include all tasks to be performed by the role:
+File [roles/users/tasks/main.yaml](roles/users/tasks/main.yaml) includes all tasks to be performed by the role:
 
 ```yaml
 ---
@@ -140,38 +140,40 @@ We can organize the role tasks in different files such [roles/users/tasks/01-cre
     shell: "{{ item.value.shell }}"
     generate_ssh_key: "{{ item.value.generate_ssh_keys }}"
     ssh_key_bits: "{{ item.value.ssh_key_size }}"
-  become: yes
+  become: true
   with_dict:
     - "{{ users }}"
 ```
 
-Se iterará sobre el diccionario **users**, sobre sus claves (**operator**, **security**, **backup** y **monitoring**) donde:
+Iteration will be done over the dictionary **users** using the dictionary keys (**operator**, **security**, **backup** y **monitoring**) where:
 
-+ **user** es el módulo de ansible que se utilizará. El módulo [user](https://docs.ansible.com/ansible/2.9/modules/user_module.html) creará usuarios en el sistema operativo.
-+ **item.key** será la clave sobre la que estamos iterando, el nombre del usuario.
-+ **item.value.gecos** será el valor del campo **gecos** de la clave sobre la que estemos iterando.
-+ **item.value.home** será el valor del campo **home** de la clave sobre la que estemos iterando.
-+ **item.value.shell** será el valor del campo **shell** de la clave sobre la que estemos iterando.
-+ **item.value.generate_ssh_keys** será el valor del campo **generate_ssh_keys** de la clave sobre la que estemos iterando.
-+ **item.value.ssh_key_bits** será el valor del campo **ssh_key_bits** de la clave sobre la que estemos iterando.
-+ **become: yes** indica que la tarea se tiene que ejecutar como usuario **root**.
-+ **with_dict** indica que se iterará sobre un diccionario.
++ **ansible.builtin.user** ansible module for user creation. Ansible module [user](https://docs.ansible.com/ansible/latest/collections/ansible/builtin/user_module.html) will create the users.
++ **item.key** dictionary key used to iterate, username.
++ **item.value.gecos** gecos value for the key being iterated.
++ **item.value.home** home value for the key being iterated.
++ **item.value.shell** shell value for the key being iterated.
++ **item.value.generate_ssh_keys** generate_ssh_keys value for the key being iterated.
++ **item.value.ssh_key_bits** ssh_key_bits value for the key being iterated.
++ **become: true** tells ansible that the task must be executed as **root**.
++ **with_dict** dictionary iteration.
 
-Este role creará los usuarios, pero no les asigna contraseñas. Aunque es posible asignar la contraseña en el código anterior vamos a crear un role a parte para realizar esta tarea para poder reutilizarlo para cambiar las contraseñas de los usuarios cuando sea necesario.
+> ![IMPORTANT](../imgs/important-icon.png) **"{{ variable }}"** means using an ansible variable.
 
-El role para cambiar las contraseñas a los usuarios:
+Users will be created but they will not have a password configured. You will create a new role to configure user's passwords.
+
+Ansible role to configure user's passwords:
 
 ```console
-[jadebustos@ansiblectrl labs-ansible]$ tree roles/passwd/
+[ansible@controller wrkshp-ansible]$ tree roles/passwd/
 roles/passwd/
 └── tasks
     ├── 01-password.yaml
     └── main.yaml
 
 1 directory, 2 files
-[jadebustos@ansiblectrl labs-ansible]$
+[ansible@controller wrkshp-ansible]$
 ```
-El fichero [roles/passwd/tasks/main.yaml](roles/passwd/tasks/main.yaml) incluye todas las tareas a realizar por el role:
+File [roles/passwd/tasks/main.yaml](roles/passwd/tasks/main.yaml) includes all tasks to be performed by the role:
 
 ```yaml
 ---
@@ -179,7 +181,7 @@ El fichero [roles/passwd/tasks/main.yaml](roles/passwd/tasks/main.yaml) incluye 
 - include_tasks: 01-password.yaml
 ```
 
-En este caso las tareas las hemos incluido en un fichero [roles/users/tasks/01-password.yaml](roles/users/tasks/01-password.yaml):
+We can organize the role tasks in different files such [roles/users/tasks/01-password.yaml](roles/users/tasks/01-password.yaml) and including them in the [roles/passwd/tasks/main.yaml](roles/passwd/tasks/main.yaml) file:
 
 ```yaml
 ---
@@ -204,7 +206,7 @@ En este caso las tareas las hemos incluido en un fichero [roles/users/tasks/01-p
 - name: create a dictionary with password hashes
   set_fact:
     passwdhashes: "{{ passwdhashes|default({}) | combine( {item.item.key: item.stdout} ) }}"
-  with_items: "{{ sha512.results }}"
+  loop: "{{ sha512.results }}"
 
 # uncomment this task to see passwordhasses structure
 #- name: display passwordhashes
@@ -318,3 +320,5 @@ Los datos confidenciales se deben incluir en **vaults**. En [06-protegiendo-info
 
 * [Ansible Roles](https://docs.ansible.com/ansible/latest/playbook_guide/playbooks_reuse_roles.html)
 * [Ansible Galaxy](https://docs.ansible.com/ansible/latest/cli/ansible-galaxy.html)
+* [Ansible user module](https://docs.ansible.com/ansible/latest/collections/ansible/builtin/user_module.html). And now you know where look for information about ansible modules and where to look for ansible modules as well.
+* [Ansible loops](https://docs.ansible.com/ansible/latest/playbook_guide/playbooks_loops.html#iterating-over-a-dictionary)
