@@ -30,7 +30,7 @@ You should have received a copy of the GNU General Public License v3. If not, se
 
 ## What's it and What's not it.
 
-These worshops are a introductory ones and were designed to help my students to understand the concepts and the technologies to which are related to.
+These worshops are a introductory ones and were designed to help my students to understand the concepts and the technologies to which are related to. These workshops are based on infrastructure and they are not based on application develpment.
 
 I will not explain syntax or architectures in depth. However, I will add some useful links to complement the workshops.
 
