@@ -141,8 +141,7 @@ We can organize the role tasks in different files such [roles/users/tasks/01-cre
     generate_ssh_key: "{{ item.value.generate_ssh_keys }}"
     ssh_key_bits: "{{ item.value.ssh_key_size }}"
   become: true
-  with_dict:
-    - "{{ users }}"
+  loop: "{{ users | dict2items }}"
 ```
 
 Iteration will be done over the dictionary **users** using the dictionary keys (**operator**, **security**, **backup** y **monitoring**) where:
