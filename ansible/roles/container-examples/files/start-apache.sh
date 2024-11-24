@@ -1,4 +1,16 @@
 #!/usr/bin/env bash
+# Copyright 2022 (c) José Ángel de Bustos Pérez 
+#   Author: José Ángel de Bustos Pérez <jadebustos@gmail.com>
+#
+# This workshop is free software: you can redistribute it and/or modify it under the terms of 
+# the GNU General Public License v3 as published by the Free Software Foundation.
+# This workshop is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; 
+# without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. 
+# See the GNU General Public License v3 for more details.
+
+# You should have received a copy of the GNU General Public License.
+# If not, see https://www.gnu.org/licenses/gpl-3.0.en.html.
+
 sed -i "s/Listen 80/Listen ${PORT}/g" /etc/apache2/ports.conf
 sed -i "s/:80/:${PORT:-80}/g" /etc/apache2/sites-enabled/*.conf
 apache2-foreground
