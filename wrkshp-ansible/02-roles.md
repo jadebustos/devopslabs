@@ -154,7 +154,7 @@ Iteration will be done over the dictionary **users** using the dictionary keys (
 + **item.value.generate_ssh_keys** generate_ssh_keys value for the key being iterated.
 + **item.value.ssh_key_bits** ssh_key_bits value for the key being iterated.
 + **become: true** tells ansible that the task must be executed as **root**.
-+ **with_dict** dictionary iteration.
++ **loop** [dictionary iteration](https://docs.ansible.com/ansible/latest/playbook_guide/playbooks_loops.html#iterating-over-a-dictionary).
 
 > ![IMPORTANT](../imgs/important-icon.png) **"{{ variable }}"** means using an ansible variable.
 
