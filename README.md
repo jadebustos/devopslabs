@@ -17,6 +17,8 @@ I decided to update and translate them into English. I will add some more extra 
 1. [Ansible workshop](wrkshp-ansible)
 1. [Laboratorios de Contenedores](labs-contenedores)
 1. [Laboratorios de Kubernetes](labs-k8s)
+1. Azure workshop
+1. Terraform workshop
 
 > ![INFORMATION](imgs/information-icon.png) These workshops are based on CentOS Stream. If you prefer to try with a different distro you should make some changes, but it will be no a difficult task.
 
