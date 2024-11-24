@@ -185,7 +185,7 @@ We can organize the role tasks in different files such [roles/users/tasks/01-pas
 ```yaml
 ---
 
- create users's password hash and store it in a variable
+# create users's password hash and store it in a variable
 - name: generate sha512 password hashes
   ansible.builtin.shell: "/usr/bin/openssl passwd -6 -salt $(/usr/bin/openssl rand -base64 48) {{ item.value.password }}"
   register: sha512
