@@ -1,5 +1,4 @@
 ---
-
 # Copyright 2022 (c) José Ángel de Bustos Pérez 
 #   Author: José Ángel de Bustos Pérez <jadebustos@gmail.com>
 #
@@ -12,11 +11,8 @@
 # You should have received a copy of the GNU General Public License.
 # If not, see https://www.gnu.org/licenses/gpl-3.0.en.html.
 
-- name: create users
+- name: network configuration (using facts example)
   hosts: all
-  vars_files:
-    - "group_vars/users.yaml"
-  gather_facts: false
+  gather_facts: true
   roles:
-    - users
-    - passwd
+    - networkconf

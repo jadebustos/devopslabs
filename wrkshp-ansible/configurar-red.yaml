@@ -1,7 +1,0 @@
----
-
-- name: configurar red (ejemplo utilizacion facts)
-  hosts: all
-  gather_facts: true
-  roles:
-    - networkconf

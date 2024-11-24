@@ -24,7 +24,7 @@ I decided to update and translate them into English. I will add some more extra 
 
 These workshops are free software: you can redistribute it and/or modify it under the terms of  the GNU General Public License v3 as published by the Free Software Foundation. These workshops are distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public License v3 for more details.
 
-You should have received a copy of the GNU General Public License v3 along with the IdM workshop. If not, see https://www.gnu.org/licenses/gpl-3.0.en.html.
+You should have received a copy of the GNU General Public License v3. If not, see https://www.gnu.org/licenses/gpl-3.0.en.html.
 
 ## What's it and What's not it.
 

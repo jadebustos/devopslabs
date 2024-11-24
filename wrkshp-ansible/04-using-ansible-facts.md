@@ -70,7 +70,9 @@ You can use the **jq** command to extract information from the JSON facts file:
 [ansible@controller facts]$ 
 ```
 
-## Utilizando facts (Ejemplo)
+## How to use Ansible facts
+
+Playbook [network-configuration.yaml](network-configuration.yaml)
 
 El playbook [configurar-red.yaml](configurar-red.yaml) recrea un fichero de configuración de red en **/tmp/ifcfg-nombre_interface** utilizando la información contenida en los facts basandose en el template [network.j2](roles/networkconf/templates/network.j2). El fichero de configuración sigue el formato utilizado en Red Hat y derivados:
 
