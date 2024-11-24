@@ -72,30 +72,17 @@ You can use the **jq** command to extract information from the JSON facts file:
 
 ## How to use Ansible facts
 
-Playbook [network-configuration.yaml](network-configuration.yaml)
-
-El playbook [configurar-red.yaml](configurar-red.yaml) recrea un fichero de configuración de red en **/tmp/ifcfg-nombre_interface** utilizando la información contenida en los facts basandose en el template [network.j2](roles/networkconf/templates/network.j2). El fichero de configuración sigue el formato utilizado en Red Hat y derivados:
+Playbook [network-configuration.yaml](network-configuration.yaml) will create the network configuration file in **/tmp/ifcfg-interface_name** using information from the facts. This is a silly example but it illustrates how to use ansible facts and jinja2 templates. The playbook will use the jinja 2 template [network.j2](roles/networkconf/templates/network.j2).
 
 ```console
-[ansible@controller wrkshp-ansible]$ ansible-playbook -i hosts -l client configurar-red.yaml 
+[ansible@controller wrkshp-ansible]$ ansible-playbook -i hosts -l client network-configuration.yaml 
 
-PLAY [configurar red (ejemplo utilizacion facts)] ********************************************************************************************************************************************************************************************
 
-TASK [Gathering Facts] ***********************************************************************************************************************************************************************************************************************
-ok: [client.melmac.univ]
 
-TASK [networkconf : include_tasks] ***********************************************************************************************************************************************************************************************************
-included: /home/ansible/devopslabs/wrkshp-ansible/roles/networkconf/tasks/01-network.yaml for client.melmac.univ
 
-TASK [networkconf : crear configuracion de red] **********************************************************************************************************************************************************************************************
-changed: [client.melmac.univ]
-
-PLAY RECAP ***********************************************************************************************************************************************************************************************************************************
-client.melmac.univ    : ok=3    changed=1    unreachable=0    failed=0    skipped=0    rescued=0    ignored=0   
 
 [ansible@controller wrkshp-ansible]$
 ```
-> ![INFORMATION](../imgs/information-icon.png) [Templates (Jinja2)](https://docs.ansible.com/ansible/latest/user_guide/playbooks_templating.html)
 
 Si nos conectamos al equipo podemos comparar el fichero generado con la información de los facts y el fichero real de configuración:
 
@@ -451,4 +438,4 @@ El playbook [check-for-empty-disk.yaml](check-for-empty-disk.yaml) detecta el pr
 ## Resources
 
 + [Ansible Facts](https://docs.ansible.com/ansible/latest/user_guide/playbooks_vars_facts.html)
-
++ [Jinja2 templates](https://docs.ansible.com/ansible/latest/user_guide/playbooks_templating.html)
