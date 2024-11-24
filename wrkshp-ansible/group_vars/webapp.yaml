@@ -1,4 +1,15 @@
 ---
+# Copyright 2022 (c) José Ángel de Bustos Pérez 
+#   Author: José Ángel de Bustos Pérez <jadebustos@gmail.com>
+#
+# This workshop is free software: you can redistribute it and/or modify it under the terms of 
+# the GNU General Public License v3 as published by the Free Software Foundation.
+# This workshop is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; 
+# without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. 
+# See the GNU General Public License v3 for more details.
+
+# You should have received a copy of the GNU General Public License.
+# If not, see https://www.gnu.org/licenses/gpl-3.0.en.html.
 
 DocumentRoot: '/var/www/html/webapp'
 ServerName: 'www.acme.es'
@@ -8,7 +19,7 @@ ServerName: 'www.acme.es'
 #       -subj "/C=SP/ST=Spain/L=Madrid/O=ACME/OU=ACME-IT/CN=www.acme.es/emailAddress=webmaster@acme.es" \
 #       -addext "subjectAltName = DNS:acme.es"
 
-# firmar el csr con una CA previamente creada ACMECA
+# csr singing using a CA named ACMECA
 # openssl ca -extensions server -name ACMECA -out acme.es.crt -infiles acme.es.csr
 
 

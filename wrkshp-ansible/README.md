@@ -16,6 +16,7 @@ The following workshops are intended to learn the Ansible fundamentals:
 1. [Ansible playbooks](01-playbooks.md)
 1. [Using Ansible roles](02-roles.md)
 1. [Privilege escalation](03-privilege-escalation.md)
+1. [Using Ansible facts](04-using-ansible-facts.md)
 
 ## Aditional resources
 

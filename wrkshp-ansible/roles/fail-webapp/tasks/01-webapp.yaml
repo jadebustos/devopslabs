@@ -1,12 +1,23 @@
 ---
+# Copyright 2022 (c) José Ángel de Bustos Pérez 
+#   Author: José Ángel de Bustos Pérez <jadebustos@gmail.com>
+#
+# This workshop is free software: you can redistribute it and/or modify it under the terms of 
+# the GNU General Public License v3 as published by the Free Software Foundation.
+# This workshop is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; 
+# without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. 
+# See the GNU General Public License v3 for more details.
+
+# You should have received a copy of the GNU General Public License.
+# If not, see https://www.gnu.org/licenses/gpl-3.0.en.html.
 
 - name: remove certificate files (Red Hat)
   file:
     path: "{{ item.path }}"
     state: absent
-  become: yes
+  become: true
   when: ansible_os_family == 'RedHat'
-  with_items:
+  loop:
     - { file: 'acme.es.crt', path: '/etc/pki/tls/certs/acme.es.crt', mode: 0644, setype: 'cert_t' }
     - { file: 'acme.es.key', path: '/etc/pki/tls/private/acme.es.key', mode: 0644, setype: 'cert_t' }
     - { file: 'cacert.pem', path: '/etc/pki/tls/certs/server-chain.crt', mode: 0644, setype: 'cert_t' }
@@ -15,30 +26,30 @@
   file:
     path: /etc/httpd/conf.d/devops.conf
     state: absent
-  become: yes
+  become: true
   when: ansible_os_family == 'RedHat'
 
 - name: remove webapp files (Red Hat)
   file:
     path: "{{ webapp_dir }}/index.html"
     state: absent
-  become: yes
+  become: true
   when: ansible_os_family == 'RedHat'
 
 - name: delete webapp directory (Red Hat)
   file:
     path: "{{ webapp_dir }}"
     state: absent
-  become: yes
+  become: true
   when: ansible_os_family == 'RedHat'
 
 - name: remove certificate files (Debian)
   file:
     path: "{{ item.path }}"
     state: absent
-  become: yes
+  become: true
   when: ansible_os_family == 'Debian'
-  with_items:
+  loop:
     - { file: 'acme.es.crt', path: '/etc/pki/tls/certs/acme.es.crt', mode: 0644 }
     - { file: 'acme.es.key', path: '/etc/pki/tls/private/acme.es.key', mode: 0644 }
     - { file: 'cacert.pem', path: '/etc/pki/tls/certs/server-chain.crt', mode: 0644 }
@@ -47,9 +58,9 @@
   file:
     path: "{{ item }}"
     state: absent
-  become: yes
+  become: true
   when: ansible_os_family == 'Debian'
-  with_items:
+  loop:
     - "/etc/pki/tls/certs"
     - "/etc/pki/tls/private" 
 
@@ -57,23 +68,23 @@
   file:
     path: /etc/apache2/sites-enable/devops.conf
     state: absent
-  become: yes
+  become: true
   when: ansible_os_family == 'Debian'
 
 - name: delete virtual host file (Debian)
   file:
     path: /etc/apache2/sites-available/devops.conf
     state: absent
-  become: yes
+  become: true
   when: ansible_os_family == 'Debian'
 
 - name: disable ssl on apache (Debian)
   file:
     path: "{{ item.dest }}"
     state: absent
-  become: yes
+  become: true
   when: ansible_os_family == 'Debian'
-  with_items:
+  loop:
     - { src: '/etc/apache2/mods-available/ssl.conf', dest: '/etc/apache2/mods-enabled/ssl.conf' }
     - { src: '/etc/apache2/mods-available/ssl.load', dest: '/etc/apache2/mods-enabled/ssl.load' }
     - { src: '/etc/apache2/mods-available/socache_shmcb.load', dest: '/etc/apache2/mods-enabled/socache_shmcb.load' }
@@ -82,14 +93,14 @@
   file:
     path: /var/log/httpd
     state: absent
-  become: yes
+  become: true
   when: ansible_os_family == 'Debian'
 
 - name: remove webapp files (Debian)
   file:
     path: "{{ webapp_dir }}/index.html"
     state: absent
-  become: yes
+  become: true
   when: ansible_os_family == 'Debian'
 
 - name: remove webapp directory (Debian)
@@ -97,5 +108,5 @@
     path: "{{ webapp_dir }}"
     state: directory
     mode: 0755
-  become: yes
+  become: true
   when: ansible_os_family == 'Debian'

@@ -1,0 +1,9 @@
+[all:vars]
+ansible_user=ansible
+
+[haproxy]
+haproxy.melmac.univ
+
+[apache]
+apache1.melmac.univ 
+apache2.melmac.univ

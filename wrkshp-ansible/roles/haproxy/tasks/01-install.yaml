@@ -1,4 +1,15 @@
 ---
+# Copyright 2022 (c) José Ángel de Bustos Pérez 
+#   Author: José Ángel de Bustos Pérez <jadebustos@gmail.com>
+#
+# This workshop is free software: you can redistribute it and/or modify it under the terms of 
+# the GNU General Public License v3 as published by the Free Software Foundation.
+# This workshop is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; 
+# without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. 
+# See the GNU General Public License v3 for more details.
+
+# You should have received a copy of the GNU General Public License.
+# If not, see https://www.gnu.org/licenses/gpl-3.0.en.html.
 
 - name: install haproxy (Red Hat)
   dnf:
@@ -28,7 +39,7 @@
     setype: cert_t
   become: yes
   when: ansible_os_family == 'RedHat'
-  with_items:
+  loop:
       - "acme.es.pem"
       - "cacert.pem"
 
@@ -58,6 +69,6 @@
     mode: 0644
   become: yes
   when: ansible_os_family == 'Debian'
-  with_items:
+  loop:
       - "acme.es.pem"
       - "cacert.pem"
