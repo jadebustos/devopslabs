@@ -180,7 +180,7 @@ File [roles/passwd/tasks/main.yaml](roles/passwd/tasks/main.yaml) includes all t
 - include_tasks: 01-password.yaml
 ```
 
-We can organize the role tasks in different files such [roles/passwd/tasks/01-password.yaml](roles/users/tasks/01-password.yaml) and including them in the [roles/passwd/tasks/main.yaml](roles/passwd/tasks/main.yaml) file:
+We can organize the role tasks in different files such [roles/passwd/tasks/01-password.yaml](roles/passwd/tasks/01-password.yaml) and including them in the [roles/passwd/tasks/main.yaml](roles/passwd/tasks/main.yaml) file:
 
 ```yaml
 ---
