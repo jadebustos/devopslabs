@@ -68,7 +68,7 @@ Enter same passphrase again:
 Your identification has been saved in id_rsa
 Your public key has been saved in id_rsa.pub
 The key fingerprint is:
-SHA256:d6ePc0yE/+ZhkgTgxPqpNn4iEV5vmbUnCUFt0YXPPUc ansible@controller.jadbp.lab
+SHA256:d6ePc0yE/+ZhkgTgxPqpNn4iEV5vmbUnCUFt0YXPPUc ansible@controller.melmac.univ
 The key's randomart image is:
 +---[RSA 4096]----+
 |        o+..o o. |
