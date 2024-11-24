@@ -139,11 +139,7 @@ DNS information is taken from:
 
 ## Ansible facts practical use case
 
-Una tarea habitual que se suele hacer en las tareas de administración es al de crear un sistema de fichero o bien ampliar uno existente.
-
-Queramos crear un nuevo filesystem o ampliar uno ya existente (necesitando ampliar un Volume Group) lo que necesitamos es conocer el dispositivo físico sobre el que necesitemos actuar. Necesitaremos encontrar un dispositivo que este libre, en el sentido de que no tenga ninguna partición creada y pueda ser utilizado para crear un filesystem que ocupe todo el disco o bien utilizar todo el disco para ampliar un Volume Group.
-
-Si recogemos los facts de un equipo tendremos acceso a información sobre los dispositivos presentes, y obtendremos una salida similar a esta para un disco con particiones (disco que no se podrá utilizar para ampliar un sistema de ficheros)
+One common tasks is creating or increasing a filesystem. So you will need to find free storage device that can be used to create a filesystem. Storage devices information is in the facts:
 
 ```yaml
 "sda": {
@@ -271,9 +267,9 @@ Si recogemos los facts de un equipo tendremos acceso a información sobre los di
     "virtual": 1
   },
 ```
-> ![INFORMATION](../imgs/information-icon.png) El anterior es un ejemplo de la información de un disco de arranque, de sistema operativo, de un sistema Linux.
+> ![INFORMATION](../imgs/information-icon.png) The above is an example of a Linux system boot disk.
 
-> ![INFORMATION](../imgs/information-icon.png) Queremos identificar un disco que no esté siendo usado para usarlo en su totalidad para crear un nuevo sistema de ficheros o bien ampliar un Volume Group. Todo esto se puede hacer sobre un disco que aunque no esté libre disponga de espacio libre para crear una partición. El propósito de este ejemplo es ilustrar el uso de facts, no la creación de sistemas de ficheros.
+> ![INFORMATION](../imgs/information-icon.png) You want to identify a disk with free space that can be used to create a filesystem. This example purpose is to illustrate how to use facts, not to create filesystems.
 
 Podemos apreciar en lo anterior que los siguientes campos no se encuentran vacíos:
 
