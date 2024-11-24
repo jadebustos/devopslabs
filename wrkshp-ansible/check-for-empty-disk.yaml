@@ -1,23 +1,32 @@
 ---
+# Copyright 2022 (c) José Ángel de Bustos Pérez 
+#   Author: José Ángel de Bustos Pérez <jadebustos@gmail.com>
+#
+# This workshop is free software: you can redistribute it and/or modify it under the terms of 
+# the GNU General Public License v3 as published by the Free Software Foundation.
+# This workshop is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; 
+# without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. 
+# See the GNU General Public License v3 for more details.
+
+# You should have received a copy of the GNU General Public License.
+# If not, see https://www.gnu.org/licenses/gpl-3.0.en.html.
 
 - hosts: all
   gather_facts: true
 
   tasks:
-    - name: identifica el primer disco libre
+    - name: identify first free disk
       set_fact:
         disks: "/dev/{{ item.key }}"
       when:
-        # si el disco no está particionado tendrá libre 
-        # estas variables de los facts
+        # if disk has no partitions the following vars will be emptied
         - not item.value.partitions
         - not item.value.holders
         - not item.value.links.uuids
         - not item.value.links.labels
-        # los discos serán /dev/vd? o /dev/sd? filtramos el
-        # resto de resultados
+        # disk devices will be /dev/vd? or /dev/sd?
         - item.key | regex_search ("vd|sd")
-      with_dict: "{{ ansible_devices }}"
+      loop: "{{ ansible_devices  | dict2items }}"
 
-    - name: mostrar
-      debug: msg="Disco vacio {{ disks }}"
+    - name: show free disk
+      debug: msg="Free disk {{ disks }}"

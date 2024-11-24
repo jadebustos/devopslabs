@@ -271,7 +271,7 @@ One common tasks is creating or increasing a filesystem. So you will need to fin
 
 > ![INFORMATION](../imgs/information-icon.png) You want to identify a disk with free space that can be used to create a filesystem. This example purpose is to illustrate how to use facts, not to create filesystems.
 
-Podemos apreciar en lo anterior que los siguientes campos no se encuentran vacíos:
+The following field is not empty:
 
 + **ansible_facts.ansible_devices.partitions**.
 
@@ -348,29 +348,11 @@ Veamos ahora la información sobre un dispositivo vacío:
   },
 ```
 
-Podemos ver que esos campos se encuentran vacíos. 
-Por lo tanto para detectar los dispositivos vacíos podemos iterar sobre los dispositivos seleccionando aquellos que tengan vacías dichas propiedades.
+You can see that those fields are empty. 
 
-Para ello, crearemos un fact en el que incluiremos el primer dispositivo libre que encontremos:
+You can detect empty devices iterating on the devices and selecting those which have that fields empty.
 
-```yaml
-- name: identifica el primer disco libre
-  set_fact:
-    disks: "/dev/{{ item.key }}"
-  when:
-    # si el disco no está particionado tendrá libre 
-    # estas variables de los facts
-    - not item.value.partitions
-    - not item.value.holders
-    - not item.value.links.uuids
-    - not item.value.links.labels
-    # los discos serán /dev/vd? o /dev/sd? filtramos el
-    # resto de resultados
-    - item.key | regex_search ("vd|sd")
-  with_dict: "{{ ansible_devices }}"
-```
-
-El playbook [check-for-empty-disk.yaml](check-for-empty-disk.yaml) detecta el primer disco libre, lo almacena en una variable y muestra en pantalla el dispositivo que han encontrado libre:
+You will create a fact in which the first free device will be included. The [check-for-empty-disk.yaml](check-for-empty-disk.yaml) playbook will look for the first free disk, the disk device is stored in a variable that is printed on the screen:
 
 ```yaml
 ---
@@ -398,7 +380,7 @@ El playbook [check-for-empty-disk.yaml](check-for-empty-disk.yaml) detecta el pr
       debug: msg="Disco vacio {{ disks }}"
 ```
 
-> ![INFORMATION](../imgs/information-icon.png) Una vez que tenemos el dispositivo en una variable ya podemos operar con el como necesitemos.
+> ![INFORMATION](../imgs/information-icon.png) Once we have a free disk device stored in a variable we can create the filesystem.
 
 ## Resources
 
