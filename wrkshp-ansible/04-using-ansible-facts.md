@@ -84,91 +84,60 @@ Playbook [network-configuration.yaml](network-configuration.yaml) will create th
 [ansible@controller wrkshp-ansible]$
 ```
 
-Si nos conectamos al equipo podemos comparar el fichero generado con la información de los facts y el fichero real de configuración:
+You can check the configuration file created by the playbook:
 
 ```console
 [ansible@client ~]$ cat /tmp/ifcfg-enp1s0 
-BOOTPROTO=none
-DEFROUTE=yes
-DEVICE=enp1s0
-DNS1=192.168.1.200
-GATEWAY=192.168.1.1
-IPADDR=192.168.1.177
-NETMASK=255.255.255.0
-ONBOOT=yes
-TYPE=Ethernet
-USERCTL=no[ansible@client ~]$ cat /etc/sysconfig/network-scripts/ifcfg-enp1s0 
-TYPE=Ethernet
-PROXY_METHOD=none
-BROWSER_ONLY=no
-BOOTPROTO=none
-DEFROUTE=yes
-IPV4_FAILURE_FATAL=no
-IPV6INIT=yes
-IPV6_AUTOCONF=yes
-IPV6_DEFROUTE=yes
-IPV6_FAILURE_FATAL=no
-IPV6_ADDR_GEN_MODE=stable-privacy
-NAME=enp1s0
-UUID=7ff72f73-5b87-4685-8dd2-c92fed809bcb
-DEVICE=enp1s0
-ONBOOT=yes
-IPADDR=192.168.1.177
-NETMASK=255.255.255.0
-GATEWAY=192.168.1.1
-DNS1=192.168.1.200
-DOMAIN="melmac.univ"
+
+
+
 [ansible@client ~]$ 
 ```
 
-> ![INFORMATION](../imgs/information-icon.png) En el template que hemos utilizado [roles/networkconf/templates/network.j2](roles/networkconf/templates/network.j2) no hemos incluido todos los parámetros, por lo tanto ambos ficheros serán diferentes. Observar que los parámetros que hemos incluido no se han definido en el fichero de variables del role, se cogen de los facts del host y por lo tanto serán los mismos valores que tenga ese mismo parámetro en el fichero de configuración del host.
+Facts gathering takes some time. If you do not need the information from the facts you can disable facts gathering using **gather_facts: false**.
 
-La recolección de facts lleva algo de tiempo, para la ejecución en un sistema es algo asumible. Sin embargo, cuando se ejecuta un playbook en varios equipos puede llevar mucho tiempo. Si no se necesita la información contenida en los facts se desactiva la recolección de información con **gather_facts: false**.
-
-El playbook que hemos creado necesita el valor **gather_facts** a **true** ya que utiliza la información recolectada en los facts: 
+To gather facts you will need to use **gather_facts: true**: 
 
 ```console
 ---
 
-- name: configurar red (ejemplo utilizacion facts)
+- name: create network configuration file
   hosts: all
   gather_facts: true
   roles:
     - networkconf
 ```
 
-En los facts la información de red, menos los dns, se saca de la siguiente estructura:
+Network configuration in the ansible facts is taken from the following estructure:
 
 ```console
 [ansible@controller wrkshp-ansible]$ cat /tmp/formatted-client.melmac.univ.json | jq '.ansible_facts.ansible_default_ipv4'
 {
-  "address": "192.168.1.177",
-  "alias": "enp1s0",
-  "broadcast": "192.168.1.255",
-  "gateway": "192.168.1.1",
-  "interface": "enp1s0",
-  "macaddress": "52:54:00:d1:55:0f",
-  "mtu": 1500,
-  "netmask": "255.255.255.0",
-  "network": "192.168.1.0",
-  "type": "ether"
-}
+
+
+
 [ansible@controller wrkshp-ansible]$  
 ```
 
-La información de dns se obtiene de la siguiente estructura:
+DNS information is taken from:
 
 ```console
 [ansible@controller wrkshp-ansible]$ cat /tmp/facts/formatted-client.melmac.univ.json | jq '.ansible_facts.ansible_dns.nameservers'
-[
-  "192.168.1.200"
-]
+
+
+
+
+
 [ansible@controller wrkshp-ansible]$ cat /tmp/facts/formatted-client.melmac.univ.json | jq '.ansible_facts.ansible_dns.nameservers[0]'
-"192.168.1.200"
+
+
+
+
+
 [ansible@controller wrkshp-ansible]$ 
 ```
 
-## Ejemplo práctico del uso de facts
+## Ansible facts practical use case
 
 Una tarea habitual que se suele hacer en las tareas de administración es al de crear un sistema de fichero o bien ampliar uno existente.
 
