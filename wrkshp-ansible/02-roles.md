@@ -133,7 +133,7 @@ We can organize the role tasks in different files such [roles/users/tasks/01-cre
 ---
 
 - name: create users
-  user:
+  ansible.builtin.user:
     name: "{{ item.key }}"
     comment: "{{ item.value.gecos }}"
     home: "{{ item.value.home }}"
@@ -184,37 +184,35 @@ En este caso las tareas las hemos incluido en un fichero [roles/users/tasks/01-p
 ```yaml
 ---
 
-# creamos el hash de las passwords de los usuarios y lo almacenamos en una variable
+ create users's password hash and store it in a variable
 - name: generate sha512 password hashes
-  shell: "openssl passwd -6 -salt $(openssl rand -base64 48) {{ item.value.password }}"
+  ansible.builtin.shell: "/usr/bin/openssl passwd -6 -salt $(/usr/bin/openssl rand -base64 48) {{ item.value.password }}"
   register: sha512
   with_dict:
     - "{{ users }}"
 
 #- name: display sha512
-#  debug: var=sha512
+#  ansible.builtin.debug: var=sha512
 
-#- name: muestra los contenidos de sha512.results
-#  debug: var=item.stdout
-#  with_items:
+#- name: show sha512.results
+#  ansible.builtin.debug: var=item.stdout
+#  loop:
 #    - "{{ sha512.results }}"
 
-# crea un diccionario donde la clave es el nombre del usuario y el password el hash de su contraseña
-# para ver la estructura de sha512 y los campos que tiene puedes descomentar las tarea anteriores que
-# imprimiran el contenido de la variable sha512 que nos valdrá para conocer su estructura y poder
-# crear el diccionario con los hashes de las contraseñas
+# create a dictionary where the key is the username and the value is password's hash
+# to see sha512 structure you can uncomment the two above tasks
 - name: create a dictionary with password hashes
   set_fact:
     passwdhashes: "{{ passwdhashes|default({}) | combine( {item.item.key: item.stdout} ) }}"
   with_items: "{{ sha512.results }}"
 
-# descomentando esta tarea podemos ver la estructura creada
-- name: display passwordhashes
-  debug: var=passwdhashes
+# uncomment this task to see passwordhasses structure
+#- name: display passwordhashes
+#  ansible.builtin.debug: var=passwdhashes
 
-# cambiamos el password de los usuarios
+# configure user's passwords
 - name: change shadow password hash
-  user:
+  ansible.builtin.user:
     user: "{{ item.key }}"
     password: "{{ item.value }}"
   become: yes
