@@ -221,17 +221,15 @@ We can organize the role tasks in different files such [roles/users/tasks/01-pas
     - "{{ passwdhashes }}"
 ```
 
-+ La primera tarea itera sobre el diccionario **users**, ejecuta un comando que imprime en la salida estándar el hash (sha512) de la contraseña y almacena estas salidas en la variable **sha512**. Si se descomentan las dos tareas siguientes se imprimirá en pantalla lo almacenado en la variable **sha512**. Nos permitirá ver su estructura para ser utilizada en la siguiente tarea.
++ First task iterates over the **users** dictionary, runs a command to print tha password's hash (sha512) and store it in the **sha512** var. The next two tasks are commented, if you uncomment them **sha512** variable will be printed on the screen.
 
-+ La siguiente tarea itera sobre los resultados obtenidos en la ejecución de la primera tarea y que se encuentran almacenados en **sha512.results**. Se creará un diccionario cuya clave serán los nombres de los usuarios y el valor el hash (sha512) de la contraseña de ese usuario.
++ The following task iterates over the results from the first tasks which were stored into the var **sha512.results**. A new dictionary will be created, user's name will be the key and the user's password hash the value.
 
-+ La siguiente tarea imprime el diccionario creado.
++ Next task prints the created dictionary.
 
-+ La última tarea itera sobre el diccionario que hemos creado, **passwdhashes** y cambia la contraseña de los usuarios.
++ Last task iterates over the dictionary **passwdhashes** and changes user's passwords.
 
-Ya tenemos los roles, ahora será necesario crear un playbook que los use para crear los usuarios y asignarles las contraseñas.
-
-El playbook en cuestion será [create-users.yaml](create-users.yaml):
+Now, we have two roles, one to create users and the second one to change user's passwords. To create the users you will need to create an ansible playbook and use these roles. The playbook [create-users.yaml](create-users.yaml) will do the job.
 
 ```yaml
 ---
@@ -246,74 +244,27 @@ El playbook en cuestion será [create-users.yaml](create-users.yaml):
     - passwd
 ```
 
-+ **hosts** indica sobre que elementos del inventario se ejecutará el playbook.
-+ **vars_files** es una lista que incluye los ficheros de variables. Vamos a utilizar el mismo fichero de variables para ambos roles y hemos optado por utilizar un fichero externo al módulo para almacenar las variables.
-+ **gather_facts** se utiliza para que ansible recoga información de la máquina donde va a ejecutar la tarea. Esa información se almacenará en variables, llamadas **facts**, y podrá ser utilizada en el playbook. En este caso como no se necesita esa información no se recoge ya que dicha recolección consume tiempo. Para más información ver [04-facts-ansible.md](04-facts-ansible.md).
-+ **roles** es una lista que incluye los roles a ejecutar por el playbook. Estos roles se ejecutarán en el orden en que aparecen indicados.
++ **hosts** is used to tell ansible in which inventory nodes the playbook will be executed. This is mandatory an can be overwritten using the **ansible-playbook's** command line arguments.
++ **vars_files** list with variable files which are not in the role's var directory.
++ **gather_facts** is used to tell ansible to gather information about the system in which is running a task. This information is stored in variables and can be used for ansible to perform tasks. You will learn a bit more on [04-facts-ansible.md](04-facts-ansible.md).
++ **roles** list of roles to use.
 
-Para ejecutarlo:
+To run the playbook:
 
 ```console
-[jadebustos@ansiblectrl labs-ansible]$ ansible-playbook -i hosts -l client create-users.yaml 
-
-PLAY [create users] **************************************************************************************************************************************************************************************************************************
-
-TASK [users : include_tasks] *****************************************************************************************************************************************************************************************************************
-included: /home/jadebustos/devopslabs/labs-ansible/roles/users/tasks/01-create.yaml for ansibleclient.jadbp.lab
-
-TASK [create users] **************************************************************************************************************************************************************************************************************************
-changed: [ansibleclient.jadbp.lab] => (item={'key': 'operator', 'value': {'password': 'temporal123', 'home': '/home/operator', 'gecos': 'usuario para tareas de operacion', 'shell': '/bin/bash', 'generate_ssh_keys': 'yes', 'ssh_key_size': 3072}})
-changed: [ansibleclient.jadbp.lab] => (item={'key': 'security', 'value': {'password': '12345', 'home': '/home/security', 'gecos': 'usuario de seguridad', 'shell': '/bin/bash', 'generate_ssh_keys': 'yes', 'ssh_key_size': 4096}})
-changed: [ansibleclient.jadbp.lab] => (item={'key': 'backup', 'value': {'password': 'password', 'home': '/var/lib/backup', 'gecos': 'usuario para ejecutar el agente de backup', 'shell': '/sbin/nologin', 'generate_ssh_keys': 'no', 'ssh_key_size': 0}})
-changed: [ansibleclient.jadbp.lab] => (item={'key': 'monitoring', 'value': {'password': 'enunlugardelamancha', 'home': '/var/lib/monitoring', 'gecos': 'usuario para ejecutar el agente de monitorizacion', 'shell': '/sbin/nologin', 'generate_ssh_keys': 'no', 'ssh_key_size': 0}})
-
-TASK [passwd : include_tasks] ****************************************************************************************************************************************************************************************************************
-included: /home/jadebustos/devopslabs/labs-ansible/roles/passwd/tasks/01-password.yaml for ansibleclient.jadbp.lab
-
-TASK [passwd : generate sha512 password hashes] **********************************************************************************************************************************************************************************************
-changed: [ansibleclient.jadbp.lab] => (item={'key': 'operator', 'value': {'password': 'temporal123', 'home': '/home/operator', 'gecos': 'usuario para tareas de operacion', 'shell': '/bin/bash', 'generate_ssh_keys': 'yes', 'ssh_key_size': 3072}})
-changed: [ansibleclient.jadbp.lab] => (item={'key': 'security', 'value': {'password': '12345', 'home': '/home/security', 'gecos': 'usuario de seguridad', 'shell': '/bin/bash', 'generate_ssh_keys': 'yes', 'ssh_key_size': 4096}})
-changed: [ansibleclient.jadbp.lab] => (item={'key': 'backup', 'value': {'password': 'password', 'home': '/var/lib/backup', 'gecos': 'usuario para ejecutar el agente de backup', 'shell': '/sbin/nologin', 'generate_ssh_keys': 'no', 'ssh_key_size': 0}})
-changed: [ansibleclient.jadbp.lab] => (item={'key': 'monitoring', 'value': {'password': 'enunlugardelamancha', 'home': '/var/lib/monitoring', 'gecos': 'usuario para ejecutar el agente de monitorizacion', 'shell': '/sbin/nologin', 'generate_ssh_keys': 'no', 'ssh_key_size': 0}})
-
-TASK [passwd : create a dictionary with password hashes] *************************************************************************************************************************************************************************************
-ok: [ansibleclient.jadbp.lab] => (item={'cmd': 'openssl passwd -6 -salt $(openssl rand -base64 48) temporal123', 'stdout': '$6$ij43auXpmyXRLoE9$iUfipM2kJ5gSHm7ZA5gt/EzmyyiRfS5g83TkqgWYAlLXk4A5MPzib7Vlbv2QilbRBJlbgSQ3lQSC.VWS6g4m9.', 'stderr': '', 'rc': 0, 'start': '2021-06-19 18:33:32.403393', 'end': '2021-06-19 18:33:32.423792', 'delta': '0:00:00.020399', 'changed': True, 'invocation': {'module_args': {'_raw_params': 'openssl passwd -6 -salt $(openssl rand -base64 48) temporal123', '_uses_shell': True, 'warn': True, 'stdin_add_newline': True, 'strip_empty_ends': True, 'argv': None, 'chdir': None, 'executable': None, 'creates': None, 'removes': None, 'stdin': None}}, 'stdout_lines': ['$6$ij43auXpmyXRLoE9$iUfipM2kJ5gSHm7ZA5gt/EzmyyiRfS5g83TkqgWYAlLXk4A5MPzib7Vlbv2QilbRBJlbgSQ3lQSC.VWS6g4m9.'], 'stderr_lines': [], 'failed': False, 'item': {'key': 'operator', 'value': {'password': 'temporal123', 'home': '/home/operator', 'gecos': 'usuario para tareas de operacion', 'shell': '/bin/bash', 'generate_ssh_keys': 'yes', 'ssh_key_size': 3072}}, 'ansible_loop_var': 'item'})
-ok: [ansibleclient.jadbp.lab] => (item={'cmd': 'openssl passwd -6 -salt $(openssl rand -base64 48) 12345', 'stdout': '$6$CkeoaArQPwNKncGy$SvxF3U/vRX/v.DSnI532csnSIKz2/gf.UHDi/QB.SDuSh1WCKDncw.ue7yisGEaVg6ekzsBfil067X0KTS8ho.', 'stderr': '', 'rc': 0, 'start': '2021-06-19 18:33:33.131178', 'end': '2021-06-19 18:33:33.152753', 'delta': '0:00:00.021575', 'changed': True, 'invocation': {'module_args': {'_raw_params': 'openssl passwd -6 -salt $(openssl rand -base64 48) 12345', '_uses_shell': True, 'warn': True, 'stdin_add_newline': True, 'strip_empty_ends': True, 'argv': None, 'chdir': None, 'executable': None, 'creates': None, 'removes': None, 'stdin': None}}, 'stdout_lines': ['$6$CkeoaArQPwNKncGy$SvxF3U/vRX/v.DSnI532csnSIKz2/gf.UHDi/QB.SDuSh1WCKDncw.ue7yisGEaVg6ekzsBfil067X0KTS8ho.'], 'stderr_lines': [], 'failed': False, 'item': {'key': 'security', 'value': {'password': '12345', 'home': '/home/security', 'gecos': 'usuario de seguridad', 'shell': '/bin/bash', 'generate_ssh_keys': 'yes', 'ssh_key_size': 4096}}, 'ansible_loop_var': 'item'})
-ok: [ansibleclient.jadbp.lab] => (item={'cmd': 'openssl passwd -6 -salt $(openssl rand -base64 48) password', 'stdout': '$6$U5z8jT1Wnkbpm1Zc$.IA0mVtGaDnv7p49X6AVR9Mp65cICvB2FIUKssct51dm92ejWo61hMicaGW9Eh9IjgRuHWFROFdt.er0NKpll.', 'stderr': '', 'rc': 0, 'start': '2021-06-19 18:33:33.847984', 'end': '2021-06-19 18:33:33.867853', 'delta': '0:00:00.019869', 'changed': True, 'invocation': {'module_args': {'_raw_params': 'openssl passwd -6 -salt $(openssl rand -base64 48) password', '_uses_shell': True, 'warn': True, 'stdin_add_newline': True, 'strip_empty_ends': True, 'argv': None, 'chdir': None, 'executable': None, 'creates': None, 'removes': None, 'stdin': None}}, 'stdout_lines': ['$6$U5z8jT1Wnkbpm1Zc$.IA0mVtGaDnv7p49X6AVR9Mp65cICvB2FIUKssct51dm92ejWo61hMicaGW9Eh9IjgRuHWFROFdt.er0NKpll.'], 'stderr_lines': [], 'failed': False, 'item': {'key': 'backup', 'value': {'password': 'password', 'home': '/var/lib/backup', 'gecos': 'usuario para ejecutar el agente de backup', 'shell': '/sbin/nologin', 'generate_ssh_keys': 'no', 'ssh_key_size': 0}}, 'ansible_loop_var': 'item'})
-ok: [ansibleclient.jadbp.lab] => (item={'cmd': 'openssl passwd -6 -salt $(openssl rand -base64 48) enunlugardelamancha', 'stdout': '$6$X9az2GQgxx9ZnHT/$avyQE29t.0VTP9ADJ98QuRpZHAiPVS/qVo/c4jH.mVAFkSPupGuwgo2z0EFs5msPtZz4hD8wZuuwexJ0zlQ7l0', 'stderr': '', 'rc': 0, 'start': '2021-06-19 18:33:34.582198', 'end': '2021-06-19 18:33:34.603799', 'delta': '0:00:00.021601', 'changed': True, 'invocation': {'module_args': {'_raw_params': 'openssl passwd -6 -salt $(openssl rand -base64 48) enunlugardelamancha', '_uses_shell': True, 'warn': True, 'stdin_add_newline': True, 'strip_empty_ends': True, 'argv': None, 'chdir': None, 'executable': None, 'creates': None, 'removes': None, 'stdin': None}}, 'stdout_lines': ['$6$X9az2GQgxx9ZnHT/$avyQE29t.0VTP9ADJ98QuRpZHAiPVS/qVo/c4jH.mVAFkSPupGuwgo2z0EFs5msPtZz4hD8wZuuwexJ0zlQ7l0'], 'stderr_lines': [], 'failed': False, 'item': {'key': 'monitoring', 'value': {'password': 'enunlugardelamancha', 'home': '/var/lib/monitoring', 'gecos': 'usuario para ejecutar el agente de monitorizacion', 'shell': '/sbin/nologin', 'generate_ssh_keys': 'no', 'ssh_key_size': 0}}, 'ansible_loop_var': 'item'})
-
-TASK [passwd : display passwordhashes] *******************************************************************************************************************************************************************************************************
-ok: [ansibleclient.jadbp.lab] => {
-    "passwdhashes": {
-        "backup": "$6$U5z8jT1Wnkbpm1Zc$.IA0mVtGaDnv7p49X6AVR9Mp65cICvB2FIUKssct51dm92ejWo61hMicaGW9Eh9IjgRuHWFROFdt.er0NKpll.",
-        "monitoring": "$6$X9az2GQgxx9ZnHT/$avyQE29t.0VTP9ADJ98QuRpZHAiPVS/qVo/c4jH.mVAFkSPupGuwgo2z0EFs5msPtZz4hD8wZuuwexJ0zlQ7l0",
-        "operator": "$6$ij43auXpmyXRLoE9$iUfipM2kJ5gSHm7ZA5gt/EzmyyiRfS5g83TkqgWYAlLXk4A5MPzib7Vlbv2QilbRBJlbgSQ3lQSC.VWS6g4m9.",
-        "security": "$6$CkeoaArQPwNKncGy$SvxF3U/vRX/v.DSnI532csnSIKz2/gf.UHDi/QB.SDuSh1WCKDncw.ue7yisGEaVg6ekzsBfil067X0KTS8ho."
-    }
-}
-
-TASK [passwd : change shadow password hash] **************************************************************************************************************************************************************************************************
-changed: [ansibleclient.jadbp.lab] => (item={'key': 'operator', 'value': '$6$ij43auXpmyXRLoE9$iUfipM2kJ5gSHm7ZA5gt/EzmyyiRfS5g83TkqgWYAlLXk4A5MPzib7Vlbv2QilbRBJlbgSQ3lQSC.VWS6g4m9.'})
-changed: [ansibleclient.jadbp.lab] => (item={'key': 'security', 'value': '$6$CkeoaArQPwNKncGy$SvxF3U/vRX/v.DSnI532csnSIKz2/gf.UHDi/QB.SDuSh1WCKDncw.ue7yisGEaVg6ekzsBfil067X0KTS8ho.'})
-changed: [ansibleclient.jadbp.lab] => (item={'key': 'backup', 'value': '$6$U5z8jT1Wnkbpm1Zc$.IA0mVtGaDnv7p49X6AVR9Mp65cICvB2FIUKssct51dm92ejWo61hMicaGW9Eh9IjgRuHWFROFdt.er0NKpll.'})
-changed: [ansibleclient.jadbp.lab] => (item={'key': 'monitoring', 'value': '$6$X9az2GQgxx9ZnHT/$avyQE29t.0VTP9ADJ98QuRpZHAiPVS/qVo/c4jH.mVAFkSPupGuwgo2z0EFs5msPtZz4hD8wZuuwexJ0zlQ7l0'})
-
-PLAY RECAP ***********************************************************************************************************************************************************************************************************************************
-ansibleclient.jadbp.lab    : ok=7    changed=3    unreachable=0    failed=0    skipped=0    rescued=0    ignored=0   
-
-[jadebustos@ansiblectrl labs-ansible]$ 
+[ansible@controller wrkshp-ansible]$ ansible-playbook -i hosts -l client create-users.yaml 
+...
+[ansible@controller wrkshp-ansible]$ 
 ```
-> ![TIP](../imgs/tip-icon.png) Mediante el uso del flag **-l** indicamos que se restringa su ejecución sobre el grupo del inventario **local** en lugar de ejecutarlo sobre todos los equipos incluidos en el inventario. Este flag prevalece sobre lo indicado en el campo **hosts** del playbook.
+> ![TIP](../imgs/tip-icon.png) Using the **-l** flag we can restrict the execution to a subset of inventory members, in this case the playbook will only be execute on the **client** group.
 
-## Mejoras
+## Improvements
 
-Ya hemos comentado que el poner en claro las contraseñas no es una buena práctica, ya no solo por le hecho de que sean accesibles por todo aquel que pueda acceder al repositorio, si no que también se puede ver la contraseña en claro en las salidas del playbook.
+Use plain text for passwords is not a best practice. Not only passwords will be available for all those have access to the repository where the code is stored but passwords will be printed on the ansible output as well.
 
-Los datos confidenciales se deben incluir en **vaults**. En [06-protegiendo-informacion-sensible-ansible.md](06-protegiendo-informacion-sensible-ansible.md) se puede ver como utilizar el **vault** que incorpora ansible por defecto.
+Confidential data must be included in **vaults**. In [06-protecting-sensitive-information.md](06-protecting-sensitive-information.md) you can see how to use the ansible's vault.
 
-> ![TIP](../imgs/tip-icon.png) También es posible utilizar vaults comerciales con ansible.
-
-> ![HOMEWORK](../imgs/homework-icon.png) Un buen ejercicio sería transformar los roles anteriores para recuperar las contraseñas de los usuarios del vault que incluye ansible por defecto.
+> ![TIP](../imgs/tip-icon.png) Commercial vaults can also be used together with ansible.
 
 ## Resources
 
