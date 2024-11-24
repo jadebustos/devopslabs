@@ -180,7 +180,7 @@ File [roles/passwd/tasks/main.yaml](roles/passwd/tasks/main.yaml) includes all t
 - include_tasks: 01-password.yaml
 ```
 
-We can organize the role tasks in different files such [roles/users/tasks/01-password.yaml](roles/users/tasks/01-password.yaml) and including them in the [roles/passwd/tasks/main.yaml](roles/passwd/tasks/main.yaml) file:
+We can organize the role tasks in different files such [roles/passwd/tasks/01-password.yaml](roles/users/tasks/01-password.yaml) and including them in the [roles/passwd/tasks/main.yaml](roles/passwd/tasks/main.yaml) file:
 
 ```yaml
 ---
@@ -189,8 +189,7 @@ We can organize the role tasks in different files such [roles/users/tasks/01-pas
 - name: generate sha512 password hashes
   ansible.builtin.shell: "/usr/bin/openssl passwd -6 -salt $(/usr/bin/openssl rand -base64 48) {{ item.value.password }}"
   register: sha512
-  with_dict:
-    - "{{ users }}"
+  loop: "{{ users | dict2items }}"
 
 #- name: display sha512
 #  ansible.builtin.debug: var=sha512
@@ -217,8 +216,7 @@ We can organize the role tasks in different files such [roles/users/tasks/01-pas
     user: "{{ item.key }}"
     password: "{{ item.value }}"
   become: yes
-  with_dict:
-    - "{{ passwdhashes }}"
+  loop: "{{ passwdhashes | dict2items }}"
 ```
 
 + First task iterates over the **users** dictionary, runs a command to print tha password's hash (sha512) and store it in the **sha512** var. The next two tasks are commented, if you uncomment them **sha512** variable will be printed on the screen.
