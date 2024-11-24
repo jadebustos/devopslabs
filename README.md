@@ -6,11 +6,11 @@ I created these workshops when I taught a university course on DevOps and Cloud 
 
 In that course I was on charge to teach them about Open Source Software, Cloud and DevOps. The technologies I taught were:
 
-* Terraform
 * Ansible
 * Containers
 * Kubernetes
 * Azure
+* Terraform
 
 I decided to update and translate them into English. I will add some more extra material. 
 
