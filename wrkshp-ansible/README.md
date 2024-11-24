@@ -1,6 +1,6 @@
-# Ansible workshops
+# Ansible workshop
 
-The following workshops are intended to learn the Ansible fundamentals:
+This workshop is intended to learn the Ansible fundamentals:
 
 + Playbooks.
 + Roles.
@@ -20,7 +20,7 @@ The following workshops are intended to learn the Ansible fundamentals:
 1. [Deploying a load balanced application](05-deploying-app-lb.md)
 1. [Protecting sensitive information when using ansible](06-protecting-sensitive-information.md)
 
-## Aditional resources
+## Resources
 
 + [Red Hat Ansible Automation Platform Workshops](https://github.com/ansible/workshops)
 + [Using Hasicorp Vault to Secure Ansible Secrets](https://www.youtube.com/watch?v=_z0cbNP0i2g)

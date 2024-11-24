@@ -15,7 +15,7 @@ In that course I was on charge to teach them about Open Source Software, Cloud a
 I decided to update and translate them into English. I will add some more extra material. 
 
 1. [Ansible workshop](wrkshp-ansible)
-1. [Laboratorios de Contenedores](labs-contenedores)
+1. [Containers workshop](wrkshp-containers)
 1. [Laboratorios de Kubernetes](labs-k8s)
 1. Azure workshop
 1. Terraform workshop
