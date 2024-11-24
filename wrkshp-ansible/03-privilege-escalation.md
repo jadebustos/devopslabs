@@ -55,8 +55,12 @@ We can also use **block** to group tasks to be executed as **root**:
   become: true
 ```
 
-## Ejecución de tareas como otro usuario
+## Impersonating users different from root to execute tasks
 
-Es posible impersonar a otros usuarios, no solo al usuario **root**. Para ellos bastará añadir **become_user: usuario** junto a **become: true** para ejecutar la tarea o grupo de tareas como dicho usuario.
+It is also possible to impersonate other users rather than the **root** user. You will have to use *become_user: user** together with **become: true**.
 
-> ![HOMEWORK](../imgs/homework-icon.png) Probar a ejecutar tareas utilizando [become_user](https://docs.ansible.com/ansible/2.9/user_guide/become.html).
+> ![HOMEWORK](../imgs/homework-icon.png) Try to execute tasks using **become_user**.
+
+## Resources
+
++ [Understanding privilege escalation: become](https://docs.ansible.com/ansible/latest/playbook_guide/playbooks_privilege_escalation.html)
