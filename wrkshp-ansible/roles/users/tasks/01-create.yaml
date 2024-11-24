@@ -23,4 +23,4 @@
     generate_ssh_key: "{{ item.value.generate_ssh_keys }}"
     ssh_key_bits: "{{ item.value.ssh_key_size }}"
   become: true
-  loop: "{{ users | dict2items }}"
+    loop: "{{ users | dict2items }}"
