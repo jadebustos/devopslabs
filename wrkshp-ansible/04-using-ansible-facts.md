@@ -1,9 +1,9 @@
-# Facts
+# Using ansible facts
 
-Cuando ansible se conecta a una máquina puede recoger información de la máquina y almacenarla en variables para su porterior uso:
+When ansible connects to a node it can recollect node's information, store it in variables which can be used for the tasks being executed in that node:
 
 ```console
-[jadebustos@ansiblectrl labs-ansible]$ ansible -i hosts -l local -m setup all
+[ansible@controller wrkshp-ansible]$ ansible -i hosts -l local -m setup all
 localhost | SUCCESS => {
     "ansible_facts": {
         "ansible_all_ipv4_addresses": [
@@ -30,7 +30,7 @@ localhost | SUCCESS => {
         },
 ...
 }
-[jadebustos@ansiblectrl labs-ansible]$
+[ansible@controller wrkshp-ansible]$
 ```
 
 > ![HOMEWORK](../imgs/homework-icon.png) Verifica que en el fichero de inventario que utilices exista un grupo llamado local. Sobre el hosts o hosts incluidos en ese grupo se ejecutará la acción.
@@ -38,17 +38,17 @@ localhost | SUCCESS => {
 Si queremos enviar los facts a un fichero podemos redirigir la salida estandar hacía el fichero:
 
 ```console
-[jadebustos@ansiblectrl labs-ansible]$ ansible -i hosts -l local -m setup all > /tmp/local.json
-[jadebustos@ansiblectrl labs-ansible]$ ls -lh /tmp/
+[ansible@controller wrkshp-ansible]$ ansible -i hosts -l local -m setup all > /tmp/local.json
+[ansible@controller wrkshp-ansible]$ ls -lh /tmp/
 total 28K
--rw-rw-r--. 1 jadebustos jadebustos 25K Jun 19 18:55 local.json
-[jadebustos@ansiblectrl labs-ansible]$ 
+-rw-rw-r--. 1 ansible ansible 25K Jun 19 18:55 local.json
+[ansible@controller wrkshp-ansible]$ 
 ```
 
 También podemos indicar que se redirigan de forma automática a un directorio. Esto es útil cuando queremos recuperar los facts de varios sistemas:
 
 ```console
-[jadebustos@ansiblectrl labs-ansible]$ ansible -i hosts -l localhost,ansibleclient.jadbp.lab -m setup all --tree /tmp/facts
+[ansible@controller wrkshp-ansible]$ ansible -i hosts -l localhost,client.melmac.univ -m setup all --tree /tmp/facts
 localhost | SUCCESS => {
     "ansible_facts": {
         "ansible_all_ipv4_addresses": [
@@ -61,46 +61,46 @@ localhost | SUCCESS => {
             "status": "disabled"
         },
 ...
-[jadebustos@ansiblectrl labs-ansible]$ ls -lh /tmp/
+[ansible@controller wrkshp-ansible]$ ls -lh /tmp/
 total 28K
-drwxrwxr-x. 2 jadebustos jadebustos  54 Jun 19 18:58 facts
--rw-rw-r--. 1 jadebustos jadebustos 25K Jun 19 18:55 local.json
-[jadebustos@ansiblectrl labs-ansible]$ ls -lh /tmp/facts/
+drwxrwxr-x. 2 ansible ansible  54 Jun 19 18:58 facts
+-rw-rw-r--. 1 ansible ansible 25K Jun 19 18:55 local.json
+[ansible@controller wrkshp-ansible]$ ls -lh /tmp/facts/
 total 32K
--rw-rw-r--. 1 jadebustos jadebustos 16K Jun 19 18:58 ansibleclient.jadbp.lab
--rw-rw-r--. 1 jadebustos jadebustos 16K Jun 19 18:58 localhost
-[jadebustos@ansiblectrl labs-ansible]$ 
+-rw-rw-r--. 1 ansible ansible 16K Jun 19 18:58 client.melmac.univ
+-rw-rw-r--. 1 ansible ansible 16K Jun 19 18:58 localhost
+[ansible@controller wrkshp-ansible]$ 
 ```
 
 Si editamos los ficheros generados veremos que son un único stream, es decir que es una única línea. Si queremos consultarlos podemos reescribirlos de una forma más legible:
 
 ```console
-[jadebustos@ansiblectrl labs-ansible]$ cd /tmp/facts/
-[jadebustos@ansiblectrl facts]$ for i in $(ls *)
+[ansible@controller wrkshp-ansible]$ cd /tmp/facts/
+[ansible@controller facts]$ for i in $(ls *)
 > do
 > python3 -m json.tool $i > "formatted-$i.json"
 > done
-[jadebustos@ansiblectrl facts]$ ls -lh
+[ansible@controller facts]$ ls -lh
 total 88K
--rw-rw-r--. 1 jadebustos jadebustos 16K Jun 19 18:58 ansibleclient.jadbp.lab
--rw-rw-r--. 1 jadebustos jadebustos 25K Jun 19 19:05 formatted-ansibleclient.jadbp.lab.json
--rw-rw-r--. 1 jadebustos jadebustos 25K Jun 19 19:05 formatted-localhost.json
--rw-rw-r--. 1 jadebustos jadebustos 16K Jun 19 18:58 localhost
-[jadebustos@ansiblectrl facts]$ 
+-rw-rw-r--. 1 ansible ansible 16K Jun 19 18:58 client.melmac.univ
+-rw-rw-r--. 1 ansible ansible 25K Jun 19 19:05 formatted-client.melmac.univ.json
+-rw-rw-r--. 1 ansible ansible 25K Jun 19 19:05 formatted-localhost.json
+-rw-rw-r--. 1 ansible ansible 16K Jun 19 18:58 localhost
+[ansible@controller facts]$ 
 ```
 
 También podemos utilizar el comando **jq** sobre el fichero de facts para extraer información:
 
 ```console
-[jadebustos@ansiblectrl facts]$ cat ansibleclient.jadbp.lab | jq '.ansible_facts.ansible_fqdn'
-"ansibleclient.jadbp.lab"
-[jadebustos@ansiblectrl facts]$ cat ansibleclient.jadbp.lab | jq '.ansible_facts.ansible_all_ipv4_addresses[0]'
+[ansible@controller facts]$ cat client.melmac.univ | jq '.ansible_facts.ansible_fqdn'
+"client.melmac.univ"
+[ansible@controller facts]$ cat client.melmac.univ | jq '.ansible_facts.ansible_all_ipv4_addresses[0]'
 "192.168.1.177"
-[jadebustos@ansiblectrl facts]$ cat ansibleclient.jadbp.lab | jq '.ansible_facts.ansible_all_ipv4_addresses'
+[ansible@controller facts]$ cat client.melmac.univ | jq '.ansible_facts.ansible_all_ipv4_addresses'
 [
   "192.168.1.177"
 ]
-[jadebustos@ansiblectrl facts]$ 
+[ansible@controller facts]$ 
 ```
 
 > ![INFORMATION](../imgs/information-icon.png): [Ansible Facts](https://docs.ansible.com/ansible/latest/user_guide/playbooks_vars_facts.html)
@@ -110,30 +110,30 @@ También podemos utilizar el comando **jq** sobre el fichero de facts para extra
 El playbook [configurar-red.yaml](configurar-red.yaml) recrea un fichero de configuración de red en **/tmp/ifcfg-nombre_interface** utilizando la información contenida en los facts basandose en el template [network.j2](roles/networkconf/templates/network.j2). El fichero de configuración sigue el formato utilizado en Red Hat y derivados:
 
 ```console
-[jadebustos@ansiblectrl labs-ansible]$ ansible-playbook -i hosts -l client configurar-red.yaml 
+[ansible@controller wrkshp-ansible]$ ansible-playbook -i hosts -l client configurar-red.yaml 
 
 PLAY [configurar red (ejemplo utilizacion facts)] ********************************************************************************************************************************************************************************************
 
 TASK [Gathering Facts] ***********************************************************************************************************************************************************************************************************************
-ok: [ansibleclient.jadbp.lab]
+ok: [client.melmac.univ]
 
 TASK [networkconf : include_tasks] ***********************************************************************************************************************************************************************************************************
-included: /home/jadebustos/devopslabs/labs-ansible/roles/networkconf/tasks/01-network.yaml for ansibleclient.jadbp.lab
+included: /home/ansible/devopslabs/wrkshp-ansible/roles/networkconf/tasks/01-network.yaml for client.melmac.univ
 
 TASK [networkconf : crear configuracion de red] **********************************************************************************************************************************************************************************************
-changed: [ansibleclient.jadbp.lab]
+changed: [client.melmac.univ]
 
 PLAY RECAP ***********************************************************************************************************************************************************************************************************************************
-ansibleclient.jadbp.lab    : ok=3    changed=1    unreachable=0    failed=0    skipped=0    rescued=0    ignored=0   
+client.melmac.univ    : ok=3    changed=1    unreachable=0    failed=0    skipped=0    rescued=0    ignored=0   
 
-[jadebustos@ansiblectrl labs-ansible]$
+[ansible@controller wrkshp-ansible]$
 ```
 > ![INFORMATION](../imgs/information-icon.png) [Templates (Jinja2)](https://docs.ansible.com/ansible/latest/user_guide/playbooks_templating.html)
 
 Si nos conectamos al equipo podemos comparar el fichero generado con la información de los facts y el fichero real de configuración:
 
 ```console
-[ansible@ansibleclient ~]$ cat /tmp/ifcfg-enp1s0 
+[ansible@client ~]$ cat /tmp/ifcfg-enp1s0 
 BOOTPROTO=none
 DEFROUTE=yes
 DEVICE=enp1s0
@@ -143,7 +143,7 @@ IPADDR=192.168.1.177
 NETMASK=255.255.255.0
 ONBOOT=yes
 TYPE=Ethernet
-USERCTL=no[ansible@ansibleclient ~]$ cat /etc/sysconfig/network-scripts/ifcfg-enp1s0 
+USERCTL=no[ansible@client ~]$ cat /etc/sysconfig/network-scripts/ifcfg-enp1s0 
 TYPE=Ethernet
 PROXY_METHOD=none
 BROWSER_ONLY=no
@@ -163,8 +163,8 @@ IPADDR=192.168.1.177
 NETMASK=255.255.255.0
 GATEWAY=192.168.1.1
 DNS1=192.168.1.200
-DOMAIN="jadbp.lab"
-[ansible@ansibleclient ~]$ 
+DOMAIN="melmac.univ"
+[ansible@client ~]$ 
 ```
 
 > ![INFORMATION](../imgs/information-icon.png) En el template que hemos utilizado [roles/networkconf/templates/network.j2](roles/networkconf/templates/network.j2) no hemos incluido todos los parámetros, por lo tanto ambos ficheros serán diferentes. Observar que los parámetros que hemos incluido no se han definido en el fichero de variables del role, se cogen de los facts del host y por lo tanto serán los mismos valores que tenga ese mismo parámetro en el fichero de configuración del host.
@@ -186,7 +186,7 @@ El playbook que hemos creado necesita el valor **gather_facts** a **true** ya qu
 En los facts la información de red, menos los dns, se saca de la siguiente estructura:
 
 ```console
-[jadebustos@ansiblectrl labs-ansible]$ cat /tmp/formatted-ansibleclient.jadbp.lab.json | jq '.ansible_facts.ansible_default_ipv4'
+[ansible@controller wrkshp-ansible]$ cat /tmp/formatted-client.melmac.univ.json | jq '.ansible_facts.ansible_default_ipv4'
 {
   "address": "192.168.1.177",
   "alias": "enp1s0",
@@ -199,19 +199,19 @@ En los facts la información de red, menos los dns, se saca de la siguiente estr
   "network": "192.168.1.0",
   "type": "ether"
 }
-[jadebustos@ansiblectrl labs-ansible]$  
+[ansible@controller wrkshp-ansible]$  
 ```
 
 La información de dns se obtiene de la siguiente estructura:
 
 ```console
-[jadebustos@ansiblectrl labs-ansible]$ cat /tmp/facts/formatted-ansibleclient.jadbp.lab.json | jq '.ansible_facts.ansible_dns.nameservers'
+[ansible@controller wrkshp-ansible]$ cat /tmp/facts/formatted-client.melmac.univ.json | jq '.ansible_facts.ansible_dns.nameservers'
 [
   "192.168.1.200"
 ]
-[jadebustos@ansiblectrl labs-ansible]$ cat /tmp/facts/formatted-ansibleclient.jadbp.lab.json | jq '.ansible_facts.ansible_dns.nameservers[0]'
+[ansible@controller wrkshp-ansible]$ cat /tmp/facts/formatted-client.melmac.univ.json | jq '.ansible_facts.ansible_dns.nameservers[0]'
 "192.168.1.200"
-[jadebustos@ansiblectrl labs-ansible]$ 
+[ansible@controller wrkshp-ansible]$ 
 ```
 
 ## Ejemplo práctico del uso de facts
