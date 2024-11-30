@@ -5,7 +5,7 @@ You will need two virtual machines (CentOS Stream 9):
 + **Ansible controller**, ansible engine will be deployed in this virtual machine.
 + **Ansible client**, you will use ansible to perform tasks on this virtual machine.
 
-![NOTE](../imgs/note-icon.png) You will see that I will be writing all path for commands on playbooks. If the command is in the path it is not necessary. I wrote it in that way because it is a habit I have for a long time.
+> ![NOTE](../imgs/note-icon.png) You will see that I will be writing all path for commands on playbooks. If the command is in the path it is not necessary. I wrote it in that way because it is a habit I have for a long time.
 
 ## Ansible deployment (CentOS Stream 9)
 
