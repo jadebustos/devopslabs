@@ -7,7 +7,7 @@ All nodes must be updated:
   <summary>CentOS Stream 9</summary>
 
 ```console
-[root@host ~]# dnf update -y
+root@host:~# dnf update -y
 ```
 </details>
 
@@ -15,7 +15,7 @@ All nodes must be updated:
   <summary>Debian 12</summary>
 
 ```console
-[root@host ~]# apt update -y ; apt upgrade -y
+root@host:~# apt update -y ; apt upgrade -y
 ```
 </details>
 
@@ -25,13 +25,13 @@ Time syncronization:
   <summary>CentOS Stream 9</summary>
 
 ```console
-[root@host ~]# timedatectl set-timezone Europe/Madrid
-[root@host ~]# dnf install chrony -y
+root@host:~# timedatectl set-timezone Europe/Madrid
+root@host:~# dnf install chrony -y
 ...
-[root@host ~]# systemctl enable chronyd
-[root@host ~]# systemctl start chronyd
-[root@host ~]# timedatectl set-ntp true
-[root@host ~]#
+root@host:~# systemctl enable chronyd
+root@host:~# systemctl start chronyd
+root@host:~# timedatectl set-ntp true
+root@host:~#
 ```
 </details>
 
@@ -39,20 +39,20 @@ Time syncronization:
   <summary>Debian 12</summary>
 
 ```console
-[root@host ~]# timedatectl set-timezone Europe/Madrid
-[root@host ~]# apt install chrony -y
+root@host:~# timedatectl set-timezone Europe/Madrid
+root@host:~# apt install chrony -y
 ...
-[root@host ~]# systemctl enable chronyd
-[root@host ~]# systemctl start chronyd
-[root@host ~]# timedatectl set-ntp true
-[root@host ~]#
+root@host:~# systemctl enable chronyd
+root@host:~# systemctl start chronyd
+root@host:~# timedatectl set-ntp true
+root@host:~#
 ```
 </details>
 
 If SELinux is enabled we must disable it:
 
 ```console
-[root@host ~]# sed -i s/=enforcing/=disabled/g /etc/selinux/config
+root@host:~# sed -i s/=enforcing/=disabled/g /etc/selinux/config
 ```
 
 > ![IMPORTANT](../imgs/important-icon.png) If the kernel was updated or SELinux disabled we must reboot the server.
@@ -63,13 +63,13 @@ The following packages must be installed (some of them are not needed but are in
   <summary>CentOS Stream 9</summary>
 
 ```console
-[root@host ~]# dnf install nfs-utils nfs4-acl-tools wget -y
+root@host:~# dnf install nfs-utils nfs4-acl-tools wget -y
 </details>
 
 <details>
   <summary>Debian 12</summary>
 ```console
-[root@host ~]# apt install vim strace telnet bind9-dnsutils net-tools firewalld tmux gpg curl apt-transport-https ca-certificates -y
+root@host:~# apt install vim strace telnet bind9-dnsutils net-tools firewalld tmux gpg curl apt-transport-https ca-certificates -y
 ```
 </details>
 
