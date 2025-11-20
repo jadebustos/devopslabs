@@ -5,6 +5,7 @@ All nodes must be updated:
 
 <details>
   <summary>CentOS Stream 9</summary>
+
 ```console
 [root@host ~]# dnf update -y
 ```
@@ -12,6 +13,7 @@ All nodes must be updated:
 
 <details>
   <summary>Debian 12</summary>
+
 ```console
 [root@host ~]# apt update -y ; apt upgrade -y
 ```
@@ -21,6 +23,7 @@ Time syncronization:
 
 <details>
   <summary>CentOS Stream 9</summary>
+
 ```console
 [root@host ~]# timedatectl set-timezone Europe/Madrid
 [root@host ~]# dnf install chrony -y
@@ -34,6 +37,7 @@ Time syncronization:
 
 <details>
   <summary>Debian 12</summary>
+
 ```console
 [root@host ~]# timedatectl set-timezone Europe/Madrid
 [root@host ~]# apt install chrony -y
@@ -57,6 +61,7 @@ The following packages must be installed (some of them are not needed but are in
 
 <details>
   <summary>CentOS Stream 9</summary>
+
 ```console
 [root@host ~]# dnf install nfs-utils nfs4-acl-tools wget -y
 </details>
