@@ -13,6 +13,7 @@ The following are some laboratories to learn about the basics of kubernetes:
 
 1. [Installing kubernetes](00-00-installing-kubernetes.md)
    1. [Requirements](00-01-requirements.md)
+   1. [NFS Server Installation](00-02-nfs-server.md)
 
 ## Aditional resources
 

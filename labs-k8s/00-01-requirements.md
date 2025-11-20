@@ -67,6 +67,7 @@ The following packages must be installed (some of them are not needed but are in
 ```console
 root@host:~# dnf install nfs-utils nfs4-acl-tools wget -y
 ```
+AÑADIR EL RESTO DE PAQUETES QUE SE INSTALAN EN DEBIAN
 </details>
 
 <details>
@@ -75,6 +76,7 @@ root@host:~# dnf install nfs-utils nfs4-acl-tools wget -y
 ```console
 root@host:~# apt install vim strace telnet bind9-dnsutils net-tools firewalld tmux gpg curl apt-transport-https ca-certificates -y
 ```
+FALTA INSTALAR LAS UTILIZADES NFS
 </details>
 
 > ![TIP](../imgs/tip-icon.png) A recommendation is create one VM, perform all these tasks, configure it with dhcp and with no hostname configuration. Once finished configuration you can [seal the vm](supporting-doc/sealing-vm.md) and after that you can clone the other VMs, configure the network and the hostname. So you will perform these tasks only once.
