@@ -64,6 +64,7 @@ The following packages must be installed (some of them are not needed but are in
 
 ```console
 root@host:~# dnf install nfs-utils nfs4-acl-tools wget -y
+```
 </details>
 
 <details>
