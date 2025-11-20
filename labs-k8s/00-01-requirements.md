@@ -69,6 +69,7 @@ root@host:~# dnf install nfs-utils nfs4-acl-tools wget -y
 
 <details>
   <summary>Debian 12</summary>
+  
 ```console
 root@host:~# apt install vim strace telnet bind9-dnsutils net-tools firewalld tmux gpg curl apt-transport-https ca-certificates -y
 ```
