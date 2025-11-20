@@ -1,53 +1,28 @@
-# Instalando Kubernetes
+# Installing kubernetes
 
-## Creación de las máquinas virtuales
+The procedure to install kubernetes decribed here will cover using CentOS Stream 9 and Debian 12.
 
-Crear las siguientes máquinas virtuales con una interface de red sobre la misma red todas ellas.
+## Virtual machines
 
------------------------------------------------------------------
-| Role | Sistema Operativo | vCPUs | Memoria (GiB) | Disco Duro |
-|------|-------------------|-------|---------------|------------|
-| NFS  | CentOS 8          | 2     | 4             | 1 x 20 GiB (boot) |
-| Master | CentOS 8        | 2     | 8             | 1 x 20 GiB (boot) |
-| Worker | CentOS 8        | 2     | 4             | 1 x 20 GiB (boot) |
-| Worker | CentOS 8        | 2     | 4             | 1 x 20 GiB (boot) |
+Create the following virtual machines with one network interface connected to the same network.
 
-Suponiendo que la red en la que vamos a desplegarlas es la **192.168.1.0/24** configuramos las máquinas con direccionamiento estático:
+----------------------------------------------------------------
+| Role | Operating Systemo | vCPUs | Memory (GiB) | Hard disk  |
+|------|-------------------|-------|--------------|------------|
+| NFS  | CentOS Stream 9/Debian 12 | 2     | 4             | 1 x 20 GiB (boot) |
+| Master | CentOS Stream 9/Debian 12 | 2     | 8             | 1 x 20 GiB (boot) |
+| Worker | CentOS Stream 9/Debian 12 | 2     | 4             | 1 x 20 GiB (boot) |
+| Worker | CentOS Stream 9/Debian 12 | 2     | 4             | 1 x 20 GiB (boot) |
+
+Assuming that the network is **192.168.122.0/24** we will configure the VMs with the following network configuration:
 
 ---------------
-| Nombre | IP |
+| Name | IP |
 |------|------|
-| nfs.acme.es  | 192.168.1.115/24 |
-| kubemaster.acme.es | 192.168.1.110/24 | 
-| kubenode1.acme.es | 192.168.1.111/24 | 
-| kubenode2.acme.es | 192.168.1.112/24 | 
-
-El fichero de configuración del interface de red **/etc/sysconfig/network-script/ifcfg-enp1s0**:
-
-```
-TYPE=Ethernet
-PROXY_METHOD=none
-BROWSER_ONLY=no
-BOOTPROTO=none
-DEFROUTE=yes
-IPV4_FAILURE_FATAL=no
-IPV6INIT=no
-IPV6_AUTOCONF=no
-IPV6_DEFROUTE=no
-IPV6_FAILURE_FATAL=no
-IPV6_ADDR_GEN_MODE=stable-privacy
-NAME=enp1s0
-UUID=7ff72f73-5b87-4685-8dd2-c92fed809bcb
-DEVICE=enp1s0
-ONBOOT=yes
-IPADDR=192.168.1.115
-NETMASK=255.255.255.0
-GATEWAY=192.168.1.1
-DNS1=192.168.1.200
-DOMAIN=acme.es
-```
-
-> ![WARNING](../imgs/warning-icon.png) El nombre del interface de red puede cambiar.
+| nfs.melmac.univ  | 192.168.122.115/24 |
+| kubemaster.melmac.univ | 192.168.122.110/24 | 
+| kubenode1.melmac.univ | 192.168.122.111/24 | 
+| kubenode2.melmac.univ | 192.168.122.112/24 | 
 
 Una vez arrancadas las máquinas, nos aseguramos que estan actualizadas a último nivel ejecutando en cada una de ellas:
 
@@ -55,11 +30,32 @@ Una vez arrancadas las máquinas, nos aseguramos que estan actualizadas a últim
 [root@host ~]# dnf update -y
 ```
 
-## Tareas previas de configuración
+## Tasks that must be done in all nodes prior installation
 
-Estas tareas se tendrán que realizar en todas las VMs del laboratorio:
+All nodes must be updated:
 
-Tendremos que configurar la sincronización horaria:
+```console
+[root@host ~]# dnf update -y
+```
+
+```console
+[root@host ~]# apt update -y ; apt upgrade -y
+```
+<details>
+  <summary>Opción 1</summary>
+
+  Contenido para la opción 1.
+
+</details>
+
+<details>
+  <summary>Opción 2</summary>
+
+  Contenido para la opción 2.
+
+</details>
+
+Time syncronization:
 
 ```console
 [root@host ~]# timedatectl set-timezone Europe/Madrid

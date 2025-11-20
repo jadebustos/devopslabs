@@ -1,0 +1,208 @@
+
+PREREQUISIQUES
+==============
+
+# rm -f /etc/ssh/ssh_host_*
+# dpkg-reconfigure openssh-server
+# apt update
+# apt upgrade -y
+
+# timedatectl set-timezone Europe/Madrid
+# apt install tmux gpg curl apt-transport-https ca-certificates chrony -y
+# apt autoremove
+# systemctl enable chronyd
+# systemctl start chronyd
+# timedatectl set-ntp true
+
+# cat <<EOF >> /etc/modules-load.d/containerd.conf
+> overlay
+> br_netfilter
+> EOF
+# modprobe overlay
+# modprobe br_netfilter
+# # cat <<EOF >> /etc/sysctl.d/99-kubernetes-k8s.conf
+> net.bridge.bridge-nf-call-iptables = 1
+> net.ipv4.ip_forward = 1
+> net.bridge.bridge-nf-call-ip6tables = 1
+> EOF
+# sysctl --system
+* Applying /usr/lib/sysctl.d/50-pid-max.conf ...
+* Applying /etc/sysctl.d/99-kubernetes-k8s.conf ...
+* Applying /usr/lib/sysctl.d/99-protect-links.conf ...
+* Applying /etc/sysctl.d/99-sysctl.conf ...
+* Applying /etc/sysctl.conf ...
+kernel.pid_max = 4194304
+net.bridge.bridge-nf-call-iptables = 1
+net.ipv4.ip_forward = 1
+net.bridge.bridge-nf-call-ip6tables = 1
+fs.protected_fifos = 1
+fs.protected_hardlinks = 1
+fs.protected_regular = 2
+fs.protected_symlinks = 1
+# apt install containerd -y
+# containerd config default | tee /etc/containerd/config.toml >/dev/null 2>&1
+# sed -i 's/SystemdCgroup = false/SystemdCgroup = true/' /etc/containerd/config.toml
+# systemctl restart containerd
+# systemctl enable containerd
+# curl -fsSL https://pkgs.k8s.io/core:/stable:/v1.34/deb/Release.key | gpg --dearmor -o /etc/apt/keyrings/kubernetes-apt-keyring.gpg
+# chmod 644 /etc/apt/keyrings/kubernetes-apt-keyring.gpg
+# echo 'deb [signed-by=/etc/apt/keyrings/kubernetes-apt-keyring.gpg] https://pkgs.k8s.io/core:/stable:/v1.34/deb/ /' | tee /etc/apt/sources.list.d/kubernetes.list
+# chmod 644 /etc/apt/sources.list.d/kubernetes.list
+# apt update
+# apt upgrade
+# apt install kubelet kubeadm kubectl -y
+# apt-mark hold kubelet kubeadm kubectl
+# systemctl enable kubelet
+# systemctl start kubelet
+# firewall-cmd --permanent --add-port=6443/tcp
+# firewall-cmd --permanent --add-port=2379-2380/tcp
+# firewall-cmd --permanent --add-port=10250-10252/tcp
+# firewall-cmd --permanent --add-port=10255/tcp
+# firewall-cmd --permanent --zone public --add-interface enp1s0
+# firewall-cmd --reload
+# swapoff -a
+# sed -i '/swap/s/^/#/' /etc/fstab
+# reboot
+# kubeadm config images pull
+# kubeadm init --apiserver-advertise-address=192.168.122.80 --pod-network-cidr 10.69.0.0/16
+
+Your Kubernetes control-plane has initialized successfully!
+
+To start using your cluster, you need to run the following as a regular user:
+
+  mkdir -p $HOME/.kube
+  sudo cp -i /etc/kubernetes/admin.conf $HOME/.kube/config
+  sudo chown $(id -u):$(id -g) $HOME/.kube/config
+
+Alternatively, if you are the root user, you can run:
+
+  export KUBECONFIG=/etc/kubernetes/admin.conf
+
+You should now deploy a pod network to the cluster.
+Run "kubectl apply -f [podnetwork].yaml" with one of the options listed at:
+  https://kubernetes.io/docs/concepts/cluster-administration/addons/
+
+Then you can join any number of worker nodes by running the following on each as root:
+
+kubeadm join 192.168.122.80:6443 --token aib1a6.7uzbulu40gbcs7sc \
+	--discovery-token-ca-cert-hash sha256:43e8920bc6909cc3ede1d15986d6acb63043417be04b91758766d75c959be86d
+# firewall-cmd --permanent --add-rich-rule 'rule family=ipv4 source address=192.168.122.80/32 accept'
+success
+# firewall-cmd --reload
+success
+# 
+
+
+jadebustos@k8sctrl:~$ mkdir -p $HOME/.kube
+jadebustos@k8sctrl:~$ sudo cp -i /etc/kubernetes/admin.conf $HOME/.kube/config
+jadebustos@k8sctrl:~$ sudo chown $(id -u):$(id -g) $HOME/.kube/config
+jadebustos@k8sctrl:~$ kubectl get nodes
+NAME                  STATUS     ROLES           AGE     VERSION
+k8sctrl.melmac.univ   NotReady   control-plane   6m38s   v1.34.1
+jadebustos@k8sctrl:~$ 
+
+Instalando SDN Calico: https://docs.tigera.io/calico/latest/getting-started/kubernetes/self-managed-onprem/onpremises
+=====================================================================================================================
+
+jadebustos@acme:~$ kubectl create -f https://raw.githubusercontent.com/projectcalico/calico/v3.31.1/manifests/operator-crds.yaml
+customresourcedefinition.apiextensions.k8s.io/apiservers.operator.tigera.io created
+customresourcedefinition.apiextensions.k8s.io/gatewayapis.operator.tigera.io created
+customresourcedefinition.apiextensions.k8s.io/goldmanes.operator.tigera.io created
+customresourcedefinition.apiextensions.k8s.io/imagesets.operator.tigera.io created
+customresourcedefinition.apiextensions.k8s.io/installations.operator.tigera.io created
+customresourcedefinition.apiextensions.k8s.io/managementclusterconnections.operator.tigera.io created
+customresourcedefinition.apiextensions.k8s.io/tigerastatuses.operator.tigera.io created
+customresourcedefinition.apiextensions.k8s.io/whiskers.operator.tigera.io created
+customresourcedefinition.apiextensions.k8s.io/bgpconfigurations.crd.projectcalico.org created
+customresourcedefinition.apiextensions.k8s.io/bgpfilters.crd.projectcalico.org created
+customresourcedefinition.apiextensions.k8s.io/bgppeers.crd.projectcalico.org created
+customresourcedefinition.apiextensions.k8s.io/blockaffinities.crd.projectcalico.org created
+customresourcedefinition.apiextensions.k8s.io/caliconodestatuses.crd.projectcalico.org created
+customresourcedefinition.apiextensions.k8s.io/clusterinformations.crd.projectcalico.org created
+customresourcedefinition.apiextensions.k8s.io/felixconfigurations.crd.projectcalico.org created
+customresourcedefinition.apiextensions.k8s.io/globalnetworkpolicies.crd.projectcalico.org created
+customresourcedefinition.apiextensions.k8s.io/globalnetworksets.crd.projectcalico.org created
+customresourcedefinition.apiextensions.k8s.io/hostendpoints.crd.projectcalico.org created
+customresourcedefinition.apiextensions.k8s.io/ipamblocks.crd.projectcalico.org created
+customresourcedefinition.apiextensions.k8s.io/ipamconfigs.crd.projectcalico.org created
+customresourcedefinition.apiextensions.k8s.io/ipamhandles.crd.projectcalico.org created
+customresourcedefinition.apiextensions.k8s.io/ippools.crd.projectcalico.org created
+customresourcedefinition.apiextensions.k8s.io/ipreservations.crd.projectcalico.org created
+customresourcedefinition.apiextensions.k8s.io/kubecontrollersconfigurations.crd.projectcalico.org created
+customresourcedefinition.apiextensions.k8s.io/networkpolicies.crd.projectcalico.org created
+customresourcedefinition.apiextensions.k8s.io/networksets.crd.projectcalico.org created
+customresourcedefinition.apiextensions.k8s.io/stagedglobalnetworkpolicies.crd.projectcalico.org created
+customresourcedefinition.apiextensions.k8s.io/stagedkubernetesnetworkpolicies.crd.projectcalico.org created
+customresourcedefinition.apiextensions.k8s.io/stagednetworkpolicies.crd.projectcalico.org created
+customresourcedefinition.apiextensions.k8s.io/tiers.crd.projectcalico.org created
+customresourcedefinition.apiextensions.k8s.io/adminnetworkpolicies.policy.networking.k8s.io created
+customresourcedefinition.apiextensions.k8s.io/baselineadminnetworkpolicies.policy.networking.k8s.io created
+jadebustos@acme:~$ kubectl create -f https://raw.githubusercontent.com/projectcalico/calico/v3.31.1/manifests/tigera-operator.yaml
+namespace/tigera-operator created
+serviceaccount/tigera-operator created
+clusterrole.rbac.authorization.k8s.io/tigera-operator-secrets created
+clusterrole.rbac.authorization.k8s.io/tigera-operator created
+clusterrolebinding.rbac.authorization.k8s.io/tigera-operator created
+rolebinding.rbac.authorization.k8s.io/tigera-operator-secrets created
+deployment.apps/tigera-operator created
+jadebustos@acme:~$ curl -O https://raw.githubusercontent.com/projectcalico/calico/v3.31.1/manifests/custom-resources.yaml
+  % Total    % Received % Xferd  Average Speed   Time    Time     Time  Current
+                                 Dload  Upload   Total   Spent    Left  Speed
+100  1046  100  1046    0     0   2686      0 --:--:-- --:--:-- --:--:--  2688
+jadebustos@acme:~$ vi custom-resources.yaml 
+...
+jadebustos@acme:~$ cat custom-resources.yaml | grep cidr
+        cidr: 10.69.0.0/16
+jadebustos@acme:~$ kubectl create -f custom-resources.yaml
+installation.operator.tigera.io/default created
+apiserver.operator.tigera.io/default created
+goldmane.operator.tigera.io/default created
+whisker.operator.tigera.io/default created
+jadebustos@acme:~$ 
+
+After a few minutes...
+jadebustos@acme:~$ kubectl get tigerastatus
+NAME        AVAILABLE   PROGRESSING   DEGRADED   SINCE
+apiserver   True        False         False      38s
+calico      True        False         False      58s
+goldmane    True        False         False      8s
+ippools     True        False         False      2m33s
+whisker     True        False         False      23s
+jadebustos@acme:~$ kubectl get pods -n calico-system
+NAME                                       READY   STATUS    RESTARTS   AGE
+calico-apiserver-677879c58c-7zsfj          1/1     Running   0          3m11s
+calico-apiserver-677879c58c-n9lqt          1/1     Running   0          3m11s
+calico-kube-controllers-689bf594c5-l9b5h   1/1     Running   0          3m10s
+calico-node-zzl4l                          1/1     Running   0          3m10s
+calico-typha-6d5f88575f-pb8p9              1/1     Running   0          3m11s
+csi-node-driver-lkv9p                      2/2     Running   0          3m10s
+goldmane-5bb799dbd6-f4t27                  1/1     Running   0          3m11s
+whisker-87669d795-9mzvx                    2/2     Running   0          2m9s
+jadebustos@acme:~$ kubectl get nodes
+NAME               STATUS   ROLES           AGE   VERSION
+acme.melmac.univ   Ready    control-plane   11m   v1.34.2
+jadebustos@acme:~$
+
+instalar calicoctl como plugin de kubectl
+
+
+jadebustos@acme:~$ curl -L https://github.com/projectcalico/calico/releases/download/v3.31.2/calicoctl-linux-amd64 -o kubectl-calico
+  % Total    % Received % Xferd  Average Speed   Time    Time     Time  Current
+                                 Dload  Upload   Total   Spent    Left  Speed
+  0     0    0     0    0     0      0      0 --:--:--  0:00:01 --:--:--     0
+100 80.5M  100 80.5M    0     0  4662k      0  0:00:17  0:00:17 --:--:-- 5019k
+jadebustos@acme:~$ sudo mv kubectl-calico /usr/local/bin/kubectl-calico
+jadebustos@acme:~$ sudo chmod +x /usr/local/bin/kubectl-calico
+
+El nodo tiene role solo para master/control-plane, por lo que tiene un taint que impide programar pods en el mismo a menos que estos toleren dicho taint.
+
+jadebustos@acme:~$ kubectl describe node acme.melmac.univ | grep -i taints
+Taints:             node-role.kubernetes.io/control-plane:NoSchedule
+jadebustos@acme:~$ kubectl taint nodes acme.melmac.univ node-role.kubernetes.io/control-plane:NoSchedule-
+node/acme.melmac.univ untainted
+jadebustos@acme:~$ kubectl get nodes
+NAME               STATUS   ROLES           AGE   VERSION
+acme.melmac.univ   Ready    control-plane   39m   v1.34.2
+jadebustos@acme:~$ kubectl describe node acme.melmac.univ | grep -i taints
+Taints:             <none>
+jadebustos@acme:~$ 
