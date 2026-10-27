@@ -80,3 +80,12 @@ FALTA INSTALAR LAS UTILIZADES NFS
 </details>
 
 > ![TIP](../imgs/tip-icon.png) A recommendation is create one VM, perform all these tasks, configure it with dhcp and with no hostname configuration. Once finished configuration you can [seal the vm](supporting-doc/sealing-vm.md) and after that you can clone the other VMs, configure the network and the hostname. So you will perform these tasks only once.
+
+DNS resolution is a MUST, so if you do not have a DNS server installed you can use the **/etc/host** file as a replacement:
+
+```console
+192.168.122.110 kubemaster kubemaster.acme.es
+192.168.122.111 kubenode1 kubenode1.acme.es
+192.168.122.112 kubenode2 kubenode2.acme.es
+192.168.122.115 nfs nfs.acme.es
+```
